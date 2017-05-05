@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:local="clr-namespace:MiddleWare">
+    <!--Personal_set.xmal-->
+    <system:String x:Key="EncodingFormat">Encoding Format</system:String>
+    <system:String x:Key="NetworkPortComm">Network Port:</system:String>
+    <system:String x:Key="SerialPortComm">Serial Port:</system:String>
+    <system:String x:Key="ASCII">ASCII</system:String>
+    <system:String x:Key="UTF8">UTF-8</system:String>
+    <system:String x:Key="Language">Language</system:String>
+    <system:String x:Key="SoftLang">Software Language:</system:String>
+    <system:String x:Key="OK">OK</system:String>
+    <system:String x:Key="Cancel">Cancel</system:String>
+
+    <!--connect.xmal-->
+    <system:String x:Key="LisServerConnect">LIS Server Connect</system:String>
+
+    <!--statusbar.xmal-->
+    <system:String x:Key="StatusBarReceiveSampleCount">Receive Count:</system:String>
+</ResourceDictionary>

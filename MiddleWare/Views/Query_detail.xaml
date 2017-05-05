@@ -1,0 +1,47 @@
+﻿<Window x:Class="MiddleWare.Views.Query_detail"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:local="clr-namespace:MiddleWare.Views"
+                    xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                    mc:Ignorable="d" Icon="/Resources/ICON.ico"
+                    ResizeMode ="NoResize"
+                    Height="560" MaxHeight="560" MinHeight="560" Width="850" MaxWidth="850" MinWidth="850" 
+                    Title="数据详情">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="15*"/>
+            <ColumnDefinition Width="580*"/>
+            <ColumnDefinition Width="15*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30*"/>
+            <RowDefinition Height="120*"/>
+            <RowDefinition Height="200*"/>
+            <RowDefinition Height="160*"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="button_printpreview" Content="打印预览" FontSize="11" FontWeight="Medium" Grid.Column="1" Grid.Row="0" Click="button_printpreview_Click" Width="75" Height="28" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <Grid x:Name="grid_monitor" Grid.Column="1" Grid.Row="1" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <local:Query_DSdetail x:Name="DS_data" DataContext="{Binding}" Visibility="Collapsed"/>
+            <local:Query_PLdetail x:Name="PL_data" DataContext="{Binding}" Visibility="Collapsed"/>
+        </Grid>
+        <DataGrid x:Name="Query_detail_datagrid"  Grid.Row="2" Grid.Column="1" AutoGenerateColumns="False" Background="WhiteSmoke" AlternatingRowBackground="BlanchedAlmond" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False"  >
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="项目名" Binding="{Binding item}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="项目全称" Binding="{Binding full_item}" IsReadOnly="True" />
+                <DataGridTextColumn Header="结果" Binding="{Binding result}" IsReadOnly="True" />
+                <DataGridTextColumn Header="结果单位" Binding="{Binding unit}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="正常最低值" Binding="{Binding normal_low}" IsReadOnly="True" />
+                <DataGridTextColumn Header="正常最高值" Binding="{Binding normal_high}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="提示" Binding="{Binding indicate}" IsReadOnly="True" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <Grid x:Name="PLchart" Grid.Row="3" Grid.Column="1">
+            <local:Query_PLlivechart x:Name="PL_chart" DataContext="{Binding}" Visibility="Collapsed"/>
+        </Grid>
+    </Grid>
+</Window>

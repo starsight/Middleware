@@ -1,0 +1,170 @@
+﻿<FlowDocument xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:local="clr-namespace:MiddleWare.Views"
+              ColumnWidth="400" FontSize="14" FontFamily="Georgia"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" TextOptions.TextFormattingMode="Display">
+    <FlowDocument.Resources>
+        <Style TargetType="Table" x:Key="BorderedTable">
+            <Setter Property="CellSpacing" Value="0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+        </Style>
+        <Style TargetType="TableCell" x:Key="BorderedCell">
+            <Setter Property="BorderThickness" Value="0.5"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="Padding" Value="3"/>
+        </Style>
+    </FlowDocument.Resources>
+    <Table FontSize="16" FontFamily="宋体">
+        <Table.Columns>
+            <TableColumn Width="73"/>
+            <TableColumn Width="100"/>
+            <TableColumn Width="73"/>
+            <TableColumn Width="148"/>
+            <TableColumn Width="73"/>
+            <TableColumn Width="80"/>
+            <TableColumn Width="73"/>
+            <TableColumn Width="80"/>
+        </Table.Columns>
+        <TableRowGroup>
+            <TableRow>
+                <TableCell>
+                    <Paragraph>检测项目:</Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>
+                        <Run Text="{Binding DSTYPE}"/>
+                    </Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>病人编号:</Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>
+                        <Run Text="{Binding DSPATIENT_ID}"/>
+                    </Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>病人姓名:</Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>
+                        <Run Text="{Binding DSFIRST_NAME}"/>
+                    </Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>病人性别:</Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>
+                        <Run Text="{Binding DSSEX}"/>
+                    </Paragraph>
+                </TableCell>
+            </TableRow>
+            <TableRow>
+                <TableCell>
+                    <Paragraph>样本编号:</Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>
+                        <Run Text="{Binding DSSAMPLE_ID}"/>
+                    </Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>检测时间:</Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>
+                        <Run Text="{Binding DSTEST_TIME}"/>
+                    </Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>样本类型:</Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>
+                        <Run Text="{Binding DSSAMPLE_KIND}"/>
+                    </Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>检测仪器:</Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>
+                        <Run Text="{Binding DSDEVICE}"/>
+                    </Paragraph>
+                </TableCell>
+            </TableRow>
+            <TableRow>
+                <TableCell>
+                    <Paragraph>申请医生:</Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>
+                        <Run Text="{Binding DSDOCTOR}"/>
+                    </Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>科室:</Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>
+                        <Run Text="{Binding DSDEPARTMENT}"/>
+                    </Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>病区:</Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>
+                        <Run Text="{Binding DSAREA}"/>
+                    </Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>病床:</Paragraph>
+                </TableCell>
+                <TableCell>
+                    <Paragraph>
+                        <Run Text="{Binding DSBED}"/>
+                    </Paragraph>
+                </TableCell>
+            </TableRow>
+        </TableRowGroup>
+    </Table>
+
+    <Table Style="{StaticResource BorderedTable}" FontFamily="宋体">
+        <Table.Columns>
+            <TableColumn Width="50"/>
+            <TableColumn Width="300"/>
+            <TableColumn Width="50"/>
+            <TableColumn Width="70"/>
+            <TableColumn Width="90"/>
+            <TableColumn Width="90"/>
+            <TableColumn Width="50"/>
+        </Table.Columns>
+        <TableRowGroup x:Name="TableRowsDetails">
+            <TableRow FontWeight="Medium">
+                <TableCell Style="{StaticResource BorderedCell}">
+                    <Paragraph>项目名</Paragraph>
+                </TableCell>
+                <TableCell Style="{StaticResource BorderedCell}">
+                    <Paragraph>项目全名</Paragraph>
+                </TableCell>
+                <TableCell Style="{StaticResource BorderedCell}">
+                    <Paragraph>结果</Paragraph>
+                </TableCell>
+                <TableCell Style="{StaticResource BorderedCell}">
+                    <Paragraph>结果单位</Paragraph>
+                </TableCell>
+                <TableCell Style="{StaticResource BorderedCell}">
+                    <Paragraph>正常最低值</Paragraph>
+                </TableCell>
+                <TableCell Style="{StaticResource BorderedCell}">
+                    <Paragraph>正常最高值</Paragraph>
+                </TableCell>
+                <TableCell Style="{StaticResource BorderedCell}">
+                    <Paragraph>提示</Paragraph>
+                </TableCell>
+            </TableRow>
+        </TableRowGroup>
+    </Table>
+</FlowDocument>

@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="MiddleWare.Views.HL7connect"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MiddleWare.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="365" d:DesignWidth="390">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="195*"/>
+            <ColumnDefinition Width="195*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="35*"/>
+            <RowDefinition Height="35*"/>
+            <RowDefinition Height="35*"/>
+            <RowDefinition Height="255*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="网口设置:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBlock Text="IP地址:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Width="100" HorizontalAlignment="Right"/>
+        <TextBlock Text="端口:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" Width="100" HorizontalAlignment="Right"/>
+        <TextBox x:Name="textbox_hl7ip" FontSize="18" FontFamily="Consolas" Grid.Column="1" Grid.Row="2" Height="25" Width="160" VerticalAlignment="Center" HorizontalAlignment="Left" />
+        <TextBox x:Name="textbox_hl7port" FontSize="18" FontFamily="Consolas" Grid.Column="1" Grid.Row="3" Height="25" Width="160" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+    </Grid>
+</UserControl>

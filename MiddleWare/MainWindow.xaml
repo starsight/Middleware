@@ -1,0 +1,36 @@
+﻿<Controls:MetroWindow x:Class="MiddleWare.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:Views="clr-namespace:MiddleWare.Views"
+                      xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+                      Title="MiddleWare"
+                      Height="600"
+                      Width="960" Icon="/Resources/ICON.ico"
+                      Closing="MetroWindow_Closing">
+    <Grid>
+        <Controls:MetroAnimatedSingleRowTabControl x:Name="MainTabControl" Grid.Row="1">
+            <TabItem Header="连接状态">
+                <Views:Connect DataContext="{Binding}"/>
+            </TabItem>
+            <TabItem Header="实时监控">
+                <Views:Monitor DataContext="{Binding}"/>
+            </TabItem>
+            <TabItem Header="数据查询">
+                <Views:Query DataContext="{Binding}"/>
+            </TabItem>
+            <TabItem Header="设置">
+                <Views:SetOption DataContext="{Binding}"/>
+            </TabItem>
+        </Controls:MetroAnimatedSingleRowTabControl>
+        <Grid VerticalAlignment="Bottom" Height="36">
+            <Views:Statusbar DataContext="{Binding}"/>
+        </Grid>
+        <Views:NotificationAreaIcon x:Name="notificationIcon" Text="MiddleWare" Icon="/Resources/ICON.ico"  MouseDoubleClick="NotificationAreaIcon_MouseDoubleClick">
+            <Views:NotificationAreaIcon.MenuItems>
+                <forms:MenuItem Text="关于我们" Click="MenuItem_Click_AboutUs"/>
+                <forms:MenuItem Text="退出软件" Click="MenuItem_Click_Close"/>
+            </Views:NotificationAreaIcon.MenuItems>
+        </Views:NotificationAreaIcon>
+    </Grid>
+</Controls:MetroWindow>

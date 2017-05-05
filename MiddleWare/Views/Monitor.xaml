@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="MiddleWare.Views.Monitor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MiddleWare.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="900">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="100*"/>
+            <ColumnDefinition Width="130*"/>
+            <ColumnDefinition Width="580*"/>
+            <ColumnDefinition Width="30*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="120*"/>
+            <RowDefinition Height="40*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="40*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="40*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="40*"/>
+            <RowDefinition Height="100*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="50*"/>
+        </Grid.RowDefinitions>
+        <Label x:Name="label_selectdevice" Content="选择仪器:" FontSize="20" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+        <ComboBox x:Name="combobox_selectdevice" SelectionChanged="combobox_selectdevice_SelectionChanged" FontSize="20" DisplayMemberPath="NAME" SelectedValuePath="NAME" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2"/>
+        <Label x:Name="label_deveicestate" Content="仪器监控状态:" FontSize="20" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+        <Label x:Name="label_lisstate" Content="Lis监控状态:" FontSize="20" Grid.Column="1" Grid.Row="8" Grid.ColumnSpan="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+        <TextBox x:Name="textbox_deveicestate" FontFamily="宋体" FontSize="15" Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="3" Grid.RowSpan="2" IsReadOnly="True" BorderBrush="White" VerticalScrollBarVisibility="Auto"/>
+        <TextBox x:Name="textbox_lisstate" FontFamily="宋体" FontSize="15" Grid.Column="1" Grid.Row="9" Grid.ColumnSpan="3" Grid.RowSpan="1" IsReadOnly="True" BorderBrush="White" VerticalScrollBarVisibility="Auto"/>
+        <Grid Grid.Column="4" Grid.Row="1" Grid.RowSpan="6" Grid.ColumnSpan="1" >
+            <DataGrid x:Name="datagrid_monitor" AutoGenerateColumns="False" AlternatingRowBackground="BlanchedAlmond" Visibility="Collapsed">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="项目名" Binding="{Binding ITEM}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="项目全称" Binding="{Binding FULL_NAME}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="结果" Binding="{Binding RESULT}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="结果单位" Binding="{Binding UNIT}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="正常最低值" Binding="{Binding NORMAL_LOW}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="正常最高值" Binding="{Binding NORMAL_HIGH}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="提示" Binding="{Binding INDICATE}" IsReadOnly="True"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+        <Grid x:Name="grid_monitor" Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="2">
+            <local:DSmonitor x:Name="DSmonitor" DataContext="{Binding}" Visibility="Collapsed"/>
+            <local:PLmonitor x:Name="PLmonitor" DataContext="{Binding}" Visibility="Collapsed"/>
+        </Grid>
+        <Grid x:Name="grid_chart" Grid.Column="4" Grid.Row="7" Grid.RowSpan="4">
+            <local:PLlivechart x:Name="PLchart" DataContext="{Binding}" Visibility="Collapsed"/>
+        </Grid>
+        <Image Source="/Resources/sinnowa.jpg" Height="100" Width="260" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" Visibility="Visible"/>
+    </Grid>
+</UserControl>

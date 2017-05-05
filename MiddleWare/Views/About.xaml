@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="MiddleWare.Views.About"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MiddleWare.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="550" d:DesignWidth="780">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="150*"/>
+            <ColumnDefinition Width="580*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="50*"/>
+            <RowDefinition Height="150*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="江苏英诺华医疗技术有限公司" FontSize="30" FontFamily="宋体" Foreground="Green" FontWeight="Medium" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBlock Text="公司地址:" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="邮    编:" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="联系电话:" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="传    真:" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="电子邮箱:" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="网    址:" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="南京市江宁区麒麟街道宝山路7号" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="211135" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="025-84127188 总机" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="025-84127199" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="sales@sinnowa.com" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <Hyperlink NavigateUri="http://www.sinnowa.com" Click="Hyperlink_Click">http://www.sinnowa.com</Hyperlink>
+        </TextBlock>
+        
+    </Grid> 
+</UserControl>

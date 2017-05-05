@@ -1,0 +1,525 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Items>
+  <Item>
+    <NAME>AAP</NAME>
+    <FULL_NAME>诱聚剂项目</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>MPV_0</NAME>
+    <FULL_NAME>原始血小板平均体积</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>7</NORMAL_LOW>
+    <NORMAL_HIGH>11</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>MAR</NAME>
+    <FULL_NAME>最大聚集率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>40</NORMAL_LOW>
+    <NORMAL_HIGH>80</NORMAL_HIGH>
+    <UNIT>%</UNIT>
+  </Item>
+  <Item>
+    <NAME>MAT</NAME>
+    <FULL_NAME>最大聚集时间</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>0</NORMAL_LOW>
+    <NORMAL_HIGH>600</NORMAL_HIGH>
+    <UNIT>S</UNIT>
+  </Item>
+  <Item>
+    <NAME>PLT_0</NAME>
+    <FULL_NAME>原始血小板数量</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>100</NORMAL_LOW>
+    <NORMAL_HIGH>300</NORMAL_HIGH>
+    <UNIT>10^9/L</UNIT>
+  </Item>
+  <Item>
+    <NAME>AAR</NAME>
+    <FULL_NAME>平均聚集率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>30</NORMAL_LOW>
+    <NORMAL_HIGH>70</NORMAL_HIGH>
+    <UNIT>%</UNIT>
+  </Item>
+  <Item>
+    <NAME>RBC_0</NAME>
+    <FULL_NAME>原始红细胞数量</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>3.5</NORMAL_LOW>
+    <NORMAL_HIGH>5.5</NORMAL_HIGH>
+    <UNIT>10^12/L</UNIT>
+  </Item>
+  <Item>
+    <NAME>MCV_0</NAME>
+    <FULL_NAME>原始红细胞体积</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>80</NORMAL_LOW>
+    <NORMAL_HIGH>100</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>PDW</NAME>
+    <FULL_NAME>原始血小板分布宽度</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>7</NORMAL_LOW>
+    <NORMAL_HIGH>17</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>RDW</NAME>
+    <FULL_NAME>原始红细胞分布宽度</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>35</NORMAL_LOW>
+    <NORMAL_HIGH>56</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>INH</NAME>
+    <FULL_NAME>有效抑制率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>20</NORMAL_LOW>
+    <NORMAL_HIGH>60</NORMAL_HIGH>
+    <UNIT>%</UNIT>
+  </Item>
+  <Item>
+    <NAME>A_INH</NAME>
+    <FULL_NAME>平均抑制率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>30</NORMAL_LOW>
+    <NORMAL_HIGH>70</NORMAL_HIGH>
+    <UNIT>%</UNIT>
+  </Item>
+  <Item>
+    <NAME>R_MAR</NAME>
+    <FULL_NAME>红细胞最大聚集率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>0</NORMAL_LOW>
+    <NORMAL_HIGH>100</NORMAL_HIGH>
+    <UNIT>%</UNIT>
+  </Item>
+  <Item>
+    <NAME>PLT1</NAME>
+    <FULL_NAME>第1检测点血小板数量</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>100</NORMAL_LOW>
+    <NORMAL_HIGH>300</NORMAL_HIGH>
+    <UNIT>10^9/L</UNIT>
+  </Item>
+  <Item>
+    <NAME>PLT2</NAME>
+    <FULL_NAME>第2检测点血小板数量</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>100</NORMAL_LOW>
+    <NORMAL_HIGH>300</NORMAL_HIGH>
+    <UNIT>10^9/L</UNIT>
+  </Item>
+  <Item>
+    <NAME>PLT3</NAME>
+    <FULL_NAME>第3检测点血小板数量</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>100</NORMAL_LOW>
+    <NORMAL_HIGH>300</NORMAL_HIGH>
+    <UNIT>10^9/L</UNIT>
+  </Item>
+  <Item>
+    <NAME>PLT4</NAME>
+    <FULL_NAME>第4检测点血小板数量</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>100</NORMAL_LOW>
+    <NORMAL_HIGH>300</NORMAL_HIGH>
+    <UNIT>10^9/L</UNIT>
+  </Item>
+  <Item>
+    <NAME>PLT5</NAME>
+    <FULL_NAME>第5检测点血小板数量</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>100</NORMAL_LOW>
+    <NORMAL_HIGH>300</NORMAL_HIGH>
+    <UNIT>10^9/L</UNIT>
+  </Item>
+  <Item>
+    <NAME>MPV1</NAME>
+    <FULL_NAME>第1检测点血小板平均体积</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>7</NORMAL_LOW>
+    <NORMAL_HIGH>11</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>MPV2</NAME>
+    <FULL_NAME>第2检测点血小板平均体积</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>7</NORMAL_LOW>
+    <NORMAL_HIGH>11</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>MPV3</NAME>
+    <FULL_NAME>第3检测点血小板平均体积</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>7</NORMAL_LOW>
+    <NORMAL_HIGH>11</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>MPV4</NAME>
+    <FULL_NAME>第4检测点血小板平均体积</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>7</NORMAL_LOW>
+    <NORMAL_HIGH>11</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>MPV5</NAME>
+    <FULL_NAME>第5检测点血小板平均体积</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>7</NORMAL_LOW>
+    <NORMAL_HIGH>11</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>RBC1</NAME>
+    <FULL_NAME>第1检测点红细胞数量</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>3.5</NORMAL_LOW>
+    <NORMAL_HIGH>5.5</NORMAL_HIGH>
+    <UNIT>10^12/L</UNIT>
+  </Item>
+  <Item>
+    <NAME>RBC2</NAME>
+    <FULL_NAME>第2检测点红细胞数量</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>3.5</NORMAL_LOW>
+    <NORMAL_HIGH>5.5</NORMAL_HIGH>
+    <UNIT>10^12/L</UNIT>
+  </Item>
+  <Item>
+    <NAME>RBC3</NAME>
+    <FULL_NAME>第3检测点红细胞数量</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>3.5</NORMAL_LOW>
+    <NORMAL_HIGH>5.5</NORMAL_HIGH>
+    <UNIT>10^12/L</UNIT>
+  </Item>
+  <Item>
+    <NAME>RBC4</NAME>
+    <FULL_NAME>第4检测点红细胞数量</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>3.5</NORMAL_LOW>
+    <NORMAL_HIGH>5.5</NORMAL_HIGH>
+    <UNIT>10^12/L</UNIT>
+  </Item>
+  <Item>
+    <NAME>RBC5</NAME>
+    <FULL_NAME>第5检测点红细胞数量</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>3.5</NORMAL_LOW>
+    <NORMAL_HIGH>5.5</NORMAL_HIGH>
+    <UNIT>10^12/L</UNIT>
+  </Item>
+  <Item>
+    <NAME>PACBit</NAME>
+    <FULL_NAME>PAC图形有效点数</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>PAC1</NAME>
+    <FULL_NAME>PAC图形第1点Y轴高度</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>PAC2</NAME>
+    <FULL_NAME>PAC图形第2点Y轴高度</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>PAC3</NAME>
+    <FULL_NAME>PAC图形第3点Y轴高度</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>PAC4</NAME>
+    <FULL_NAME>PAC图形第4点Y轴高度</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>PAC5</NAME>
+    <FULL_NAME>PAC图形第5点Y轴高度</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>PAC6</NAME>
+    <FULL_NAME>PAC图形第6点Y轴高度</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>PAC7</NAME>
+    <FULL_NAME>PAC图形第7点Y轴高度</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>PAC8</NAME>
+    <FULL_NAME>PAC图形第8点Y轴高度</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>MCV1</NAME>
+    <FULL_NAME>第1检测点红细胞平均体积</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>80</NORMAL_LOW>
+    <NORMAL_HIGH>100</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>MCV2</NAME>
+    <FULL_NAME>第2检测点红细胞平均体积</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>80</NORMAL_LOW>
+    <NORMAL_HIGH>100</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>MCV3</NAME>
+    <FULL_NAME>第3检测点红细胞平均体积</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>80</NORMAL_LOW>
+    <NORMAL_HIGH>100</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>MCV4</NAME>
+    <FULL_NAME>第4检测点红细胞平均体积</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>80</NORMAL_LOW>
+    <NORMAL_HIGH>100</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>MCV5</NAME>
+    <FULL_NAME>第5检测点红细胞平均体积</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>80</NORMAL_LOW>
+    <NORMAL_HIGH>100</NORMAL_HIGH>
+    <UNIT>fL</UNIT>
+  </Item>
+  <Item>
+    <NAME>AR_1</NAME>
+    <FULL_NAME>第1次反应聚集率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>AR_2</NAME>
+    <FULL_NAME>第2次反应聚集率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>AR_3</NAME>
+    <FULL_NAME>第3次反应聚集率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>AR_4</NAME>
+    <FULL_NAME>第4次反应聚集率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>AR_5</NAME>
+    <FULL_NAME>第5次反应聚集率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>AR_6</NAME>
+    <FULL_NAME>第6次反应聚集率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>INH_1</NAME>
+    <FULL_NAME>第1次反应抑制率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>20</NORMAL_LOW>
+    <NORMAL_HIGH>60</NORMAL_HIGH>
+    <UNIT>%</UNIT>
+  </Item>
+  <Item>
+    <NAME>INH_2</NAME>
+    <FULL_NAME>第2次反应抑制率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>20</NORMAL_LOW>
+    <NORMAL_HIGH>60</NORMAL_HIGH>
+    <UNIT>%</UNIT>
+  </Item>
+  <Item>
+    <NAME>INH_3</NAME>
+    <FULL_NAME>第3次反应抑制率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>20</NORMAL_LOW>
+    <NORMAL_HIGH>60</NORMAL_HIGH>
+    <UNIT>%</UNIT>
+  </Item>
+  <Item>
+    <NAME>INH_4</NAME>
+    <FULL_NAME>第4次反应抑制率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>20</NORMAL_LOW>
+    <NORMAL_HIGH>60</NORMAL_HIGH>
+    <UNIT>%</UNIT>
+  </Item>
+  <Item>
+    <NAME>INH_5</NAME>
+    <FULL_NAME>第5次反应抑制率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>20</NORMAL_LOW>
+    <NORMAL_HIGH>60</NORMAL_HIGH>
+    <UNIT>%</UNIT>
+  </Item>
+  <Item>
+    <NAME>INH_6</NAME>
+    <FULL_NAME>第6次反应抑制率</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW>20</NORMAL_LOW>
+    <NORMAL_HIGH>60</NORMAL_HIGH>
+    <UNIT>%</UNIT>
+  </Item>
+  <Item>
+    <NAME>ID</NAME>
+    <FULL_NAME>样本ID</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>RBCHist</NAME>
+    <FULL_NAME>RBC直方图</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>PLTHist</NAME>
+    <FULL_NAME>PLT直方图</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+  <Item>
+    <NAME>BarCode</NAME>
+    <FULL_NAME>条形码</FULL_NAME>
+    <TYPE>test</TYPE>
+    <INDEX></INDEX>
+    <NORMAL_LOW />
+    <NORMAL_HIGH />
+    <UNIT />
+  </Item>
+</Items>
