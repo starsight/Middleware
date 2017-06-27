@@ -8,6 +8,9 @@ using System.Data;
 using System.Data.OleDb;
 using MiddleWare.Views;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using static MiddleWare.Communicate.PLManager;
+using RestSharp;
 //3个线程  2个队列 1个PL12Raw队列  1个PL12队列
 namespace MiddleWare.Communicate
 {
@@ -248,6 +251,25 @@ namespace MiddleWare.Communicate
             public string SAMPLE_KIND;//样本类型  等于1就代表检测结果
             public bool ISSEND;
             public List<PL12Result> Result;
+        }
+        public struct PL12Web
+        {
+            public string SAMPLE_ID;//样品号
+            public string BarCode;//条形码
+            public DateTime TEST_TIME;//测试时间
+            public string DEVICE;//仪器设备
+            public string AAP;//诱聚剂项目
+            //public string TYPE;//血小板
+            public string SAMPLE_KIND;//样本类型  等于1就代表检测结果
+            public bool ISSEND;
+            //public List<PL12Result> Result;
+            public string ITEM;
+            public string FULL_NAME;
+            public string RESULT;
+            public string UNIT;
+            public double NORMAL_lOW;
+            public double NORMAL_HIGH;
+            public string INDICATE;
         }
 
         private readonly Queue<PL12> pl12Queue = new Queue<PL12>();
@@ -498,6 +520,8 @@ namespace MiddleWare.Communicate
         public static CancellationTokenSource WriteAccessPLCancel;
 
         private PLManager plManager;
+
+        private List<PL12Web> ListPL12Result;
         public WriteAccessPL(PLManager pm)
         {
             strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
@@ -528,6 +552,42 @@ namespace MiddleWare.Communicate
                 }
                 Thread.Sleep(300);
             }
+        }
+        private void WriteDataAccessWebOperation(OleDbCommand cmd,PL12Raw data,string item,string name,string result,string unit,double low,double high,string indicate)
+        {
+            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
+            cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
+            cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
+            cmd.Parameters.Add("@AAP", OleDbType.VarChar).Value = data.AAP;
+            cmd.Parameters.Add("@SAMPLE_KIND", OleDbType.VarChar).Value = data.Type;
+            cmd.Parameters.Add("@ITEM", OleDbType.VarChar).Value = item;//"MPV1";
+            cmd.Parameters.Add("@FULL_NAME", OleDbType.VarChar).Value = name;// Name;
+            cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = result;// data.MPV1;
+            cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = unit;// Unit;
+            cmd.Parameters.Add("@NORMAL_lOW", OleDbType.VarChar).Value = low;// Normal_Low;
+            cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = high;// Normal_High;
+            cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = indicate;//data.MPV1 > Normal_High ? "H" : (data.MPV1 < Normal_Low ? "L" : "N");
+            cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
+            cmd.ExecuteNonQuery();
+
+            ListPL12Result.Add(new PL12Web()
+            {
+                SAMPLE_ID = data.ID,
+                BarCode = data.BarCode,
+                TEST_TIME = data.TIME,
+                DEVICE = data.Device,
+                AAP = data.AAP,
+                SAMPLE_KIND = data.Type.ToString(),
+                ITEM = item,
+                FULL_NAME = name,
+                RESULT = result,
+                UNIT = unit,
+                NORMAL_lOW = low,
+                NORMAL_HIGH = high,
+                INDICATE = indicate,
+                ISSEND = false
+            });
         }
         public void WriteData(PLManager.PL12Raw data)
         {
@@ -561,6 +621,9 @@ namespace MiddleWare.Communicate
                     "values (@SAMPLE_ID,@BarCode,@TEST_TIME,@DEVICE,@AAP,@SAMPLE_KIND,@ITEM,@FULL_NAME,@RESULT,@UNIT,@NORMAL_lOW,@NORMAL_HIGH,@INDICATE,@ISSEND)";
             strInsertLack = "insert into PL_lisoutput(SAMPLE_ID,BarCode,TEST_TIME,DEVICE,AAP,SAMPLE_KIND,ITEM,FULL_NAME,RESULT,UNIT,ISSEND) " +
                 "values (@SAMPLE_ID,@BarCode,@TEST_TIME,@DEVICE,@AAP,@SAMPLE_KIND,@ITEM,@FULL_NAME,@RESULT,@UNIT,@ISSEND)";
+
+            ListPL12Result = new List<PL12Web>();
+
             #region MPV封装
             cmd = new OleDbCommand(strInsert, conn);
             strSelectInfo = "select * from PL_ExtraInfo where ITEM ='MPV'";
@@ -576,7 +639,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -590,7 +653,10 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MPV_0 > Normal_High ? "H" : (data.MPV_0 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd,data, "MPV_0",Name,data.MPV_0.ToString(),Unit,Normal_Low,Normal_High, data.MPV_0 > Normal_High ? "H" : (data.MPV_0 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='MPV1'";
@@ -598,7 +664,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -612,7 +678,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MPV1 > Normal_High ? "H" : (data.MPV1 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "MPV1", Name, data.MPV1.ToString(), Unit, Normal_Low, Normal_High, data.MPV1 > Normal_High ? "H" : (data.MPV1 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='MPV2'";
@@ -620,7 +688,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -634,7 +702,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MPV2 > Normal_High ? "H" : (data.MPV2 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "MPV2", Name, data.MPV2.ToString(), Unit, Normal_Low, Normal_High, data.MPV2 > Normal_High ? "H" : (data.MPV2 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='MPV3'";
@@ -642,7 +712,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -656,7 +726,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MPV3 > Normal_High ? "H" : (data.MPV3 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "MPV3", Name, data.MPV3.ToString(), Unit, Normal_Low, Normal_High, data.MPV3 > Normal_High ? "H" : (data.MPV3 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='MPV4'";
@@ -664,7 +736,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -678,7 +750,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MPV4 > Normal_High ? "H" : (data.MPV4 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "MPV4", Name, data.MPV4.ToString(), Unit, Normal_Low, Normal_High, data.MPV4 > Normal_High ? "H" : (data.MPV4 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='MPV5'";
@@ -686,7 +760,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -700,7 +774,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MPV5 > Normal_High ? "H" : (data.MPV5 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "MPV5", Name, data.MPV5.ToString(), Unit, Normal_Low, Normal_High, data.MPV5 > Normal_High ? "H" : (data.MPV5 < Normal_Low ? "L" : "N"));
+
             #endregion
             #region MCV封装
             cmd = new OleDbCommand(strInsert, conn);
@@ -716,7 +792,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -730,7 +806,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MCV_0 > Normal_High ? "H" : (data.MCV_0 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "MCV_0", Name, data.MCV_0.ToString(), Unit, Normal_Low, Normal_High, data.MCV_0 > Normal_High ? "H" : (data.MCV_0 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='MCV1'";
@@ -738,7 +816,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -752,7 +830,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MCV1 > Normal_High ? "H" : (data.MCV1 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "MCV1", Name, data.MCV1.ToString(), Unit, Normal_Low, Normal_High, data.MCV1 > Normal_High ? "H" : (data.MCV1 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='MCV2'";
@@ -760,7 +840,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -774,7 +854,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MCV2 > Normal_High ? "H" : (data.MCV2 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "MCV2", Name, data.MCV2.ToString(), Unit, Normal_Low, Normal_High, data.MCV2 > Normal_High ? "H" : (data.MCV2 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='MCV3'";
@@ -782,7 +864,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -796,7 +878,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MCV3 > Normal_High ? "H" : (data.MCV3 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "MCV3", Name, data.MCV3.ToString(), Unit, Normal_Low, Normal_High, data.MCV3 > Normal_High ? "H" : (data.MCV3 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='MCV4'";
@@ -804,7 +888,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -818,7 +902,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MCV4 > Normal_High ? "H" : (data.MCV4 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "MCV4", Name, data.MCV4.ToString(), Unit, Normal_Low, Normal_High, data.MCV4 > Normal_High ? "H" : (data.MCV4 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='MCV5'";
@@ -826,7 +912,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -840,7 +926,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MCV5 > Normal_High ? "H" : (data.MCV5 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "MCV5", Name, data.MCV5.ToString(), Unit, Normal_Low, Normal_High, data.MCV5 > Normal_High ? "H" : (data.MCV5 < Normal_Low ? "L" : "N"));
+
             #endregion
             #region 反应聚集率
             cmd = new OleDbCommand(strInsert, conn);
@@ -856,7 +944,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -870,7 +958,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.AAR > Normal_High ? "H" : (data.AAR < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "AAR", Name, data.AAR.ToString(), Unit, Normal_Low, Normal_High, data.AAR > Normal_High ? "H" : (data.AAR < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectInfo = "select * from PL_ExtraInfo where ITEM ='MAR'";//最大聚集率
@@ -885,7 +975,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -899,7 +989,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MAR > Normal_High ? "H" : (data.MAR < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "MAR", Name, data.MAR.ToString(), Unit, Normal_Low, Normal_High, data.MAR > Normal_High ? "H" : (data.MAR < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='AR_1'";
@@ -907,7 +999,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -918,7 +1010,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.AR_1;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = Unit;
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "AR_1", Name, data.AR_1.ToString(), Unit, 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='AR_2'";
@@ -926,7 +1020,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -937,7 +1031,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.AR_2;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = Unit;
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "AR_2", Name, data.AR_2.ToString(), Unit, 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='AR_3'";
@@ -945,7 +1041,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -956,7 +1052,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.AR_3;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = Unit;
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "AR_3", Name, data.AR_3.ToString(), Unit, 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='AR_4'";
@@ -964,7 +1062,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -975,7 +1073,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.AR_4;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = Unit;
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "AR_4", Name, data.AR_4.ToString(), Unit, 0, 0, "");     
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='AR_5'";
@@ -983,7 +1083,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -994,7 +1094,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.AR_5;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = Unit;
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "AR_5", Name, data.AR_5.ToString(), Unit, 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='AR_6'";
@@ -1002,7 +1104,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1013,7 +1115,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.AR_6;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = Unit;
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "AR_6", Name, data.AR_6.ToString(), Unit, 0, 0, "");
+
             #endregion
             #region 反应抑制率
             cmd = new OleDbCommand(strInsert, conn);
@@ -1029,7 +1133,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1043,7 +1147,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.A_INH > Normal_High ? "H" : (data.A_INH < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "A_INH", Name, data.A_INH.ToString(), Unit, Normal_Low, Normal_High, data.A_INH > Normal_High ? "H" : (data.A_INH < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectInfo = "select * from PL_ExtraInfo where ITEM ='INH'";
@@ -1058,7 +1164,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1072,7 +1178,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.INH > Normal_High ? "H" : (data.INH < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "INH", Name, data.INH.ToString(), Unit, Normal_Low, Normal_High, data.INH > Normal_High ? "H" : (data.INH < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='INH_1'";
@@ -1080,7 +1188,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1091,7 +1199,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.INH_1;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = Unit;
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "INH_1", Name, data.INH_1.ToString(), Unit, 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='INH_2'";
@@ -1099,7 +1209,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1110,7 +1220,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.INH_2;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = Unit;
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "INH_2", Name, data.INH_2.ToString(), Unit, 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='INH_3'";
@@ -1118,7 +1230,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1129,7 +1241,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.INH_3;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = Unit;
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "INH_3", Name, data.INH_3.ToString(), Unit, 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='INH_4'";
@@ -1137,7 +1251,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1148,7 +1262,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.INH_4;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = Unit;
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "INH_4", Name, data.INH_4.ToString(), Unit, 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='INH_5'";
@@ -1156,7 +1272,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1167,7 +1283,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.INH_5;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = Unit;
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "INH_5", Name, data.INH_5.ToString(), Unit, 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='INH_6'";
@@ -1175,7 +1293,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1186,7 +1304,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.INH_6;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = Unit;
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "INH_6", Name, data.INH_6.ToString(), Unit, 0, 0, "");
+
             #endregion
             #region PAC高度
             cmd = new OleDbCommand(strInsertLack, conn);
@@ -1195,7 +1315,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1206,7 +1326,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.PACBit;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = "";
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PACBit", Name, data.PACBit.ToString(), "", 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='PAC1'";
@@ -1214,7 +1336,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1225,7 +1347,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.PAC1;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = "";
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PAC1", Name, data.PAC1.ToString(), "", 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='PAC2'";
@@ -1233,7 +1357,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1244,7 +1368,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.PAC2;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = "";
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PAC2", Name, data.PAC2.ToString(), "", 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='PAC3'";
@@ -1252,7 +1378,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1263,7 +1389,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.PAC3;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = "";
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PAC3", Name, data.PAC3.ToString(), "", 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='PAC4'";
@@ -1271,7 +1399,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1282,7 +1410,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.PAC4;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = "";
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PAC4", Name, data.PAC4.ToString(), "", 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='PAC5'";
@@ -1290,7 +1420,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1301,7 +1431,8 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.PAC5;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = "";
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PAC5", Name, data.PAC5.ToString(), "", 0, 0, "");
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='PAC6'";
@@ -1309,7 +1440,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1320,7 +1451,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.PAC6;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = "";
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PAC6", Name, data.PAC6.ToString(), "", 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='PAC7'";
@@ -1328,7 +1461,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1339,7 +1472,8 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.PAC7;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = "";
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PAC7", Name, data.PAC7.ToString(), "", 0, 0, "");
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='PAC8'";
@@ -1347,7 +1481,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1358,7 +1492,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.PAC8;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = "";
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PAC8", Name, data.PAC8.ToString(), "", 0, 0, "");
+
             #endregion
             #region 血小板数量
             cmd = new OleDbCommand(strInsert, conn);
@@ -1374,7 +1510,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1388,7 +1524,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.PLT_0 > Normal_High ? "H" : (data.PLT_0 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PLT_0", Name, data.PLT_0.ToString(), Unit, Normal_Low, Normal_High, data.PLT_0 > Normal_High ? "H" : (data.PLT_0 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='PLT1'";
@@ -1396,7 +1534,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1410,7 +1548,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.PLT1 > Normal_High ? "H" : (data.PLT1 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PLT1", Name, data.PLT1.ToString(), Unit, Normal_Low, Normal_High, data.PLT1 > Normal_High ? "H" : (data.PLT1 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='PLT2'";
@@ -1418,7 +1558,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1432,7 +1572,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.PLT2 > Normal_High ? "H" : (data.PLT2 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PLT2", Name, data.PLT2.ToString(), Unit, Normal_Low, Normal_High, data.PLT2 > Normal_High ? "H" : (data.PLT2 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='PLT3'";
@@ -1440,7 +1582,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1454,7 +1596,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.PLT3 > Normal_High ? "H" : (data.PLT3 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PLT3", Name, data.PLT3.ToString(), Unit, Normal_Low, Normal_High, data.PLT3 > Normal_High ? "H" : (data.PLT3 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='PLT4'";
@@ -1462,7 +1606,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1476,7 +1620,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.PLT4 > Normal_High ? "H" : (data.PLT4 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PLT4", Name, data.PLT4.ToString(), Unit, Normal_Low, Normal_High, data.PLT4 > Normal_High ? "H" : (data.PLT4 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='PLT5'";
@@ -1484,7 +1630,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1498,7 +1644,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.PLT5 > Normal_High ? "H" : (data.PLT5 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PLT5", Name, data.PLT5.ToString(), Unit, Normal_Low, Normal_High, data.PLT5 > Normal_High ? "H" : (data.PLT5 < Normal_Low ? "L" : "N"));
+
             #endregion
             #region 红细胞数量
             cmd = new OleDbCommand(strInsert, conn);
@@ -1514,7 +1662,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1528,7 +1676,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.RBC_0 > Normal_High ? "H" : (data.RBC_0 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "RBC_0", Name, data.RBC_0.ToString(), Unit, Normal_Low, Normal_High, data.RBC_0 > Normal_High ? "H" : (data.RBC_0 < Normal_Low ? "L" : "N"));
+
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='RBC1'";
@@ -1536,7 +1686,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1550,7 +1700,8 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.RBC1 > Normal_High ? "H" : (data.RBC1 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "RBC1", Name, data.RBC1.ToString(), Unit, Normal_Low, Normal_High, data.RBC1 > Normal_High ? "H" : (data.RBC1 < Normal_Low ? "L" : "N"));
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='RBC2'";
@@ -1558,7 +1709,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1572,7 +1723,8 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.RBC2 > Normal_High ? "H" : (data.RBC2 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "RBC2", Name, data.RBC2.ToString(), Unit, Normal_Low, Normal_High, data.RBC2 > Normal_High ? "H" : (data.RBC2 < Normal_Low ? "L" : "N"));
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='RBC3'";
@@ -1580,7 +1732,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1594,7 +1746,8 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.RBC3 > Normal_High ? "H" : (data.RBC3 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "RBC3", Name, data.RBC3.ToString(), Unit, Normal_Low, Normal_High, data.RBC3 > Normal_High ? "H" : (data.RBC3 < Normal_Low ? "L" : "N"));
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='RBC4'";
@@ -1602,7 +1755,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1616,7 +1769,8 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.RBC4 > Normal_High ? "H" : (data.RBC4 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "RBC4", Name, data.RBC4.ToString(), Unit, Normal_Low, Normal_High, data.RBC4 > Normal_High ? "H" : (data.RBC4 < Normal_Low ? "L" : "N"));
 
             cmd = new OleDbCommand(strInsert, conn);
             strSelectName = "select * from PL_FullName where ITEM ='RBC5'";
@@ -1624,7 +1778,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1638,7 +1792,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.RBC5 > Normal_High ? "H" : (data.RBC5 < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "RBC5", Name, data.RBC5.ToString(), Unit, Normal_Low, Normal_High, data.RBC5 > Normal_High ? "H" : (data.RBC5 < Normal_Low ? "L" : "N"));
+
             #endregion
             #region 最大聚集时间
             cmd = new OleDbCommand(strInsert, conn);
@@ -1655,7 +1811,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1669,7 +1825,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.MAT > Normal_High ? "H" : (data.MAT < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "MAT", Name, data.MAT.ToString(), Unit, Normal_Low, Normal_High, data.MAT > Normal_High ? "H" : (data.MAT < Normal_Low ? "L" : "N"));
+
             #endregion
             #region 原始血小板分布宽度
             cmd = new OleDbCommand(strInsert, conn);
@@ -1686,7 +1844,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1700,7 +1858,42 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.PDW > Normal_High ? "H" : (data.PDW < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PDW", Name, data.PDW.ToString(), Unit, Normal_Low, Normal_High, data.PDW > Normal_High ? "H" : (data.PDW < Normal_Low ? "L" : "N"));
+
+            #endregion
+            #region 原始红细胞分布宽度
+            cmd = new OleDbCommand(strInsert, conn);
+            strSelectInfo = "select * from PL_ExtraInfo where ITEM ='RDW'";
+            oaInfo = new OleDbDataAdapter(strSelectInfo, conn);
+            dtInfo = new DataTable();
+            oaInfo.Fill(dtInfo);
+            Normal_Low = (double)dtInfo.Rows[0]["NORMAL_LOW"];
+            Normal_High = (double)dtInfo.Rows[0]["NORMAL_HIGH"];
+            Unit = (string)dtInfo.Rows[0]["UNIT"];
+
+            strSelectName = "select * from PL_FullName where ITEM ='RDW'";
+            oaName = new OleDbDataAdapter(strSelectName, conn);
+            dtName = new DataTable();
+            oaName.Fill(dtName);
+            Name = (string)dtName.Rows[0]["FULL_NAME"];
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
+            cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
+            cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
+            cmd.Parameters.Add("@AAP", OleDbType.VarChar).Value = data.AAP;
+            cmd.Parameters.Add("@SAMPLE_KIND", OleDbType.VarChar).Value = data.Type;
+            cmd.Parameters.Add("@ITEM", OleDbType.VarChar).Value = "PDW";
+            cmd.Parameters.Add("@FULL_NAME", OleDbType.VarChar).Value = Name;
+            cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.PDW;
+            cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = Unit;
+            cmd.Parameters.Add("@NORMAL_lOW", OleDbType.VarChar).Value = Normal_Low;
+            cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
+            cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.PDW > Normal_High ? "H" : (data.PDW < Normal_Low ? "L" : "N");
+            cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "RDW", Name, data.RDW.ToString(), Unit, Normal_Low, Normal_High, data.RDW > Normal_High ? "H" : (data.RDW < Normal_Low ? "L" : "N"));
+
             #endregion
             #region 红细胞最大聚集率
             cmd = new OleDbCommand(strInsert, conn);
@@ -1717,7 +1910,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1731,7 +1924,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@NORMAL_HIGH", OleDbType.VarChar).Value = Normal_High;
             cmd.Parameters.Add("@INDICATE", OleDbType.VarChar).Value = data.R_MAR > Normal_High ? "H" : (data.R_MAR < Normal_Low ? "L" : "N");
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "R_MAR", Name, data.R_MAR.ToString(), Unit, Normal_Low, Normal_High, data.R_MAR > Normal_High ? "H" : (data.R_MAR < Normal_Low ? "L" : "N"));
+
             #endregion
             #region 直方图 没有单位
             cmd = new OleDbCommand(strInsertLack, conn);
@@ -1740,7 +1935,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1751,7 +1946,9 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.PLTHist;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = "";
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "PLTHist", Name, data.PLTHist.ToString(), "", 0, 0, "");
+
 
             cmd = new OleDbCommand(strInsertLack, conn);
             strSelectName = "select * from PL_FullName where ITEM ='RBCHist'";
@@ -1759,7 +1956,7 @@ namespace MiddleWare.Communicate
             dtName = new DataTable();
             oaName.Fill(dtName);
             Name = (string)dtName.Rows[0]["FULL_NAME"];
-            cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
+            /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
             cmd.Parameters.Add("@DEVICE", OleDbType.VarChar).Value = data.Device;
@@ -1770,8 +1967,20 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@RESULT", OleDbType.VarChar).Value = data.RBCHist;
             cmd.Parameters.Add("@UNIT", OleDbType.VarChar).Value = "";
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
-            cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();*/
+            WriteDataAccessWebOperation(cmd, data, "RBCHist", Name, data.RBCHist.ToString(), "", 0, 0, "");
+
             #endregion
+
+            /*
+            string json = JsonConvert.SerializeObject(ListPL12Result);
+            var client = new RestClient();
+            client.BaseUrl = new Uri(GlobalVariable.BaseUrl);//http://localhost:8080/MiddlewareWeb
+            var request = new RestRequest("PL/PLResult", Method.POST);
+            request.AddParameter("plJSON", json);
+            IRestResponse response = client.Execute(request);
+            */
+
             conn.Close();
             ShareAccessPL.mutex.ReleaseMutex();
             WriteAccessPLMessage.Invoke(data.ID + "写入数据库成功\r\n", "DEVICE");
@@ -1796,6 +2005,21 @@ namespace MiddleWare.Communicate
                 using (OleDbCommand command = new OleDbCommand(strIns, conn))
                 {
                     command.ExecuteNonQuery();
+
+                    var tempEntity = new
+                    {
+                        SAMPLE_ID = SAMPLE_ID,
+                        ITEM = ITEM[i],
+                        DEVICE = DEVICE
+                    };
+                    /*
+                    string json = JsonConvert.SerializeObject(tempEntity);
+                    var client = new RestClient();
+                    client.BaseUrl = new Uri(GlobalVariable.BaseUrl);//http://localhost:8080/MiddlewareWeb
+                    var request = new RestRequest("PL/PLResult", Method.PUT);
+                    request.AddParameter("plJSON", json);
+                    IRestResponse response = client.Execute(request);
+                    */
                 }
             }
             conn.Close();//关闭连接

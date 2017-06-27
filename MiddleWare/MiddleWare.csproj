@@ -117,6 +117,9 @@
     <Compile Include="Views\HL7connect.xaml.cs">
       <DependentUpon>HL7connect.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Item_Vertify.xaml.cs">
+      <DependentUpon>Item_Vertify.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\NotificationAreaIcon.cs" />
     <Compile Include="Views\Connect.xaml.cs">
       <DependentUpon>Connect.xaml</DependentUpon>
@@ -224,6 +227,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\HL7connect.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Item_Vertify.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

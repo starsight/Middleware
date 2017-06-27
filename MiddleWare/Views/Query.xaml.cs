@@ -18,6 +18,8 @@ using System.Data.OleDb;
 using MiddleWare.Views;
 using System.IO;
 using System.ComponentModel;
+using Newtonsoft.Json;
+using RestSharp;
 
 namespace MiddleWare.Views
 {
@@ -332,6 +334,29 @@ namespace MiddleWare.Views
             string device;
             DateTime date;
             string ID;
+            /*string json = "{\"SAMPLE_ID\":\"201702160017\",\"ITEM\":\"TP\",\"DEVICE\":\"DS_800\"}";
+            var client = new RestClient();
+            client.BaseUrl = new Uri(GlobalVariable.BaseUrl);//http://localhost:8080/MiddlewareWeb
+            var request = new RestRequest("DS/DSResult", Method.PUT);
+            request.AddParameter("dsJSON", json);
+            //request.AddJsonBody(json);
+            //client.ExecuteAsyncGet();
+            IRestResponse response = client.Execute(request);*/
+
+            /*var tempEntity = new
+            {
+                SAMPLE_ID = "000001",
+                ITEM = "AAR",
+                DEVICE = "PL_12",
+            };*/
+            //string json = JsonConvert.SerializeObject(tempEntity);
+            //string json = "{\"SAMPLE_ID\":\"2017-05-24 21:14:29\"}";
+            /*var client = new RestClient();
+            client.BaseUrl = new Uri(GlobalVariable.BaseUrl);//http://localhost:8080/MiddlewareWeb
+            var request = new RestRequest("PL/PLResultByTime", Method.GET);
+            request.AddParameter("plJSON", "2017-05-24 21:14:29");
+            IRestResponse response = client.Execute(request);*/
+
             try
             {
                 device = ((string)(comboBox_device.SelectedValue));

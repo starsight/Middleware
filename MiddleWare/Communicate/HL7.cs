@@ -186,6 +186,9 @@ namespace MiddleWare.Communicate
         public event GlobalVariable.MessageHandler ProcessHL7Message;
         public static CancellationTokenSource ProcessHL7Cancel;
 
+        public delegate void ActiveSampleDataEventHandle(string sampleId);//主动下发样本信息时，管道传递样本Id
+        public static event ActiveSampleDataEventHandle ActiveSampleData;// xubinbin
+
         public ProcessHL7(HL7Manager hm)
         {
             hl7Manager = hm;
@@ -334,7 +337,10 @@ namespace MiddleWare.Communicate
                                 RequestSampleData.BeginInvoke(hl7info, null, null);
                                 //接收成功后就要发送应答信号
                                 Connect.sendSocket(CreatACKQ03(dsr.MSH.ReceivingFacility.NamespaceID.Value));
-                                ProcessHL7Message.Invoke(hl7Manager.GetHL7RequestSampleDataSample_ID() + "LIS服务器主动发送样本申请信息\r\n", "LIS");
+                                //ProcessHL7Message.Invoke(hl7Manager.GetHL7RequestSampleDataSample_ID() + "LIS服务器主动发送样本申请信息\r\n", "LIS");
+                                ProcessHL7Message.Invoke(hl7info.SampleID + "LIS服务器主动发送样本申请信息\r\n", "LIS");
+                                Thread.Sleep(200);
+                                ActiveSampleData.BeginInvoke(hl7info.SampleID,null, null);
                             }
                         }
                     }

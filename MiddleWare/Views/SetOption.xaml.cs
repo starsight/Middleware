@@ -36,6 +36,16 @@ namespace MiddleWare.Views
             Personal_Set.Visibility = Visibility.Collapsed;
             About.Visibility = Visibility.Collapsed;
             Number_Item.Visibility = Visibility.Visible;
+            Item_Vertify.Visibility = Visibility.Collapsed;
+        }
+
+        //审核功能
+        private void item_vertify_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Personal_Set.Visibility = Visibility.Collapsed;
+            Number_Item.Visibility = Visibility.Collapsed;
+            Item_Vertify.Visibility = Visibility.Visible;
+            About.Visibility = Visibility.Collapsed;
         }
 
         private void personal_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -43,6 +53,7 @@ namespace MiddleWare.Views
             Number_Item.Visibility = Visibility.Collapsed;
             About.Visibility = Visibility.Collapsed;
             Personal_Set.Visibility = Visibility.Visible;
+            Item_Vertify.Visibility = Visibility.Collapsed;
         }
 
         private void about_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -50,6 +61,7 @@ namespace MiddleWare.Views
             Personal_Set.Visibility = Visibility.Collapsed;
             Number_Item.Visibility = Visibility.Collapsed;
             About.Visibility = Visibility.Visible;
+            Item_Vertify.Visibility = Visibility.Collapsed;
         }
     }
 }

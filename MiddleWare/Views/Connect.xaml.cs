@@ -66,6 +66,11 @@ namespace MiddleWare.Views
         {
             InitializeComponent();
 
+            /*  */
+            NamedPipe.Openpipe += new NamedPipe.MessTrans(OpenDs);
+            ProcessHL7.ActiveSampleData += new ProcessHL7.ActiveSampleDataEventHandle(NamedPipe.ActiveSend);
+            /* */
+
             DeviceList = new ObservableCollection<Device>();
             LisList = new ObservableCollection<Lis>();
 
@@ -682,6 +687,7 @@ namespace MiddleWare.Views
                     #endregion
                     GlobalVariable.DSNum = true;
                     GlobalVariable.AddValue(GlobalVariable.DSDEVICEADDRESS, "生化");
+                    
                     OpenDs(GlobalVariable.DSDEVICEADDRESS);
                 }
             }
@@ -739,7 +745,7 @@ namespace MiddleWare.Views
             DisableButton(button_opendevice);
             EnableButton(button_closedevice);
         }
-        private void OpenDs(string DSaddress)
+        private void OpenDs(string DSaddress)//
         {
             DI800Manager dm = new DI800Manager();//新建一个DI800数据操作
             AccessManagerDS amd = new AccessManagerDS();//新建一个数据库操作
@@ -847,7 +853,8 @@ namespace MiddleWare.Views
             {
                 //关闭DS连接
                 GlobalVariable.DSNum = false;
-                NamedPipe.DisconnectPipe();//关闭命名通道,里面包括了关闭所有相关线程
+                NamedPipe.close_type = 0;
+                NamedPipe.DisconnectPipe(0);//关闭命名通道,里面包括了关闭所有相关线程
                 AddItem(textbox_deviceshow, "与生化仪器断开连接\r\n");
             }
             else if (!IsDSshow && IsPLshow && GlobalVariable.PLNum)
