@@ -53,8 +53,24 @@ namespace MiddleWare
 
         private void MenuItem_Click_AboutUs(object sender, EventArgs e)
         {
-            MessageBox.Show("江苏英诺华医疗技术有限公司","关于软件");
+            MessageBox.Show("江苏英诺华医疗技术有限公司", "关于软件");
         }
 
+    
+        /*
+         * 关闭打开的弹窗
+         */
+        protected override void OnClosed(EventArgs e)
+        {
+            var collections = Application.Current.Windows;
+
+            foreach (Window window in collections)
+            {
+                if (window != this)
+                    window.Close();
+            }
+
+            base.OnClosed(e);
+        }
     }
 }

@@ -165,7 +165,7 @@ namespace MiddleWare.Communicate
             public string SampleID;//样本编号
             public DateTime SampleTime;//样本接收日期时间即送检时间
             public string IsEmergency;//是否急诊
-            public string CollcetionVolume;//采样集
+            public string CollcetionVolume;//采集量
             public string SampleType;//样本类型 血清/serum 血浆/plasma  尿液/urine
             public string FetchDoctor;//送检医生
             public string FetchDepartment;//送检科

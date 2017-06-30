@@ -182,7 +182,7 @@ namespace MiddleWare.Views
                             singleResult.item = dr["ITEM"] == DBNull.Value ? blank : (string)dr["ITEM"];
                             singleResult.fullname = dr["FULL_NAME"] == DBNull.Value ? blank : (string)dr["FULL_NAME"];
                             singleResult.result = dr["RESULT"] == DBNull.Value ? blank : dr["RESULT"].ToString();
-                            singleResult.unit = dr["UNIT"] == DBNull.Value ? blank : (string)dr["UNIT"];
+                            singleResult.unit = dr["UNIT"] == DBNull.Value   ? blank : (string)dr["UNIT"];
                             singleResult.normal_high = dr["NORMAL_HIGH"] == DBNull.Value ? blank : dr["NORMAL_HIGH"].ToString();
                             singleResult.normal_low = dr["NORMAL_lOW"] == DBNull.Value ? blank : dr["NORMAL_lOW"].ToString();
                             singleResult.indicate = dr["INDICATE"] == DBNull.Value ? blank : (string)dr["INDICATE"];

@@ -20,9 +20,7 @@
         <TreeView  Name="Tree" Grid.Column="0" Background="AliceBlue" >
 
             <TreeViewItem x:Name="number_item" Header='项目编号' FontFamily="宋体" FontSize="18" Height="45" Background="Beige" IsSelected="True" MouseLeftButtonUp="number_item_MouseLeftButtonUp"/>
-
-            <TreeViewItem x:Name="item_vertify" Header='审核' FontFamily="宋体" FontSize="18" Height="45" Background="Beige" IsSelected="False" MouseLeftButtonUp="item_vertify_MouseLeftButtonUp"/>
-            
+          
             <TreeViewItem x:Name="personal" Header="软件设置" FontFamily="宋体" FontSize="18" Height="45" IsSelected="False" Background="Beige" MouseLeftButtonUp="personal_MouseLeftButtonUp"/>
             
             <TreeViewItem x:Name="about" Header="帮助与关于" FontFamily="宋体" FontSize="18" Height="45" IsSelected="False" Background="Beige" MouseLeftButtonUp="about_MouseLeftButtonUp"/>
@@ -30,7 +28,6 @@
         </TreeView>
         <Grid x:Name="Detail" Grid.Column="1" Grid.Row="0">
             <local:Number_Item x:Name="Number_Item" DataContext="{Binding}" Visibility="Visible"/>
-            <local:Item_Vertify x:Name="Item_Vertify" DataContext="{Binding}" Visibility="Collapsed"/>
             <local:Personal_set x:Name="Personal_Set" DataContext="{Binding}" Visibility="Collapsed"/>
             <local:About x:Name="About" DataContext="{Binding}" Visibility="Collapsed"/>
         </Grid>
