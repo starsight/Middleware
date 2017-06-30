@@ -113,6 +113,20 @@ namespace MiddleWare.Views
             {
                 this.textbox_astmport.Text = AppConfig.GetAppConfig("ASTMPORT");
             }
+           
+            if (AppConfig.GetAppConfig("ASTMUpLoadWay") != null)//ASTM的上传方式 0-网口 1-串口
+            {
+                int i = Convert.ToInt16(AppConfig.GetAppConfig("ASTMUpLoadWay"));
+                if (i == 0)
+                {
+                    astmupdata.IsASTMNet = true;
+                   // this.checkbox_netupdata.IsChecked = true;
+                } else if(i==1)
+                {
+                    astmupdata.IsASTMNet = true;
+                    //this.checkbox_comupdata.IsChecked = true;
+                }
+            }
         }
         public static void ComSearch()
         {
