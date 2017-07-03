@@ -88,6 +88,60 @@ namespace MiddleWare.Views
 
             DisableButton(button_closelis);
             DisableButton(button_closedevice);
+
+            ReadConnectConfigForAutoRun(); 
+        }
+
+        private Boolean isAutoConnectLisServer = false;
+        private Boolean isAutoConnectDevice = false;
+
+        private void ReadConnectConfigForAutoRun()
+        {
+            string str = null;
+            str = AppConfig.GetAppConfig("LisServerConnectWay");
+            if (str != null)//LIS Server 连接方式 HL7 ASTM
+            {
+                if (str == "HL7")
+                {
+                    isAutoConnectLisServer = true;
+                    combobox_lis.SelectedIndex = 0;
+                }
+                else if (str == "ASTM")
+                {
+                    isAutoConnectLisServer = true;
+                    combobox_lis.SelectedIndex = 1;
+                }
+            }
+
+            str = AppConfig.GetAppConfig("DeviceConnectType");//仪器连接类型选择
+            if (str != null)
+            {
+                switch (str)
+                {
+                    case "DS400":
+                        isAutoConnectDevice = true;
+                        combobox_device.SelectedIndex = 0;
+                        break;
+                    case "DS800":
+                        isAutoConnectDevice = true;
+                        combobox_device.SelectedIndex = 1;
+                        break;
+                    case "PL12"://未做 17-07-03 wenjie
+                        isAutoConnectDevice = true;
+                        combobox_device.SelectedIndex = 2;
+                        break;
+                    case "PL16"://未做
+                        isAutoConnectDevice = true;
+                        combobox_device.SelectedIndex = 3;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            //AppConfig.UpdateAppConfig("DeviceConnectType","kong");
+            //AppConfig.RemoveAppConfig("DeviceConnectType");
+            //AppConfig.RemoveAppConfig("LisServerConnectWay");//失败后下次不会自动连接
         }
 
         private void AddItem(TextBox textbox, string text)
@@ -135,9 +189,14 @@ namespace MiddleWare.Views
                     }break;
                 default:break;
             }
+
+            if (isAutoConnectLisServer)
+                button_openlis_Click(null,null);
         }
         private void button_openlis_Click(object sender, RoutedEventArgs e)
         {
+            AppConfig.UpdateAppConfig("LisServerConnectWay","kong");//如果此次连接失败，下次不会自动连接
+
             if (LisNum)
             {
                 AddItem(textbox_lisshow, "已连接LIS\r\n");
@@ -236,6 +295,7 @@ namespace MiddleWare.Views
                     //写入配置文件
                     AppConfig.UpdateAppConfig("HL7IP", host);
                     AppConfig.UpdateAppConfig("HL7PORT", port.ToString());
+                    AppConfig.UpdateAppConfig("LisServerConnectWay", "HL7");
                 }
                 else if (!IsHL7show && IsASTMshow && GlobalVariable.IsASTMNet && !GlobalVariable.IsASTMCom)
                 {
@@ -253,6 +313,7 @@ namespace MiddleWare.Views
                     //写入配置文件
                     AppConfig.UpdateAppConfig("ASTMIP", host);
                     AppConfig.UpdateAppConfig("ASTMPORT", port.ToString());
+                    AppConfig.UpdateAppConfig("LisServerConnectWay", "ASTM");
                 }
                 IsSocketRun = true;
             }
@@ -272,6 +333,7 @@ namespace MiddleWare.Views
                 }
                 DisableButton(button_closelis);
                 EnableButton(button_openlis);
+
             }
             while(IsSocketRun)
             {
@@ -405,8 +467,9 @@ namespace MiddleWare.Views
             AppConfig.UpdateAppConfig("ASTMComDatabit", databit.ToString());
             AppConfig.UpdateAppConfig("ASTMComStopbit", stopbit);
             AppConfig.UpdateAppConfig("ASTMComCheck", check);
+            //AppConfig.UpdateAppConfig("ASTMUpLoadWay", );
 
-            switch(stopbit)
+            switch (stopbit)
             {
                 case "1":ASTMseriaPort.StopBits = StopBits.One;break;
                 case "1.5":ASTMseriaPort.StopBits = StopBits.OnePointFive;break;
@@ -594,7 +657,8 @@ namespace MiddleWare.Views
             string devicecontent = (string)combobox_device.SelectedValue;
             EnableButton(button_opendevice);
             DisableButton(button_closedevice);
-            switch(devicecontent)
+
+            switch (devicecontent)
             {
                 case "DS400":
                 case "DS800":
@@ -626,9 +690,14 @@ namespace MiddleWare.Views
                     break;
                 default:break;
             }
+
+            if (isAutoConnectDevice)
+                button_opendevice_Click(null,null);
         }
         private void button_opendevice_Click(object sender, RoutedEventArgs e)
         {
+            AppConfig.UpdateAppConfig("DeviceConnectType", "kong");
+
             if (IsDSshow && !IsPLshow)
             {
                 try//防止为空
@@ -792,6 +861,13 @@ namespace MiddleWare.Views
 
             //写入配置文件
             AppConfig.UpdateAppConfig("DSAddress", DSaddress);
+            if (GlobalVariable.DSDEVICE == 0)
+            {
+                AppConfig.UpdateAppConfig("DeviceConnectType", "DS800");
+            }else if(GlobalVariable.DSDEVICE == 1)
+            {
+                AppConfig.UpdateAppConfig("DeviceConnectType", "DS400");
+            }
         }
         private void OpenPl(string com, int baud)
         {
