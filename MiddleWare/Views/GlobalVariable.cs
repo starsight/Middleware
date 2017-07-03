@@ -74,6 +74,7 @@ namespace MiddleWare.Views
         public static int PLBUAD;//PL串口波特率
 
         public static int DSDEVICE = 2;//1:DS400,0:DS800,其他值都不是
+        public static int PLDEVICE = 2;//1:Pl16,0:PL12,其他值都不是  by wenjie 17-07-03
 
         public static bool SocketCode;//Socket通信的编码方式：true代表ASCII,false代表UTF8
         public static bool ComCode;//Com通信的编码方式：true代表ASCII,false代表UTF8

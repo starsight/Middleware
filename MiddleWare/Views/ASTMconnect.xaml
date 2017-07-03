@@ -43,7 +43,7 @@
         <ComboBox x:Name="combobox_astmstopbit" DisplayMemberPath="NUM" SelectedValuePath="NUM" FontSize="20" FontFamily="Consolas" Grid.Column="1" Grid.Row="9" VerticalAlignment="Center" Width="120" Height="25" HorizontalAlignment="Left"/>
         <ComboBox x:Name="combobox_astmcheckbit" DisplayMemberPath="NUM" SelectedValuePath="NUM" FontSize="18" FontFamily="宋体" Grid.Column="1" Grid.Row="10" VerticalAlignment="Center" Width="120" Height="25" HorizontalAlignment="Left"/>
         <TextBlock Text="上传方式:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="11" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-        <CheckBox x:Name="checkbox_comupdata" Content="串口通讯" IsChecked="{Binding Path=IsASTMCom,Mode=TwoWay}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="11" Grid.ColumnSpan="2" Width="150" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-        <CheckBox x:Name="checkbox_netupdata" Content="网口通讯" IsChecked="{Binding Path=IsASTMNet,Mode=TwoWay}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="11" Grid.ColumnSpan="2" Width="290" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <RadioButton x:Name="checkbox_comupdata" Content="串口通讯" IsChecked="{Binding Path=IsASTMCom,Mode=TwoWay}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="11" Grid.ColumnSpan="2" Width="150" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <RadioButton x:Name="checkbox_netupdata" Content="网口通讯" IsChecked="{Binding Path=IsASTMNet,Mode=TwoWay}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="11" Grid.ColumnSpan="2" Width="290" VerticalAlignment="Center" HorizontalAlignment="Right"/>
     </Grid>
 </UserControl>

@@ -47,7 +47,7 @@ namespace MiddleWare.Views
             ComSearch();
             #endregion
             #region Buad设置
-            BuadList.Add(new Buad { NUM = 9200, ID = 0 });
+            BuadList.Add(new Buad { NUM = 9600, ID = 0 });
             BuadList.Add(new Buad { NUM = 115200, ID = 1 });
             #endregion
             #region 数据位设置
@@ -68,7 +68,11 @@ namespace MiddleWare.Views
 
             if (AppConfig.GetAppConfig("PLComBuad") != null)//波特率
             {
-                combobox_plbuad.SelectedValue = Convert.ToInt16(AppConfig.GetAppConfig("PLComBuad"));
+                int combaud = Convert.ToInt32(AppConfig.GetAppConfig("PLComBuad"));//32 bit for 115200   wenjie 17-07-03
+                if (combaud == 9600)
+                    combobox_plbuad.SelectedIndex = 0;
+                else if (combaud == 115200)
+                    combobox_plbuad.SelectedIndex = 1;
             }
             else
             {
@@ -98,9 +102,11 @@ namespace MiddleWare.Views
             {
                 combobox_plcheckbit.SelectedIndex = 0;//默认无校验位
             }
+
         }
-        public static void ComSearch()
+        public static int ComSearch()
         {
+            int i = 0;
             string[] ports = SerialPort.GetPortNames();//搜索可用COM列表
             ComList.Clear();
             if (ports.Length == 0)
@@ -108,7 +114,7 @@ namespace MiddleWare.Views
             }
             else
             {
-                int i = 0;
+                //int i = 0;
                 foreach (var singal in ports)
                 {
                     Com com = new Com();
@@ -118,6 +124,8 @@ namespace MiddleWare.Views
                     ComList.Add(com);
                 }
             }
+            
+            return i;
         }
     }
 

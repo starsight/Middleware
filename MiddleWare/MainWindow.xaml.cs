@@ -6,6 +6,7 @@ using MiddleWare.Views;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MiddleWare.Communicate;
 
 namespace MiddleWare
 {
@@ -48,6 +49,10 @@ namespace MiddleWare
         private void MenuItem_Click_Close(object sender, EventArgs e)
         {
             this.shouldClose = true;
+            if(Connect.ASTMseriaPort!=null)
+                Connect.ASTMseriaPort.Close();
+            if(ProcessASTM.ProcessASTMCancel != null)
+            ProcessASTM.ProcessASTMCancel.Cancel();
             Close();
         }
 

@@ -46,7 +46,7 @@ namespace MiddleWare.Views
         private string host;//socket的全局参数
         private int port;//socket的全局参数
 
-        private static SerialPort ASTMseriaPort;
+        public static SerialPort ASTMseriaPort;
         private bool IsComRun;//判断Com是否连接
         private string comname;//COM的全局参数
         private int buad;//COM的全局参数
@@ -126,11 +126,11 @@ namespace MiddleWare.Views
                         isAutoConnectDevice = true;
                         combobox_device.SelectedIndex = 1;
                         break;
-                    case "PL12"://未做 17-07-03 wenjie
+                    case "PL12":
                         isAutoConnectDevice = true;
                         combobox_device.SelectedIndex = 2;
                         break;
-                    case "PL16"://未做
+                    case "PL16":
                         isAutoConnectDevice = true;
                         combobox_device.SelectedIndex = 3;
                         break;
@@ -146,6 +146,7 @@ namespace MiddleWare.Views
 
         private void AddItem(TextBox textbox, string text)
         {
+
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 textbox.Clear();//先清空之前内容
@@ -183,7 +184,24 @@ namespace MiddleWare.Views
                     {
                         HL7connect.Visibility = Visibility.Collapsed;
                         ASTMconnect.Visibility = Visibility.Visible;
-                        ASTMconnect.ComSearch();//用作COM口实时更新
+                        ASTMconnect.combobox_astmcom.SelectedIndex = 0;
+                        /*string str = AppConfig.GetAppConfig("ASTMCom");//仪器连接类型选择
+
+                        if (str != null)
+                        {
+                            int count = ASTMconnect.ComSearch();//用作COM口实时更新
+                            if (count >= 1)
+                                //   ASTMconnect.combobox_astmcom.SelectedIndex = 0;//自动连接时，默认选择第0个COM口
+                                for (int i = 0; i < ASTMconnect.ComList.Count; i++)
+                                {
+                                    if (ASTMconnect.ComList[i].NAME == str)
+                                    {
+                                        ASTMconnect.combobox_astmcom.SelectedIndex = i;
+                                    }
+                                }
+                        }*/
+
+                        //ASTMconnect.combobox_astmcom.SelectedIndex = 0;
                         IsHL7show = false;
                         IsASTMshow = true;
                     }break;
@@ -191,7 +209,10 @@ namespace MiddleWare.Views
             }
 
             if (isAutoConnectLisServer)
-                button_openlis_Click(null,null);
+            {
+                isAutoConnectLisServer = false;
+                button_openlis_Click(null, null);
+            }
         }
         private void button_openlis_Click(object sender, RoutedEventArgs e)
         {
@@ -210,7 +231,7 @@ namespace MiddleWare.Views
                     host = HL7connect.textbox_hl7ip.Text;
                     port = Convert.ToInt16(HL7connect.textbox_hl7port.Text);
                 }
-                catch
+                catch(Exception e3)
                 {
                     AddItem(textbox_lisshow, "请正确输入\r\n");
                     return;
@@ -314,6 +335,8 @@ namespace MiddleWare.Views
                     AppConfig.UpdateAppConfig("ASTMIP", host);
                     AppConfig.UpdateAppConfig("ASTMPORT", port.ToString());
                     AppConfig.UpdateAppConfig("LisServerConnectWay", "ASTM");
+                    AppConfig.UpdateAppConfig("ASTMUpLoadWay",0+"");//模式--网口
+
                 }
                 IsSocketRun = true;
             }
@@ -467,7 +490,9 @@ namespace MiddleWare.Views
             AppConfig.UpdateAppConfig("ASTMComDatabit", databit.ToString());
             AppConfig.UpdateAppConfig("ASTMComStopbit", stopbit);
             AppConfig.UpdateAppConfig("ASTMComCheck", check);
-            //AppConfig.UpdateAppConfig("ASTMUpLoadWay", );
+            AppConfig.UpdateAppConfig("ASTMUpLoadWay", 1+"");//模式--串口
+            AppConfig.UpdateAppConfig("LisServerConnectWay", "ASTM");
+            AppConfig.UpdateAppConfig("ASTMCom", comname);
 
             switch (stopbit)
             {
@@ -646,8 +671,13 @@ namespace MiddleWare.Views
                 //ASTM 串口连接方式
                 LisNum = false;
                 IsComRun = false;
-                ASTMseriaPort.Close();
-                ProcessASTM.ProcessASTMCancel.Cancel();
+                if (Connect.ASTMseriaPort != null)
+                    Connect.ASTMseriaPort.Close();
+                if (ProcessASTM.ProcessASTMCancel != null)
+                    ProcessASTM.ProcessASTMCancel.Cancel();
+
+                //ASTMseriaPort.Close();
+                //ProcessASTM.ProcessASTMCancel.Cancel();
                 AddItem(textbox_lisshow, "已关闭与LIS服务器连接\r\n");
             }
         }
@@ -678,7 +708,23 @@ namespace MiddleWare.Views
                     {
                         DSconnect.Visibility = Visibility.Collapsed;
                         PLconnect.Visibility = Visibility.Visible;
-                        PLconnect.ComSearch();//用作COM口更新
+
+                       
+                        string str = AppConfig.GetAppConfig("PLCom");//仪器连接类型选择
+
+                        if (str != null)
+                        {
+                            PLconnect.ComSearch();
+
+                            for (int i = 0; i < PLconnect.ComList.Count; i++)
+                            {
+                                if (PLconnect.ComList[i].NAME == str)
+                                {
+                                    PLconnect.combobox_plcom.SelectedIndex = i;
+                                }
+                            }
+                        }
+
                         IsPLshow = true;
                         IsDSshow = false;
                         if (GlobalVariable.IsContainsKey(GlobalVariable.PLCOM + "+" + GlobalVariable.PLBUAD.ToString())) //如果之前没有建立过
@@ -691,14 +737,20 @@ namespace MiddleWare.Views
                 default:break;
             }
 
-            if (isAutoConnectDevice)
-                button_opendevice_Click(null,null);
+           if (isAutoConnectDevice)
+            {
+                isAutoConnectDevice = false;
+                button_opendevice_Click(null, null);
+            }
+                
         }
         private void button_opendevice_Click(object sender, RoutedEventArgs e)
         {
             AppConfig.UpdateAppConfig("DeviceConnectType", "kong");
 
+            
             if (IsDSshow && !IsPLshow)
+
             {
                 try//防止为空
                 {
@@ -762,17 +814,44 @@ namespace MiddleWare.Views
             }
             else if (IsPLshow && !IsDSshow) 
             {
-                //PLConnect显示
-
+                //PLConnect显示          
                 try
                 {
-                    if (PLconnect.combobox_plcom.SelectedValue == null)
+                    
+                    /*if (isAutoConnectDevice&& AppConfig.GetAppConfig("PLCom")!=null)
                     {
-                        AddItem(textbox_deviceshow, "请输入端口号与波特率\r\n");
+                        isAutoConnectDevice = false;
+                        GlobalVariable.PLCOM = AppConfig.GetAppConfig("PLCom");//自动连接
+                        //PLconnect.combobox_plcom.SelectedItem = 0;
+                    }
+                    else*/
+                    {
+                        if (PLconnect.combobox_plcom.SelectedValue == null)
+                        {
+                            AddItem(textbox_deviceshow, "请输入端口号与波特率\r\n");
+                            return;
+                        }
+                        GlobalVariable.PLCOM = (string)PLconnect.combobox_plcom.SelectedValue;
+                    }
+                    GlobalVariable.PLBUAD = (int)PLconnect.combobox_plbuad.SelectedValue;
+
+                    #region 用于判断是PL12还是PL16
+                    try
+                    {
+                        switch ((string)combobox_device.SelectedValue)
+                        {
+                            case "PL12": GlobalVariable.PLDEVICE = 0; break;
+                            case "PL16": GlobalVariable.PLDEVICE = 1; break;
+                            default: break;
+                        }
+                    }
+                    catch
+                    {
+                        AddItem(textbox_deviceshow, "仪器选择错误\r\n请重试\r\n");
                         return;
                     }
-                    GlobalVariable.PLCOM = (string)PLconnect.combobox_plcom.SelectedValue;
-                    GlobalVariable.PLBUAD = (int)PLconnect.combobox_plbuad.SelectedValue;
+                    #endregion
+
                 }
                 catch
                 {
@@ -918,7 +997,16 @@ namespace MiddleWare.Views
             AddItem(textbox_deviceshow, "等待血小板数据传送\r\n");
 
             //写入配置文件
-            AppConfig.UpdateAppConfig("PLComBuad", buad.ToString());
+            AppConfig.UpdateAppConfig("PLComBuad", baud.ToString());
+            AppConfig.UpdateAppConfig("PLCom", com);//保存COM口
+            if (GlobalVariable.PLDEVICE == 0)
+            {
+                AppConfig.UpdateAppConfig("DeviceConnectType", "PL12");
+            }
+            else if (GlobalVariable.PLDEVICE == 1)
+            {
+                AppConfig.UpdateAppConfig("DeviceConnectType", "PL16");
+            }
 
         }
         private void button_closedevice_Click(object sender, RoutedEventArgs e)

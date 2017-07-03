@@ -142,12 +142,12 @@ namespace MiddleWare.Communicate
             serialPort.Open();
             if (serialPort.IsOpen)
             {
-                CommMessage.Invoke("串口打开成功\r\n", "DEVICE");
+                //CommMessage.Invoke("串口打开成功\r\n", "DEVICE"); //自动连接时
                 StartReading();
             }
             else
             {
-                CommMessage.Invoke("串口打开失败\r\n", "DEVICE");
+               //CommMessage.Invoke("串口打开失败\r\n", "DEVICE");
             }
         }
 

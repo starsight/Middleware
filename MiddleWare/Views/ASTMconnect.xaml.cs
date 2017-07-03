@@ -51,7 +51,7 @@ namespace MiddleWare.Views
             ComSearch();
             #endregion
             #region Buad设置
-            BuadList.Add(new Buad { NUM = 9200, ID = 0 });
+            BuadList.Add(new Buad { NUM = 9600, ID = 0 });
             BuadList.Add(new Buad { NUM = 115200, ID = 1 });
             #endregion
             #region 数据位设置
@@ -73,7 +73,11 @@ namespace MiddleWare.Views
             //读取配置文件
             if (AppConfig.GetAppConfig("ASTMComBuad") != null)//波特率
             {
-                combobox_astmbuad.SelectedValue = Convert.ToInt16(AppConfig.GetAppConfig("ASTMComBuad"));
+                int combaud = Convert.ToInt32(AppConfig.GetAppConfig("ASTMComBuad"));
+                if (combaud == 9600)
+                    combobox_astmbuad.SelectedIndex = 0;
+                else if(combaud == 115200)
+                    combobox_astmbuad.SelectedIndex = 1;
             }
             else
             {
@@ -81,7 +85,13 @@ namespace MiddleWare.Views
             }
             if (AppConfig.GetAppConfig("ASTMComDatabit") != null)//数据位
             {
-                combobox_astmdatabit.SelectedValue = Convert.ToInt16(AppConfig.GetAppConfig("ASTMComDatabit"));
+                int databit = Convert.ToInt16(AppConfig.GetAppConfig("ASTMComDatabit"));
+                if (databit == 6)
+                    combobox_astmdatabit.SelectedIndex = 0;
+                else if (databit == 7)
+                    combobox_astmdatabit.SelectedIndex = 1;
+                else if (databit == 8)
+                    combobox_astmdatabit.SelectedIndex = 2;
             }
             else
             {
@@ -89,7 +99,13 @@ namespace MiddleWare.Views
             }
             if (AppConfig.GetAppConfig("ASTMComStopbit") != null)//停止位
             {
-                combobox_astmstopbit.SelectedValue = Convert.ToInt16(AppConfig.GetAppConfig("ASTMComStopbit"));
+                string stopbit = AppConfig.GetAppConfig("ASTMComStopbit");
+                if (stopbit == "1")
+                    combobox_astmstopbit.SelectedIndex = 0;
+                else if (stopbit == "1.5")
+                    combobox_astmstopbit.SelectedIndex = 1;
+                else if (stopbit == "2")
+                    combobox_astmstopbit.SelectedIndex = 2;
             }
             else
             {
@@ -97,7 +113,13 @@ namespace MiddleWare.Views
             }
             if (AppConfig.GetAppConfig("ASTMComCheck") != null)//校验
             {
-                combobox_astmcheckbit.SelectedValue = Convert.ToInt16(AppConfig.GetAppConfig("ASTMComCheck"));
+                string checkbit = AppConfig.GetAppConfig("ASTMComCheck");
+                if (checkbit == "无")
+                    combobox_astmcheckbit.SelectedIndex = 0;
+                else if (checkbit == "奇校验")
+                    combobox_astmcheckbit.SelectedIndex = 1;
+                else if (checkbit == "偶校验")
+                    combobox_astmcheckbit.SelectedIndex = 2;
             }
             else
             {
@@ -123,13 +145,15 @@ namespace MiddleWare.Views
                    // this.checkbox_netupdata.IsChecked = true;
                 } else if(i==1)
                 {
-                    astmupdata.IsASTMNet = true;
+                    astmupdata.IsASTMCom = true;
                     //this.checkbox_comupdata.IsChecked = true;
                 }
             }
         }
-        public static void ComSearch()
+        public static int ComSearch()
         {
+            int i = 0;
+
             string[] ports = SerialPort.GetPortNames();//搜索可用COM列表
             ComList.Clear();
             if (ports.Length == 0)
@@ -138,7 +162,6 @@ namespace MiddleWare.Views
             }
             else
             {
-                int i = 0;
                 foreach (var singal in ports)
                 {
                     Com com = new Com();
@@ -148,6 +171,7 @@ namespace MiddleWare.Views
                     ComList.Add(com);
                 }
             }
+            return i;
         }
     }
     /// <summary>
