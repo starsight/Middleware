@@ -28,6 +28,7 @@
         </Grid>
         <Views:NotificationAreaIcon x:Name="notificationIcon" Text="MiddleWare" Icon="/Resources/ICON.ico"  MouseDoubleClick="NotificationAreaIcon_MouseDoubleClick">
             <Views:NotificationAreaIcon.MenuItems>
+                <forms:MenuItem Name="miniMode" Text="mini模式" Click="MenuItem_Click_Mini"/>
                 <forms:MenuItem Text="关于我们" Click="MenuItem_Click_AboutUs"/>
                 <forms:MenuItem Text="退出软件" Click="MenuItem_Click_Close"/>
             </Views:NotificationAreaIcon.MenuItems>

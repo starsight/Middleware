@@ -18,6 +18,8 @@ namespace MiddleWare
         bool shouldClose;
         public MainWindow()
         {
+            
+
             InitializeComponent();
         }
 
@@ -49,10 +51,10 @@ namespace MiddleWare
         private void MenuItem_Click_Close(object sender, EventArgs e)
         {
             this.shouldClose = true;
-            if(Connect.ASTMseriaPort!=null)
+            if (Connect.ASTMseriaPort != null)
                 Connect.ASTMseriaPort.Close();
-            if(ProcessASTM.ProcessASTMCancel != null)
-            ProcessASTM.ProcessASTMCancel.Cancel();
+            if (ProcessASTM.ProcessASTMCancel != null)
+                ProcessASTM.ProcessASTMCancel.Cancel();
             Close();
         }
 
@@ -61,7 +63,32 @@ namespace MiddleWare
             MessageBox.Show("江苏英诺华医疗技术有限公司", "关于软件");
         }
 
-    
+        FloatMiniWindow mini;
+        private void MenuItem_Click_Mini(object sender, EventArgs e)
+        {
+            if (this.Visibility == Visibility.Visible)
+            {
+                notificationIcon.MenuItems[0].Text = "完整模式";//菜单栏文字更新
+
+                // 隐藏自己(父窗体)
+                this.Visibility = System.Windows.Visibility.Hidden;
+
+                mini = new FloatMiniWindow();
+                mini.ShowDialog();
+
+            }
+            else
+            {
+                notificationIcon.MenuItems[0].Text = "mini模式";//菜单栏文字更新
+
+                if (mini != null)
+                    mini.Close();
+
+                this.Visibility = Visibility.Visible;
+                
+            }
+        }
+
         /*
          * 关闭打开的弹窗
          */

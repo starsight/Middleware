@@ -113,6 +113,9 @@
       <DependentUpon>ASTMconnect.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DetailDocumentRenderer.cs" />
+    <Compile Include="Views\FloatMiniWindow.xaml.cs">
+      <DependentUpon>FloatMiniWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GlobalVariable.cs" />
     <Compile Include="Views\HL7connect.xaml.cs">
       <DependentUpon>HL7connect.xaml</DependentUpon>
@@ -220,6 +223,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\DSmonitor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FloatMiniWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
