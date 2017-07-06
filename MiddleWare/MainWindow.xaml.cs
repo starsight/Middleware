@@ -16,20 +16,27 @@ namespace MiddleWare
     public partial class MainWindow : MetroWindow
     {
         bool shouldClose;
+        
+
         public MainWindow()
         {
-            
-
             InitializeComponent();
         }
 
         private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (!shouldClose)
+            if (!shouldClose)//close按钮
             {
                 e.Cancel = true;
+                this.ShowInTaskbar = false;//任务栏不显示
                 this.WindowState = WindowState.Minimized;
-                this.ShowInTaskbar = false;//状态栏不显示
+
+                GlobalVariable.isMiniMode = true;
+                notificationIcon.MenuItems[0].Text = "完整模式";//菜单栏文字更新
+                // 隐藏自己(父窗体)
+                //this.Visibility = System.Windows.Visibility.Hidden;
+                mini = new FloatMiniWindow();
+                mini.ShowDialog();
             }
         }
         /// <summary>
@@ -41,10 +48,11 @@ namespace MiddleWare
         {
             if (e.ChangedButton == MouseButton.Left)
             {
-                if (this.WindowState == WindowState.Minimized)
+                if (this.WindowState == WindowState.Minimized&& !GlobalVariable.isMiniMode)
                 {
-                    this.WindowState = WindowState.Normal;
                     this.ShowInTaskbar = true;//恢复状态栏显示
+                    this.Show();
+                    this.WindowState = WindowState.Normal;        
                 }
             }
         }
@@ -66,9 +74,10 @@ namespace MiddleWare
         FloatMiniWindow mini;
         private void MenuItem_Click_Mini(object sender, EventArgs e)
         {
-            if (this.Visibility == Visibility.Visible)
+            if (!GlobalVariable.isMiniMode)
             {
                 notificationIcon.MenuItems[0].Text = "完整模式";//菜单栏文字更新
+                GlobalVariable.isMiniMode = true;
 
                 // 隐藏自己(父窗体)
                 this.Visibility = System.Windows.Visibility.Hidden;
@@ -80,12 +89,21 @@ namespace MiddleWare
             else
             {
                 notificationIcon.MenuItems[0].Text = "mini模式";//菜单栏文字更新
-
+                GlobalVariable.isMiniMode = false;
                 if (mini != null)
                     mini.Close();
 
                 this.Visibility = Visibility.Visible;
-                
+                this.Show();
+                this.WindowState = WindowState.Normal;
+            }
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            if (this.WindowState == WindowState.Minimized)//最小化
+            {
+                this.Hide();
             }
         }
 

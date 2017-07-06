@@ -11,6 +11,7 @@
         WindowStartupLocation="Manual"
         Left="800"
         Top="120"
+        ResizeMode="NoResize"
         Title="FloatMiniWindow" Height="50" Width="260" ShowInTaskbar="False" AllowsTransparency="True" WindowStyle="None" >
     <Grid>
         

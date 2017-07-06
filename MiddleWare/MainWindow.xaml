@@ -7,6 +7,7 @@
                       Title="MiddleWare"
                       Height="600"
                       Width="960" Icon="/Resources/ICON.ico"
+                      StateChanged="Window_StateChanged"
                       Closing="MetroWindow_Closing">
     <Grid>
         <Controls:MetroAnimatedSingleRowTabControl x:Name="MainTabControl" Grid.Row="1">

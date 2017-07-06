@@ -85,6 +85,10 @@ namespace MiddleWare.Views
 
         /*MiddlewareWeb*/
         public static String BaseUrl = "http://localhost:8080/MiddlewareWeb";
+
+        /*mini window*/
+        public static bool isMiniMode = false;
+
     }
 
 }
