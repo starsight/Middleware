@@ -90,6 +90,7 @@ namespace MiddleWare.Communicate
                 pipe_write = 0;
                 pipe_read = 0;
                 NamedPipeMessage.BeginInvoke("命名管道已关闭\r\n", "DEVICE", null, null);
+                Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
                 DisconnectPipe(1);
                 return;
             }
@@ -108,6 +109,7 @@ namespace MiddleWare.Communicate
                 pipe_write = 0;
                 pipe_read = 0;
                 NamedPipeMessage.BeginInvoke("命名管道已关闭\r\n", "DEVICE", null, null);
+                Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
                 DisconnectPipe(1);
                 return;
             }
@@ -209,6 +211,9 @@ namespace MiddleWare.Communicate
                 if (pipeServer.IsConnected && pipeServer_write.IsConnected && pipe_read == 2 && pipe_write == 2)
                 {
                     NamedPipeMessage.Invoke("命名管道建立成功\r\n", "DEVICE");
+
+                    Statusbar.SBar.DeviceStatus = GlobalVariable.miniConn;// for mini mode
+
                     close_type = 0;
                     pipe_read = 1;
                     pipe_write = 1;
@@ -325,20 +330,26 @@ namespace MiddleWare.Communicate
                 {
                     if(receiveData.GetNewData==0)
                     {
+                        Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;//mini mode
+                        Statusbar.SBar.SampleId = receiveData.ID;
                         //新数据结果
                         PipeMessage.BeginInvoke(receiveData.ID, receiveData.Device, receiveData.GetTestType, accessmanager, null, null);//把这三个数据委托出去，三个数据分别为样本ID ,样本测试仪器,和样本类型
                         receiveData.UploadEnd = 1;
                         //namedpipe.WriteNamedPipe(NamedPipe.pipeServer, ref receiveData);//回写函数
                         namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);//回写函数
+                        Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;
                     }
                     else if(receiveData.GetNewData==1)
                     {
+                        Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;//mini mode
+                        Statusbar.SBar.SampleId = receiveData.ID;
                         //申请样本信息
                         ++Statusbar.SBar.ReceiveNum;
                         PipeApplyMessage.BeginInvoke(receiveData.ID, receiveData.Device, null, null);//样本仪器和样本类型
                         receiveData.UploadEnd = 1;
                         //namedpipe.WriteNamedPipe(NamedPipe.pipeServer, ref receiveData);//回写函数
                         namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);//回写函数
+                        Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;
                     }
                 }
                 Thread.Sleep(200);

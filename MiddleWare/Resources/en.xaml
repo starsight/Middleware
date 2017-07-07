@@ -18,4 +18,9 @@
 
     <!--statusbar.xmal-->
     <system:String x:Key="StatusBarReceiveSampleCount">Receive Count:</system:String>
+
+    <!--FloatMini.xaml-->
+    <system:String x:Key="FloatMiniLIS_Device">LIS/Device</system:String>
+    <system:String x:Key="FloatMiniSend_Receive_SampleCount">Send/Rece</system:String>
+    
 </ResourceDictionary>

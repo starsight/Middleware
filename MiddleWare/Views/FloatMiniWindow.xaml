@@ -12,8 +12,32 @@
         Left="800"
         Top="120"
         ResizeMode="NoResize"
-        Title="FloatMiniWindow" Height="50" Width="260" ShowInTaskbar="False" AllowsTransparency="True" WindowStyle="None" >
-    <Grid>
+        Title="FloatMiniWindow" Height="60" Width="145" ShowInTaskbar="False" AllowsTransparency="True" WindowStyle="None" >
+    <Grid x:Name="grid_mini" Background="SkyBlue">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="4*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="{DynamicResource FloatMiniLIS_Device}" FontSize="12" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
+        <TextBlock Text="{Binding Path=LISStatus}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="0"/>
+        <TextBlock Text="/" FontSize="12" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="0"/>
+        <TextBlock Text="{Binding Path=DeviceStatus}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="3" Grid.Row="0" />
+
+        <TextBlock Text="{DynamicResource FloatMiniSend_Receive_SampleCount}" FontSize="12" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1"/>
+        <TextBlock Text="{Binding Path=SendNum}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="1"/>
+        <TextBlock Text="/" FontSize="12" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="1"/>
+        <TextBlock Text="{Binding Path=ReceiveNum}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="3" Grid.Row="1" />
         
+        <TextBlock Text="{Binding Path=SampleId}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
+
+        <TextBlock Text="{Binding Path=SoftStatus}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="2"/>
+        <Image Source="/Resources/fullmode.png" Grid.Column="3" Grid.Row="2" Visibility="Visible" MouseLeftButtonDown="Image_MouseLeftButtonDown" />
     </Grid>
 </Window>

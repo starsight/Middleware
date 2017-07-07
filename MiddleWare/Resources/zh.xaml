@@ -21,4 +21,10 @@
 
     <!--MainWindow.xmal-->
     <system:String x:Key="AbouUs">关于我们</system:String>
+    
+    <!--FloatMini.xaml-->
+    <system:String x:Key="FloatMiniLIS_Device">LIS/设备</system:String>
+    <system:String x:Key="FloatMiniSend_Receive_SampleCount">发送/接收</system:String>
+
+    
 </ResourceDictionary>

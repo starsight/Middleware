@@ -16,7 +16,7 @@ namespace MiddleWare
     public partial class MainWindow : MetroWindow
     {
         bool shouldClose;
-        
+
 
         public MainWindow()
         {
@@ -36,7 +36,8 @@ namespace MiddleWare
                 // 隐藏自己(父窗体)
                 //this.Visibility = System.Windows.Visibility.Hidden;
                 mini = new FloatMiniWindow();
-                mini.ShowDialog();
+                //mini.ShowDialog();
+                showMiniWindow();
             }
         }
         /// <summary>
@@ -48,11 +49,11 @@ namespace MiddleWare
         {
             if (e.ChangedButton == MouseButton.Left)
             {
-                if (this.WindowState == WindowState.Minimized&& !GlobalVariable.isMiniMode)
+                if (this.WindowState == WindowState.Minimized && !GlobalVariable.isMiniMode)
                 {
                     this.ShowInTaskbar = true;//恢复状态栏显示
                     this.Show();
-                    this.WindowState = WindowState.Normal;        
+                    this.WindowState = WindowState.Normal;
                 }
             }
         }
@@ -71,8 +72,8 @@ namespace MiddleWare
             MessageBox.Show("江苏英诺华医疗技术有限公司", "关于软件");
         }
 
-        FloatMiniWindow mini;
-        private void MenuItem_Click_Mini(object sender, EventArgs e)
+        public static FloatMiniWindow mini;
+        public void MenuItem_Click_Mini(object sender, EventArgs e)
         {
             if (!GlobalVariable.isMiniMode)
             {
@@ -83,7 +84,8 @@ namespace MiddleWare
                 this.Visibility = System.Windows.Visibility.Hidden;
 
                 mini = new FloatMiniWindow();
-                mini.ShowDialog();
+                // mini.ShowDialog();
+                showMiniWindow();
 
             }
             else
@@ -96,6 +98,28 @@ namespace MiddleWare
                 this.Visibility = Visibility.Visible;
                 this.Show();
                 this.WindowState = WindowState.Normal;
+            }
+        }
+
+        private void showMiniWindow()
+        {
+            if (mini == null)
+                return;
+
+            if (mini.ShowDialog() == false)
+            {
+                notificationIcon.MenuItems[0].Text = "mini模式";//菜单栏文字更新
+                GlobalVariable.isMiniMode = false;
+                if (mini != null)
+                    mini.Close();
+
+                if (!shouldClose)
+                {
+                    this.Visibility = Visibility.Visible;
+                    this.Show();
+                    this.WindowState = WindowState.Normal;
+                }
+
             }
         }
 

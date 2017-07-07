@@ -202,6 +202,7 @@ namespace MiddleWare.Communicate
                 if (astmManager.IsASTMAvailable)
                 {
                     #region 向ASTM发送样本测试结果
+                    Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;// mini mode
                     ASTMMessage = astmManager.GetASTMMessage();
 
                     if (!GlobalVariable.IsOneWay)
@@ -229,18 +230,22 @@ namespace MiddleWare.Communicate
                                     //发送结束标识符EOT
                                     Connect.sendComByte(ASTM_Commands.EOT);
                                     ProcessASTMMessage.Invoke(astmManager.GetASTMSample_ID() + "Lis服务器接收成功\r\n", "LIS");//发送成功
+                                    Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
+                                    Statusbar.SBar.SampleId = astmManager.GetASTMSample_ID();// mini mode
                                     ++Statusbar.SBar.ReplyNum;
                                     UpdateDB.Invoke(astmManager.GetASTMSample_ID(), astmManager.GetASTMItem(), astmManager.GetASTMDevice());//回调
                                 }
                             }
                             else
                             {
+                                Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                                 ProcessASTMMessage.Invoke(astmManager.GetASTMSample_ID() + "Lis服务器发送失败\r\n", "LIS");
                             }
                         }
                         else
                         {
                             //LIS没有应答ACK,LIS连接错误
+                            Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                             ProcessASTMMessage.Invoke(astmManager.GetASTMSample_ID() + "Lis服务器连接错误\r\n", "LIS");
                         }
                         #endregion
@@ -251,12 +256,15 @@ namespace MiddleWare.Communicate
                         if (Connect.sendCom(ASTMMessage))
                         {
                             ProcessASTMMessage.Invoke(astmManager.GetASTMSample_ID() + "Lis服务器发送成功\r\n", "LIS");
+                            Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
+                            Statusbar.SBar.SampleId = astmManager.GetASTMSample_ID();// mini mode
                             ++Statusbar.SBar.SendNum;
                             UpdateDB.Invoke(astmManager.GetASTMSample_ID(), astmManager.GetASTMItem(), astmManager.GetASTMDevice());//回调
                         }
                         else
                         {
                             ProcessASTMMessage.Invoke(astmManager.GetASTMSample_ID() + "Lis服务器发送失败\r\n", "LIS");
+                            Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                         }
                         #endregion
                     }
@@ -266,6 +274,7 @@ namespace MiddleWare.Communicate
                 else if (astmManager.IsASTMRequestSampleDataAvailable) 
                 {
                     #region 向ASTM请求样本信息
+                    Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;// mini mode
                     Connect.sendComByte(ASTM_Commands.ENQ);//先发送ENQ
                     receiveByte = Connect.recevieComByte();
                     if (receiveByte == ASTM_Commands.ENQ)
@@ -314,17 +323,24 @@ namespace MiddleWare.Communicate
                                     {
                                         //解析出现异常
                                         ProcessASTMMessage.Invoke(astmManager.GetASTMRequestSampleDataSample_ID() + "Lis服务器申请样本异常\r\n", "LIS");
+                                        Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                                     }
 
                                     if (EndJudge == "I")
                                     {
                                         //LIS无相应样本信息
                                         ProcessASTMMessage.Invoke(astmManager.GetASTMRequestSampleDataSample_ID() + "Lis服务器无相关样本信息\r\n", "LIS");
+                                        Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                                     }
                                     else if (EndJudge == "N")
                                     {
                                         //LIS内有相应样本信息
                                         ASTMManager.ASTMPatientInfo pi = ASTM_ParesrPatientInfo(receiveString);
+
+                                        if (pi.SampleInfo.Count>=1)
+                                            Statusbar.SBar.SampleId = pi.SampleInfo[0].SampleID;// mini mode
+                                        Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
+
                                         RequestSampleData.BeginInvoke(pi, null, null);
                                         //委托出去
                                     }
@@ -332,6 +348,7 @@ namespace MiddleWare.Communicate
                                     {
                                         //LIS 异常
                                         ProcessASTMMessage.Invoke(astmManager.GetASTMRequestSampleDataSample_ID() + "Lis服务器申请样本异常\r\n", "LIS");
+                                        Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                                     }
                                 }
 
@@ -344,6 +361,7 @@ namespace MiddleWare.Communicate
                 else
                 {
                     #region LIS主动发送样本信息
+                    Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;// mini mode
                     //astmManager.ASTMSignal.Reset();
                     //持续监听LIS服务器
                     //LIS为主模式 仪器为从模式
@@ -370,17 +388,25 @@ namespace MiddleWare.Communicate
                             {
                                 //解析出现异常
                                 ProcessASTMMessage.Invoke(astmManager.GetASTMRequestSampleDataSample_ID() + "Lis服务器主动发送样本信息异常\r\n", "LIS");
+                                Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                             }
                             if (EndJudge == "O")
                             {
                                 //LIS内有相应样本信息
+
                                 ASTMManager.ASTMPatientInfo pi = ASTM_ParesrPatientInfo(receiveString);
+
+                                if (pi.SampleInfo.Count >= 1)
+                                    Statusbar.SBar.SampleId = pi.SampleInfo[0].SampleID;// mini mode
+                                Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
+
                                 RequestSampleData.BeginInvoke(pi, null, null);//委托出去
                             }
                             else
                             {
                                 //LIS 异常
                                 ProcessASTMMessage.Invoke(astmManager.GetASTMRequestSampleDataSample_ID() + "Lis服务器主动发送样本信息异常\r\n", "LIS");
+                                Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                             }
                         }
                     }
@@ -400,6 +426,7 @@ namespace MiddleWare.Communicate
                 if(astmManager.IsASTMAvailable)
                 {
                     #region 向ASTM发送样本测试结果
+                    Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;// mini mode
                     ASTMMessage = astmManager.GetASTMMessage();//先把要发送的数据取出来
                     if (!GlobalVariable.IsOneWay)
                     {
@@ -426,22 +453,29 @@ namespace MiddleWare.Communicate
                                     //发送结束标识符EOT
                                     Connect.sendSocketByte(ASTM_Commands.EOT);
                                     ProcessASTMMessage.Invoke(astmManager.GetASTMSample_ID() + "Lis服务器接收成功\r\n", "LIS");//发送成功
+
+                                    Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
+                                    Statusbar.SBar.SampleId = astmManager.GetASTMSample_ID();// mini mode
+
                                     ++Statusbar.SBar.ReplyNum;
                                     UpdateDB.Invoke(astmManager.GetASTMSample_ID(), astmManager.GetASTMItem(), astmManager.GetASTMDevice());//回调
                                 }
                                 else
                                 {
+                                    Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                                     ProcessASTMMessage.Invoke(astmManager.GetASTMSample_ID() + "Lis服务器发送失败\r\n", "LIS");
                                 }
                             }
                             else
                             {
+                                Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                                 ProcessASTMMessage.Invoke(astmManager.GetASTMSample_ID() + "Lis服务器发送失败\r\n", "LIS");
                             }
                         }
                         else
                         {
                             //LIS没有应答ACK,LIS连接错误
+                            Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                             ProcessASTMMessage.Invoke(astmManager.GetASTMSample_ID() + "Lis服务器连接错误\r\n", "LIS");
                         }
                         #endregion
@@ -453,10 +487,15 @@ namespace MiddleWare.Communicate
                         {
                             ++Statusbar.SBar.SendNum;
                             ProcessASTMMessage.Invoke(astmManager.GetASTMSample_ID() + "Lis服务器发送成功\r\n", "LIS");//发送成功
+
+                            Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
+                            Statusbar.SBar.SampleId = astmManager.GetASTMSample_ID();// mini mode
+
                             UpdateDB.Invoke(astmManager.GetASTMSample_ID(), astmManager.GetASTMItem(), astmManager.GetASTMDevice());//回调
                         }
                         else
                         {
+                            Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                             ProcessASTMMessage.Invoke(astmManager.GetASTMSample_ID() + "Lis服务器发送失败\r\n", "LIS");//发送成功
                         }
                         #endregion
@@ -467,6 +506,7 @@ namespace MiddleWare.Communicate
                 else if(astmManager.IsASTMRequestSampleDataAvailable)
                 {
                     #region 向ASTM请求样本信息
+                    
                     Connect.sendSocketByte(ASTM_Commands.ENQ);//先发送ENQ
                     receiveByte = Connect.receiveSocketByet();
                     if (receiveByte == ASTM_Commands.ENQ) 
@@ -474,6 +514,8 @@ namespace MiddleWare.Communicate
                         //此时双方都在发送ENQ命令争夺主模式,遵循仪器优先原则
                         Connect.sendSocketByte(ASTM_Commands.NAK);//发送NAK表示不接受LIS的主模式
                         receiveByte = Connect.receiveSocketByet();//等待LIS发送ACK
+
+                        Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;// mini mode
                     }
                     if (receiveByte == ASTM_Commands.ACK)
                     {
@@ -515,23 +557,31 @@ namespace MiddleWare.Communicate
                                     {
                                         //解析出现异常
                                         ProcessASTMMessage.Invoke(astmManager.GetASTMRequestSampleDataSample_ID() + "Lis服务器申请样本异常\r\n", "LIS");
+                                        Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                                     }
                                     
                                     if (EndJudge == "I")
                                     {
                                         //LIS无相应样本信息
                                         ProcessASTMMessage.Invoke(astmManager.GetASTMRequestSampleDataSample_ID() + "Lis服务器无相关样本信息\r\n", "LIS");
+                                        Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                                     }
                                     else if (EndJudge == "N")
                                     {
                                         //LIS内有相应样本信息
                                         ASTMManager.ASTMPatientInfo pi = ASTM_ParesrPatientInfo(receiveString);
+
+                                        if (pi.SampleInfo.Count >= 1)
+                                            Statusbar.SBar.SampleId = pi.SampleInfo[0].SampleID;// mini mode
+                                        Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
+
                                         RequestSampleData.BeginInvoke(pi, null, null);
                                         //委托出去
                                     }
                                     else
                                     {
                                         //LIS 异常
+                                        Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                                         ProcessASTMMessage.Invoke(astmManager.GetASTMRequestSampleDataSample_ID() + "Lis服务器申请样本异常\r\n", "LIS");
                                     }
                                 }
@@ -541,11 +591,13 @@ namespace MiddleWare.Communicate
                         }
                     }
                     astmManager.RemoveASTMRequestSampleData();
+                    
                     #endregion
                 }
                 else
                 {
                     #region LIS主动发送样本信息
+                   
                     //astmManager.ASTMSignal.Reset();
                     //持续监听LIS服务器
                     //LIS为主模式 仪器为从模式
@@ -554,6 +606,8 @@ namespace MiddleWare.Communicate
                     Connect.sendSocketByte(ASTM_Commands.ACK);
                     if (receiveString.Length > 10 && receiveString.IndexOf("H") != -1) 
                     {
+                        Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;// mini mode
+
                         //传回来标准消息
                         //然后等待LIS发送EOT结束命令
                         receiveByte = Connect.receiveSocketByet();
@@ -571,17 +625,25 @@ namespace MiddleWare.Communicate
                             catch
                             {
                                 //解析出现异常
+                                Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                                 ProcessASTMMessage.Invoke(astmManager.GetASTMRequestSampleDataSample_ID() + "Lis服务器主动发送样本信息异常\r\n", "LIS");
                             }
                             if (EndJudge == "O")
                             {
                                 //LIS内有相应样本信息
                                 ASTMManager.ASTMPatientInfo pi = ASTM_ParesrPatientInfo(receiveString);
+
+                                if (pi.SampleInfo.Count >= 1)
+                                    Statusbar.SBar.SampleId = pi.SampleInfo[0].SampleID;// mini mode
+                                Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
+
                                 RequestSampleData.BeginInvoke(pi, null, null);//委托出去
+
                             }
                             else
                             {
                                 //LIS 异常
+                                Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                                 ProcessASTMMessage.Invoke(astmManager.GetASTMRequestSampleDataSample_ID() + "Lis服务器主动发送样本信息异常\r\n", "LIS");
                             }
                         }

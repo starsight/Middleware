@@ -88,6 +88,13 @@ namespace MiddleWare.Views
 
         /*mini window*/
         public static bool isMiniMode = false;
+        public static string miniBusy = "Busy";
+        public static string miniWaiting = "Wait";
+        public static string miniError = "Error";
+        public static string miniConn = "√";
+        public static string miniUnConn = "×";
+
+
 
     }
 

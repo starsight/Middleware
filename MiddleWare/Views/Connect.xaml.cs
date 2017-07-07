@@ -88,6 +88,9 @@ namespace MiddleWare.Views
 
             DisableButton(button_closelis);
             DisableButton(button_closedevice);
+            Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
+            Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
+
 
             ReadConnectConfigForAutoRun(); 
         }
@@ -288,6 +291,7 @@ namespace MiddleWare.Views
             }
             DisableButton(button_openlis);
             EnableButton(button_closelis);
+            Statusbar.SBar.LISStatus = GlobalVariable.miniConn;// for mini mode
         }
         private void StartSocket()
         {
@@ -356,9 +360,10 @@ namespace MiddleWare.Views
                 }
                 DisableButton(button_closelis);
                 EnableButton(button_openlis);
+                Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
 
             }
-            while(IsSocketRun)
+            while (IsSocketRun)
             {
                 if (clientSocket.Poll(-1, SelectMode.SelectRead) && !IsSocketRead) //判断socket是否在连接状态
                 {
@@ -375,6 +380,8 @@ namespace MiddleWare.Views
                     }
                     DisableButton(button_closelis);
                     EnableButton(button_openlis);
+                    Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
+
                     break;//退出去
                 }
             }
@@ -539,6 +546,8 @@ namespace MiddleWare.Views
                     }
                     DisableButton(button_closelis);
                     EnableButton(button_openlis);
+                    Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
+
                     break;//退出去
                 }
             }
@@ -647,6 +656,8 @@ namespace MiddleWare.Views
         {
             DisableButton(button_closelis);
             EnableButton(button_openlis);
+            Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
+
             if (GlobalVariable.IsHL7Run || (GlobalVariable.IsASTMNet && !GlobalVariable.IsASTMCom))
             {
                 //如果是网口传输模式
@@ -687,6 +698,8 @@ namespace MiddleWare.Views
             string devicecontent = (string)combobox_device.SelectedValue;
             EnableButton(button_opendevice);
             DisableButton(button_closedevice);
+            Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
+
 
             switch (devicecontent)
             {
@@ -701,6 +714,7 @@ namespace MiddleWare.Views
                         {
                             EnableButton(button_closedevice);
                             DisableButton(button_opendevice);
+
                         }
                     } break;
                 case "PL12":
@@ -731,6 +745,8 @@ namespace MiddleWare.Views
                         {
                             EnableButton(button_closedevice);
                             DisableButton(button_opendevice);
+                            Statusbar.SBar.DeviceStatus = GlobalVariable.miniConn;// for mini mode
+
                         }
                     }
                     break;
@@ -892,6 +908,7 @@ namespace MiddleWare.Views
             }
             DisableButton(button_opendevice);
             EnableButton(button_closedevice);
+
         }
         private void OpenDs(string DSaddress)//
         {
@@ -1013,6 +1030,8 @@ namespace MiddleWare.Views
         {
             DisableButton(button_closedevice);
             EnableButton(button_opendevice);
+            Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
+
             if (IsDSshow && !IsPLshow && GlobalVariable.DSNum)
             {
                 //关闭DS连接

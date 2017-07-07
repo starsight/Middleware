@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -21,14 +22,16 @@ namespace MiddleWare.Views
     /// </summary>
     public partial class FloatMiniWindow : Window
     {
-
-
         public FloatMiniWindow()
         {
             InitializeComponent();
-            this.Topmost = true;
 
+            this.Topmost = true;
             this.Loaded += image_Loaded;//屏蔽 alt+tab 
+
+            grid_mini.DataContext = Statusbar.SBar;
+            this.DataContext = this;
+            
         }
 
         private void Window_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
@@ -111,5 +114,9 @@ namespace MiddleWare.Views
             SetWindowLong(wndHelper.Handle, (int)GetWindowLongFields.GWL_EXSTYLE, (IntPtr)exStyle);
         }
 
+        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Close();
+        }
     }
 }

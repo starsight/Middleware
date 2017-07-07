@@ -42,6 +42,12 @@ namespace MiddleWare.Views
         private int _ReplyNum;
         private bool _IsOneWay;
 
+        private string _LISStatus="×";//mini mode show
+        private string _DeviceStatus = "√";
+        private string _SoftStatus = "Wait";
+        private string _SampleId="";
+
+
         public int ReceiveNum
         {
             get
@@ -99,6 +105,74 @@ namespace MiddleWare.Views
                 {
                     this._IsOneWay = value;
                     OnPropertyChanged("IsOneWay");
+                }
+            }
+        }
+
+        public string LISStatus
+        {
+            get
+            {
+                return _LISStatus;
+            }
+
+            set
+            {           
+                if (this._LISStatus != value)
+                {
+                    _LISStatus = value;
+                    OnPropertyChanged("LISStatus");
+                }
+            }
+        }
+
+        public string DeviceStatus
+        {
+            get
+            {
+                return _DeviceStatus;
+            }
+
+            set
+            {
+                if (this._DeviceStatus != value)
+                {
+                    _DeviceStatus = value;
+                    OnPropertyChanged("DeviceStatus");
+                }
+            }
+        }
+
+        public string SoftStatus
+        {
+            get
+            {
+                return _SoftStatus;
+            }
+
+            set
+            {
+                if (this._SoftStatus != value)
+                {
+                    _SoftStatus = value;
+                    OnPropertyChanged("SoftStatus");
+                }
+            }
+        }
+
+        public string SampleId
+        {
+            get
+            {
+                return _SampleId;
+            }
+
+            set
+            {
+                if (this._SampleId != value)
+                {
+                    _SampleId = value;
+                    OnPropertyChanged("SampleId");
                 }
             }
         }
