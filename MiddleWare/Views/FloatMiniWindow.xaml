@@ -38,6 +38,6 @@
         <TextBlock Text="{Binding Path=SampleId}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2"/>
 
         <TextBlock Text="{Binding Path=SoftStatus}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="2"/>
-        <Image Source="/Resources/fullmode.png" Grid.Column="3" Grid.Row="2" Visibility="Visible" MouseLeftButtonDown="Image_MouseLeftButtonDown" />
+        <Image Source="/Resources/full_mode.png" Grid.Column="3" Grid.Row="2" Visibility="Visible" MouseLeftButtonDown="Image_MouseLeftButtonDown" />
     </Grid>
 </Window>

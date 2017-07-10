@@ -11,6 +11,8 @@ using MiddleWare.Views;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RestSharp;
+using System.Windows;
+using System.Windows.Threading;
 //3个线程 2个队列 1个用于从仪器数据库读取写入到自己数据的的DI800队列  1个是从自己数据库读取然后发送的DI800队列
 namespace MiddleWare.Communicate
 {
@@ -322,9 +324,33 @@ namespace MiddleWare.Communicate
             {
                 NamedPipe.PipeMessage receiveData = new NamedPipe.PipeMessage();
                 namedpipe.ReadNamedPipe(NamedPipe.pipeServer, ref receiveData);
-                if (receiveData.CheckBit == 2)
+                if (receiveData.CheckBit == 2)// 关闭管道，同时关闭客户端
                 {
                     namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);//回写函数
+
+                    bool canClose = true;
+                    if (ProcessHL7.hl7Manager != null)
+                        canClose = canClose && (!ProcessHL7.hl7Manager.IsHL7Available);
+
+                    if (ProcessASTM.astmManager != null)
+                        canClose = canClose && (!ProcessASTM.astmManager.IsASTMAvailable);
+
+                    if (Statusbar.SBar.SoftStatus == GlobalVariable.miniBusy)
+                        canClose = false;
+
+                    if (canClose)
+                    {
+                        MessageBoxResult result = MessageBox.Show("是否直接退出程序？", "警告", MessageBoxButton.YesNo);
+                        if (result == MessageBoxResult.No)
+                        {
+
+                        }
+                        else if(result==MessageBoxResult.Yes)
+                        {
+                            Environment.Exit(0);                  
+                        }
+
+                    }
                 }
                 else if (receiveData.GetTestEnd == 1)//如果测试完成
                 {

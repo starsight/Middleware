@@ -175,7 +175,7 @@ namespace MiddleWare.Communicate
     }
     public class ProcessHL7
     {
-        private static HL7Manager hl7Manager;
+        public static HL7Manager hl7Manager;
 
         public delegate void UpdateAccessEventHandle(string SAMPLE_ID, List<string> ITEM, string DEVICE);
         public event UpdateAccessEventHandle UpdateDB;

@@ -163,7 +163,7 @@ namespace MiddleWare.Communicate
     }
     public class ProcessASTM
     {
-        private static ASTMManager astmManager;
+        public static ASTMManager astmManager;
 
         public delegate void UpdateAccessEventHandle(string SAMPLE_ID, List<string> ITEM, string DEVICE);
         public event UpdateAccessEventHandle UpdateDB;

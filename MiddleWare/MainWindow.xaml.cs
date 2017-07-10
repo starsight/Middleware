@@ -15,7 +15,7 @@ namespace MiddleWare
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        bool shouldClose;
+        public static bool shouldClose;
 
 
         public MainWindow()
@@ -38,7 +38,7 @@ namespace MiddleWare
                 mini = new FloatMiniWindow();
                 //mini.ShowDialog();
                 showMiniWindow();
-            }
+            }         
         }
         /// <summary>
         /// 双击还原
@@ -57,9 +57,9 @@ namespace MiddleWare
                 }
             }
         }
-        private void MenuItem_Click_Close(object sender, EventArgs e)
+        public void MenuItem_Click_Close(object sender, EventArgs e)
         {
-            this.shouldClose = true;
+            shouldClose = true;
             if (Connect.ASTMseriaPort != null)
                 Connect.ASTMseriaPort.Close();
             if (ProcessASTM.ProcessASTMCancel != null)
