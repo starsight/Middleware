@@ -13,6 +13,10 @@ using Newtonsoft.Json;
 using RestSharp;
 using System.Windows;
 using System.Windows.Threading;
+using System.Windows.Forms;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
+
 //3个线程 2个队列 1个用于从仪器数据库读取写入到自己数据的的DI800队列  1个是从自己数据库读取然后发送的DI800队列
 namespace MiddleWare.Communicate
 {
@@ -328,33 +332,34 @@ namespace MiddleWare.Communicate
                 {
                     namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);//回写函数
 
-                    bool canClose = true;
+                    bool canClose = false;
                     if (ProcessHL7.hl7Manager != null)
-                        canClose = canClose && (!ProcessHL7.hl7Manager.IsHL7Available);
+                        canClose = canClose || (ProcessHL7.hl7Manager.IsHL7Available);
 
                     if (ProcessASTM.astmManager != null)
-                        canClose = canClose && (!ProcessASTM.astmManager.IsASTMAvailable);
+                        canClose = canClose || (ProcessASTM.astmManager.IsASTMAvailable);
 
                     if (Statusbar.SBar.SoftStatus == GlobalVariable.miniBusy)
-                        canClose = false;
+                        canClose = true;
 
                     if (canClose)
                     {
-                        MessageBoxResult result = MessageBox.Show("是否直接退出程序？", "警告", MessageBoxButton.YesNo);
-                        if (result == MessageBoxResult.No)
-                        {
 
-                        }
-                        else if(result==MessageBoxResult.Yes)
+                        System.Windows.Forms.DialogResult result = System.Windows.Forms.MessageBox.Show("是否直接退出程序？", "警告", System.Windows.Forms.MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, System.Windows.Forms.MessageBoxOptions.DefaultDesktopOnly);
+                        if (result == DialogResult.No)
                         {
-                            Environment.Exit(0);                  
+                            
+                        }
+                        else if (result == DialogResult.Yes)
+                        {
+                            Environment.Exit(0);
                         }
 
                     }
                 }
-                else if (receiveData.GetTestEnd == 1)//如果测试完成
+                else if (receiveData.GetTestEnd == 1&&receiveData.CheckBit!=1)//如果测试完成   CheckBit 1表示主动下发返回 客户端不需要处理
                 {
-                    if(receiveData.GetNewData==0)
+                    if (receiveData.GetNewData == 0)
                     {
                         Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;//mini mode
                         Statusbar.SBar.SampleId = receiveData.ID;
@@ -365,7 +370,7 @@ namespace MiddleWare.Communicate
                         namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);//回写函数
                         Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;
                     }
-                    else if(receiveData.GetNewData==1)
+                    else if (receiveData.GetNewData == 1)
                     {
                         Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;//mini mode
                         Statusbar.SBar.SampleId = receiveData.ID;

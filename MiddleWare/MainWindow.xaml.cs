@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MiddleWare.Communicate;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace MiddleWare
 {
@@ -69,7 +70,8 @@ namespace MiddleWare
 
         private void MenuItem_Click_AboutUs(object sender, EventArgs e)
         {
-            MessageBox.Show("江苏英诺华医疗技术有限公司", "关于软件");
+            //MessageBox.Show("", "");
+            this.ShowMessageAsync("关于软件", "江苏英诺华医疗技术有限公司");
         }
 
         public static FloatMiniWindow mini;
