@@ -55,6 +55,6 @@
         <Grid x:Name="grid_chart" Grid.Column="4" Grid.Row="7" Grid.RowSpan="4">
             <local:PLlivechart x:Name="PLchart" DataContext="{Binding}" Visibility="Collapsed"/>
         </Grid>
-        <Image Source="/Resources/sinnowa.jpg" Height="100" Width="260" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" Visibility="Visible"/>
+        <Image Source="/Resources/sinnowa.png" Height="100" Width="260" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" Visibility="Visible"/>
     </Grid>
 </UserControl>

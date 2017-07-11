@@ -330,9 +330,6 @@
     <Resource Include="Resources\ICON.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\sinnowa.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\printer.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -351,6 +348,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\full_mode.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\sinnowa.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
