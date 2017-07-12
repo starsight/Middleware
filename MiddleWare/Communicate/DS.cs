@@ -332,7 +332,7 @@ namespace MiddleWare.Communicate
                 {
                     namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);//回写函数
 
-                    bool canClose = false;
+                    bool canClose = false;//当前连接是否可以安全关闭
                     if (ProcessHL7.hl7Manager != null)
                         canClose = canClose || (ProcessHL7.hl7Manager.IsHL7Available);
 
@@ -344,7 +344,7 @@ namespace MiddleWare.Communicate
 
                     if (canClose)
                     {
-
+                        //不可以安全关闭
                         System.Windows.Forms.DialogResult result = System.Windows.Forms.MessageBox.Show("是否直接退出程序？", "警告", System.Windows.Forms.MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, System.Windows.Forms.MessageBoxOptions.DefaultDesktopOnly);
                         if (result == DialogResult.No)
                         {
