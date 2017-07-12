@@ -93,8 +93,6 @@ namespace MiddleWare.Communicate
             catch
             {
                 close_type = 1;
-                pipe_write = 0;
-                pipe_read = 0;
                 NamedPipeMessage.BeginInvoke("命名管道已关闭\r\n", "DEVICE", null, null);
                 Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
                 DisconnectPipe(1);//非正常关闭，对面取消了连接，被动关闭
@@ -112,8 +110,6 @@ namespace MiddleWare.Communicate
             if(!flag)
             {
                 close_type = 1;
-                pipe_write = 0;
-                pipe_read = 0;
                 NamedPipeMessage.BeginInvoke("命名管道已关闭\r\n", "DEVICE", null, null);
                 Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
                 DisconnectPipe(1);//非正常关闭，对面取消了连接，被动关闭
@@ -177,7 +173,7 @@ namespace MiddleWare.Communicate
         {
             pipe_read = 0;
             pipe_write = 0;
-            close_type = 0;
+            close_type = 1;
             try
             {
                 pipeServer = new NamedPipeServerStream(name.ToString(), PipeDirection.InOut, 1);
@@ -222,6 +218,7 @@ namespace MiddleWare.Communicate
             //CloseStatus:0  主动正常关闭；1：被动异常关闭：2：主动异常关闭
             //1和2状态下需要重新建立连接
             DSCancel.Cancell();
+            close_type = 1;
             if (!pipeServer.IsConnected && pipe_read == 2)
             {
                 connectSelf(0);//重要
@@ -240,12 +237,9 @@ namespace MiddleWare.Communicate
             }
             else
             {
-                if(CloseStatus==1)
-                {
-                    GlobalVariable.DSNum = true;
-                }
-               
+                GlobalVariable.DSNum = true;
                 Openpipe.BeginInvoke(GlobalVariable.DSDEVICEADDRESS, null, null);
+                Thread.Sleep(400);
             }
 
         }
