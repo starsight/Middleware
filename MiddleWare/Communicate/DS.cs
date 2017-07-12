@@ -206,9 +206,9 @@ namespace MiddleWare.Communicate
                     pipe_write = 1;
                 }
             }
-            catch
+            catch(Exception e)
             {
-                //string str = e.Message.ToString();
+                string str = e.Message.ToString();
                 NamedPipeMessage.Invoke("命名管道建立异常\r\n请重新打开\r\n", "DEVICE");
                 close_type = 2;
                 DisconnectPipe(2);
@@ -240,7 +240,11 @@ namespace MiddleWare.Communicate
             }
             else
             {
-                GlobalVariable.DSNum = true;
+                if(CloseStatus==1)
+                {
+                    GlobalVariable.DSNum = true;
+                }
+               
                 Openpipe.BeginInvoke(GlobalVariable.DSDEVICEADDRESS, null, null);
             }
 
@@ -296,7 +300,7 @@ namespace MiddleWare.Communicate
         public void Run()
         {
             namedpipe.NamedPipeCreat(NamedPipe.Pipename,NamedPipe.Pipename_write);//读 写
-            while (!ProcessPipesCancel.IsCancellationRequested && NamedPipe.close_type == 0) 
+            while ((!ProcessPipesCancel.IsCancellationRequested) && NamedPipe.close_type == 0) 
             {
                 NamedPipe.PipeMessage receiveData = new NamedPipe.PipeMessage();
                 namedpipe.ReadNamedPipe(NamedPipe.pipeServer, ref receiveData);
@@ -445,18 +449,20 @@ namespace MiddleWare.Communicate
                 switch(type)
                 {
                     case 0://生化
-                        {
+                        {//缺少BioMain其中的Biokind，StartTime，Kind
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
                                  "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
-                                 "FROM (((BioResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "e.StartTime,e.Kind"+
+                                 "FROM ((((BioResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
                                  "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
-                                 "INNER JOIN Register d ON a.BioID = d.BioID) WHERE a.BioID " + "='" + testID +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID)"+
+                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";
                         }
                         break;
                     case 1://电解质 未测试
-                        {
+                        {//缺少BioMain其中的Biokind，StartTime，Kind
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
                                  "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
@@ -467,7 +473,7 @@ namespace MiddleWare.Communicate
                         }
                         break;
                     case 2://质控 未测试
-                        {
+                        {//缺少BioMain其中的Biokind，StartTime，Kind
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
                                  "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
@@ -478,7 +484,7 @@ namespace MiddleWare.Communicate
                         }
                         break;
                     case 3://定标 未测试
-                        {
+                        {//缺少BioMain，Biokind，StartTime，Kind
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
                                  "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
@@ -578,7 +584,7 @@ namespace MiddleWare.Communicate
                         #region 解析数据库数据
                         di800.PATIENT_ID = dr["PATIENTID"] == DBNull.Value ? blank : (string)dr["PATIENTID"];
                         di800.TIME = dr["TEST_TIME"] == DBNull.Value ? Convert.ToDateTime("1900-01-01 00:00:00") : ((DateTime)dr["TEST_TIME"]);
-                        di800.SEND_TIME = dr["TEST_TIME"] == DBNull.Value ? Convert.ToDateTime("1900-01-01 00:00:00") : ((DateTime)dr["TEST_TIME"]);
+                        di800.SEND_TIME = dr["StartTime"] == DBNull.Value ? Convert.ToDateTime("1900-01-01 00:00:00") : ((DateTime)dr["StartTime"]);//检验开始时间
                         di800.SAMPLE_ID = testID;
                         if (Device == 0)
                             di800.Device = "DS_800";
@@ -591,7 +597,7 @@ namespace MiddleWare.Communicate
                         di800.AGE = dr["AGE"] == DBNull.Value ? blank : (string)dr["AGE"];
                         if (Device == 0)//800
                         {
-                            di800.SAMPLE_KIND = string.Empty;
+                            di800.SAMPLE_KIND = dr["Kind"] == DBNull.Value ? blank : (string)dr["Kind"];
                         }
                         else if (Device == 1)//400
                         {

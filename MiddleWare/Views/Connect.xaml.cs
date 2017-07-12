@@ -86,6 +86,9 @@ namespace MiddleWare.Views
             Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
             Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
 
+            NamedPipe.Openpipe += new NamedPipe.MessTrans(OpenDs);//管道连接异常后，自动重新打开
+            ProcessHL7.ActiveSampleData += new ProcessHL7.ActiveSampleDataEventHandle(ProcessPipes.ActiveSend);//当生化仪有样本申请信息时，将样本ID通过管道发送到生化仪
+
             ReadConnectConfigForAutoRun(); //自动连接
         }
 
@@ -185,8 +188,6 @@ namespace MiddleWare.Views
                         HL7connect.Visibility = Visibility.Collapsed;
                         ASTMconnect.Visibility = Visibility.Visible;
                         ASTMconnect.ComSearch();//自动搜索COM口
-                        //ASTMconnect.combobox_astmcom.SelectedIndex = 0;
-
                         IsHL7show = false;
                         IsASTMshow = true;
                     }break;
@@ -273,7 +274,6 @@ namespace MiddleWare.Views
             }
             DisableButton(button_openlis);
             EnableButton(button_closelis);
-            //Statusbar.SBar.LISStatus = GlobalVariable.miniConn;// for mini mode
         }
         private void StartSocket()
         {
@@ -936,8 +936,7 @@ namespace MiddleWare.Views
                 DSCancel.DSCancellMessage += Monitor.AddItemState;
             }
 
-            NamedPipe.Openpipe += new NamedPipe.MessTrans(OpenDs);//管道连接异常后，自动重新打开
-            ProcessHL7.ActiveSampleData += new ProcessHL7.ActiveSampleDataEventHandle(ProcessPipes.ActiveSend);//当生化仪有样本申请信息时，将样本ID通过管道发送到生化仪
+            
 
             GlobalVariable.IsDSRepeat = true;
             AddItem(textbox_deviceshow, "等待生化仪器连接\r\n");

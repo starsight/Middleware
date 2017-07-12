@@ -161,7 +161,7 @@ namespace MiddleWare
             {
                 return;
             }
-            if (mini.ShowDialog() == false)
+            if (mini.ShowDialog() == false)//此处是阻塞函数，打开mini窗口后直接阻塞在这，等待close关闭后，就返回false
             {
                 //如果mini切换失败
                 notificationIcon.MenuItems[0].Text = "mini模式";//菜单栏文字更新
