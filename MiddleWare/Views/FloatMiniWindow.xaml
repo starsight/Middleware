@@ -25,7 +25,7 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock Text="{DynamicResource FloatMiniLIS_Device}" FontSize="12" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
+        <TextBlock Text="LIS/设备" FontSize="12" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0"/>
         <TextBlock Text="{Binding Path=LISStatus}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Grid.Row="0"/>
         <TextBlock Text="/" FontSize="12" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="0"/>
         <TextBlock Text="{Binding Path=DeviceStatus}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="3" Grid.Row="0" />

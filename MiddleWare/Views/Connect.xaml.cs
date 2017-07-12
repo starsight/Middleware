@@ -66,11 +66,6 @@ namespace MiddleWare.Views
         {
             InitializeComponent();
 
-            /*  */
-            NamedPipe.Openpipe += new NamedPipe.MessTrans(OpenDs);
-            ProcessHL7.ActiveSampleData += new ProcessHL7.ActiveSampleDataEventHandle(NamedPipe.ActiveSend);
-            /* */
-
             DeviceList = new ObservableCollection<Device>();
             LisList = new ObservableCollection<Lis>();
 
@@ -91,8 +86,7 @@ namespace MiddleWare.Views
             Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
             Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
 
-
-            ReadConnectConfigForAutoRun(); 
+            ReadConnectConfigForAutoRun(); //自动连接
         }
 
         private Boolean isAutoConnectLisServer = false;
@@ -100,8 +94,7 @@ namespace MiddleWare.Views
 
         private void ReadConnectConfigForAutoRun()
         {
-            string str = null;
-            str = AppConfig.GetAppConfig("LisServerConnectWay");
+            string str = AppConfig.GetAppConfig("LisServerConnectWay");
             if (str != null)//LIS Server 连接方式 HL7 ASTM
             {
                 if (str == "HL7")
@@ -122,29 +115,33 @@ namespace MiddleWare.Views
                 switch (str)
                 {
                     case "DS400":
-                        isAutoConnectDevice = true;
-                        combobox_device.SelectedIndex = 0;
-                        break;
+                        {
+                            isAutoConnectDevice = true;
+                            combobox_device.SelectedIndex = 0;
+                            break;
+                        }
                     case "DS800":
-                        isAutoConnectDevice = true;
-                        combobox_device.SelectedIndex = 1;
-                        break;
+                        {
+                            isAutoConnectDevice = true;
+                            combobox_device.SelectedIndex = 1;
+                            break;
+                        }
                     case "PL12":
-                        isAutoConnectDevice = true;
-                        combobox_device.SelectedIndex = 2;
-                        break;
+                        {
+                            isAutoConnectDevice = true;
+                            combobox_device.SelectedIndex = 2;
+                            break;
+                        }
                     case "PL16":
-                        isAutoConnectDevice = true;
-                        combobox_device.SelectedIndex = 3;
-                        break;
+                        {
+                            isAutoConnectDevice = true;
+                            combobox_device.SelectedIndex = 3;
+                            break;
+                        }
                     default:
                         break;
                 }
             }
-
-            //AppConfig.UpdateAppConfig("DeviceConnectType","kong");
-            //AppConfig.RemoveAppConfig("DeviceConnectType");
-            //AppConfig.RemoveAppConfig("LisServerConnectWay");//失败后下次不会自动连接
         }
 
         private void AddItem(TextBox textbox, string text)
@@ -153,7 +150,7 @@ namespace MiddleWare.Views
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 textbox.Clear();//先清空之前内容
-                textbox.AppendText(text);
+                textbox.AppendText(text);//增加文本
             }));
         }
         private void EnableButton(Button button)
@@ -187,24 +184,9 @@ namespace MiddleWare.Views
                     {
                         HL7connect.Visibility = Visibility.Collapsed;
                         ASTMconnect.Visibility = Visibility.Visible;
-                        ASTMconnect.combobox_astmcom.SelectedIndex = 0;
-                        /*string str = AppConfig.GetAppConfig("ASTMCom");//仪器连接类型选择
-
-                        if (str != null)
-                        {
-                            int count = ASTMconnect.ComSearch();//用作COM口实时更新
-                            if (count >= 1)
-                                //   ASTMconnect.combobox_astmcom.SelectedIndex = 0;//自动连接时，默认选择第0个COM口
-                                for (int i = 0; i < ASTMconnect.ComList.Count; i++)
-                                {
-                                    if (ASTMconnect.ComList[i].NAME == str)
-                                    {
-                                        ASTMconnect.combobox_astmcom.SelectedIndex = i;
-                                    }
-                                }
-                        }*/
-
+                        ASTMconnect.ComSearch();//自动搜索COM口
                         //ASTMconnect.combobox_astmcom.SelectedIndex = 0;
+
                         IsHL7show = false;
                         IsASTMshow = true;
                     }break;
@@ -219,7 +201,7 @@ namespace MiddleWare.Views
         }
         private void button_openlis_Click(object sender, RoutedEventArgs e)
         {
-            AppConfig.UpdateAppConfig("LisServerConnectWay","kong");//如果此次连接失败，下次不会自动连接
+            AppConfig.UpdateAppConfig("LisServerConnectWay","Null");//如果此次连接失败，下次不会自动连接
 
             if (LisNum)
             {
@@ -234,7 +216,7 @@ namespace MiddleWare.Views
                     host = HL7connect.textbox_hl7ip.Text;
                     port = Convert.ToInt16(HL7connect.textbox_hl7port.Text);
                 }
-                catch(Exception e3)
+                catch
                 {
                     AddItem(textbox_lisshow, "请正确输入\r\n");
                     return;
@@ -291,7 +273,7 @@ namespace MiddleWare.Views
             }
             DisableButton(button_openlis);
             EnableButton(button_closelis);
-            Statusbar.SBar.LISStatus = GlobalVariable.miniConn;// for mini mode
+            //Statusbar.SBar.LISStatus = GlobalVariable.miniConn;// for mini mode
         }
         private void StartSocket()
         {
@@ -303,6 +285,7 @@ namespace MiddleWare.Views
                 clientSocket.ReceiveTimeout = 500;//设置读取超时时间500ms
                 clientSocket.SendTimeout = 1000;//设置发送超时时间1s
                 AddItem(textbox_lisshow, "连接LIS服务器成功\r\n");
+                Statusbar.SBar.LISStatus = GlobalVariable.miniConn;// for mini mode
                 LisNum = true;
                 if (IsHL7show && !IsASTMshow) 
                 {
@@ -519,6 +502,7 @@ namespace MiddleWare.Views
             ASTMseriaPort.WriteTimeout = 500;
             ASTMseriaPort.Open();
             AddItem(textbox_lisshow, "已打开" + comname + "串口");
+            Statusbar.SBar.LISStatus = GlobalVariable.miniConn;// for mini mode
             LisNum = true;
             IsComRun = true;
 
@@ -951,6 +935,9 @@ namespace MiddleWare.Views
                 ReadAccessDS.ReadAccessDSMessage += Monitor.AddItemState;
                 DSCancel.DSCancellMessage += Monitor.AddItemState;
             }
+
+            NamedPipe.Openpipe += new NamedPipe.MessTrans(OpenDs);//管道连接异常后，自动重新打开
+            ProcessHL7.ActiveSampleData += new ProcessHL7.ActiveSampleDataEventHandle(ProcessPipes.ActiveSend);//当生化仪有样本申请信息时，将样本ID通过管道发送到生化仪
 
             GlobalVariable.IsDSRepeat = true;
             AddItem(textbox_deviceshow, "等待生化仪器连接\r\n");

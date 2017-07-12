@@ -32,7 +32,6 @@ namespace MiddleWare.Views
             SBar.ReceiveNum = 0;
             SBar.ReplyNum = 0; 
         }
-       
     }
 
     public class StatusBar : INotifyPropertyChanged
@@ -45,8 +44,7 @@ namespace MiddleWare.Views
         private string _LISStatus="×";//mini mode show
         private string _DeviceStatus = "√";
         private string _SoftStatus = "Wait";
-        private string _SampleId="";
-
+        private string _SampleId = string.Empty;
 
         public int ReceiveNum
         {
@@ -108,7 +106,6 @@ namespace MiddleWare.Views
                 }
             }
         }
-
         public string LISStatus
         {
             get
@@ -125,7 +122,6 @@ namespace MiddleWare.Views
                 }
             }
         }
-
         public string DeviceStatus
         {
             get
@@ -142,7 +138,6 @@ namespace MiddleWare.Views
                 }
             }
         }
-
         public string SoftStatus
         {
             get
@@ -159,7 +154,6 @@ namespace MiddleWare.Views
                 }
             }
         }
-
         public string SampleId
         {
             get

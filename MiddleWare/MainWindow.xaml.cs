@@ -16,7 +16,7 @@ namespace MiddleWare
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        public static bool shouldClose;
+        private bool shouldClose = false;
 
         public MainWindow()
         {
@@ -24,21 +24,28 @@ namespace MiddleWare
         }
         public static FloatMiniWindow mini;
 
-        private void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (!shouldClose)//close按钮
             {
                 e.Cancel = true;
-                this.ShowInTaskbar = false;//任务栏不显示
-                this.WindowState = WindowState.Minimized;
 
-                GlobalVariable.isMiniMode = true;
-                notificationIcon.MenuItems[0].Text = "完整模式";//菜单栏文字更新
-                // 隐藏自己(父窗体)
-                //this.Visibility = System.Windows.Visibility.Hidden;
-                mini = new FloatMiniWindow();
-                //mini.ShowDialog();
-                showMiniWindow();
+                MessageDialogResult clickresult = await this.ShowMessageAsync("警告", "确定是否退出软件", MessageDialogStyle.AffirmativeAndNegative);
+                if (clickresult == MessageDialogResult.Negative)//取消
+                {
+                    this.ShowInTaskbar = false;//任务栏不显示
+                    this.WindowState = WindowState.Minimized;
+
+                    GlobalVariable.isMiniMode = true;
+                    notificationIcon.MenuItems[0].Text = "完整模式";//菜单栏文字更新
+                    mini = new FloatMiniWindow();
+                    showMiniWindow();
+                }
+                else//确认
+                {
+                    shouldClose = true;
+                    Close();
+                }
             }         
         }
 
@@ -99,6 +106,7 @@ namespace MiddleWare
         private void MenuItem_Click_AboutUs(object sender, EventArgs e)
         {
             notificationIcon.MenuItems[0].Text = "mini模式";//菜单栏文字更新
+            this.ShowInTaskbar = true;//状态栏显示
             GlobalVariable.isMiniMode = false;
             if (mini != null)
             {
@@ -121,6 +129,7 @@ namespace MiddleWare
             {
                 //变小
                 notificationIcon.MenuItems[0].Text = "完整模式";//菜单栏文字更新
+                this.ShowInTaskbar = false;//状态栏不显示
                 GlobalVariable.isMiniMode = true;
 
                 // 隐藏自己(父窗体)
@@ -131,6 +140,7 @@ namespace MiddleWare
             else
             {
                 notificationIcon.MenuItems[0].Text = "mini模式";//菜单栏文字更新
+                this.ShowInTaskbar = true;//状态栏显示
                 GlobalVariable.isMiniMode = false;
                 if (mini != null)
                 {
@@ -155,6 +165,7 @@ namespace MiddleWare
             {
                 //如果mini切换失败
                 notificationIcon.MenuItems[0].Text = "mini模式";//菜单栏文字更新
+                this.ShowInTaskbar = true;//状态栏显示
                 GlobalVariable.isMiniMode = false;
                 if (mini != null)
                 {

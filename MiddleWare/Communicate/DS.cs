@@ -169,20 +169,7 @@ namespace MiddleWare.Communicate
 
             sw.WriteLine(sendDataStr);
         }
-        /// <summary>
-        /// 主动下发样本信息时管道传递信息
-        /// </summary>
-        public static void ActiveSend(string str)
-        {
-            PipeMessage message = new PipeMessage();
-            message.ID = str;
-            message.IDNum = str.Length;
-            message.BarCode = "";
-            message.BarCodeNum = 0;
-            message.CheckBit = 1;
-            NamedPipe namepipe =new NamedPipe();
-            namepipe.WriteNamedPipe(pipeServer_write, ref message);
-        }
+       
         /// <summary>
         /// 创建一个命名通道
         /// </summary>
@@ -293,12 +280,12 @@ namespace MiddleWare.Communicate
         public event PipeApplyTransmit PipeApplyMessage;
         public static CancellationTokenSource ProcessPipesCancel;
 
-        private NamedPipe namedpipe;
+        private static NamedPipe namedpipe;
         private AccessManagerDS accessmanager;
 
         public ProcessPipes(NamedPipe np, AccessManagerDS am)
         {
-            this.namedpipe = np;
+            namedpipe = np;
             this.accessmanager = am;
             ProcessPipesCancel = new CancellationTokenSource();
         }
@@ -368,6 +355,21 @@ namespace MiddleWare.Communicate
                 }
                 Thread.Sleep(200);
             }
+        }
+        /// <summary>
+        /// 主动下发样本信息时管道传递信息
+        /// </summary>
+        public static void ActiveSend(string _ID)
+        {
+            //只发送ID号
+            NamedPipe.PipeMessage message = new NamedPipe.PipeMessage();
+            message.ID = _ID;
+            message.IDNum = _ID.Length;
+            message.BarCode = "";
+            message.BarCodeNum = 0;
+            message.CheckBit = 1;
+
+            namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref message);
         }
     }
 
