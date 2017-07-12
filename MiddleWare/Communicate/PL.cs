@@ -630,15 +630,15 @@ namespace MiddleWare.Communicate
             oaInfo = new OleDbDataAdapter(strSelectInfo, conn);
             dtInfo = new DataTable();
             oaInfo.Fill(dtInfo);
-            Normal_Low = (double)dtInfo.Rows[0]["NORMAL_LOW"];
-            Normal_High = (double)dtInfo.Rows[0]["NORMAL_HIGH"];
-            Unit = (string)dtInfo.Rows[0]["UNIT"];
+            Normal_Low = (double)dtInfo.Rows[0]["NORMAL_LOW"];//读取低值
+            Normal_High = (double)dtInfo.Rows[0]["NORMAL_HIGH"];//读取高值
+            Unit = (string)dtInfo.Rows[0]["UNIT"];//读取单位
 
             strSelectName = "select * from PL_FullName where ITEM ='MPV_0'";
             oaName = new OleDbDataAdapter(strSelectName, conn);
             dtName = new DataTable();
             oaName.Fill(dtName);
-            Name = (string)dtName.Rows[0]["FULL_NAME"];
+            Name = (string)dtName.Rows[0]["FULL_NAME"];//获取项目全称
             /*cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = data.ID;
             cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = data.BarCode;
             cmd.Parameters.Add("@TEST_TIME", OleDbType.VarChar).Value = data.TIME;
@@ -655,7 +655,7 @@ namespace MiddleWare.Communicate
             cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
 
             cmd.ExecuteNonQuery();*/
-            WriteDataAccessWebOperation(cmd,data, "MPV_0",Name,data.MPV_0.ToString(),Unit,Normal_Low,Normal_High, data.MPV_0 > Normal_High ? "H" : (data.MPV_0 < Normal_Low ? "L" : "N"));
+            WriteDataAccessWebOperation(cmd, data, "MPV_0", Name, data.MPV_0.ToString(), Unit, Normal_Low, Normal_High, data.MPV_0 > Normal_High ? "H" : (data.MPV_0 < Normal_Low ? "L" : "N"));
 
 
             cmd = new OleDbCommand(strInsert, conn);

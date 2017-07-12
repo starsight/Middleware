@@ -31,7 +31,6 @@ namespace MiddleWare.Views
 
             grid_mini.DataContext = Statusbar.SBar;
             this.DataContext = this;
-            
         }
 
         private void Window_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
@@ -39,7 +38,6 @@ namespace MiddleWare.Views
             this.DragMove();
         }
 
-        
         #region Window styles  
         [Flags]
         public enum ExtendedWindowStyles
