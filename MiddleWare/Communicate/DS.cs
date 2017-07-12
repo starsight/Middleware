@@ -424,7 +424,7 @@ namespace MiddleWare.Communicate
         }
         public static void ReadData(string testID, int Device, int type, AccessManagerDS am)//读取生化仪数据库
         {
-            AccessManagerDS.EquipMutex.WaitOne();
+            AccessManagerDS.EquipMutex.WaitOne();//上锁
             if (conn.State == System.Data.ConnectionState.Closed)
             {
                 try
@@ -434,7 +434,7 @@ namespace MiddleWare.Communicate
                 catch
                 {
                     ReadEquipAccessMessage.Invoke("数据库地址错误\r\n", "DEVICE");
-                    AccessManagerDS.EquipMutex.ReleaseMutex();
+                    AccessManagerDS.EquipMutex.ReleaseMutex();//斜锁
                     return;
                 }
             }
@@ -1034,7 +1034,7 @@ namespace MiddleWare.Communicate
             AccessManagerDS.mutex.WaitOne();
             if (conn.State == System.Data.ConnectionState.Closed)
             {
-                conn.Open();//打开连接
+                conn.Open();//打开数据库
             }
 
             strInsert = "insert into lisoutput([SAMPLE_ID],[PATIENT_ID],[ITEM],[TYPE],[SEND_TIME],[DEVICE],[FULL_NAME],[RESULT],[UNIT],[NORMAL_lOW],[NORMAL_HIGH],[TIME],[INDICATE],[IsGet],[FIRST_NAME],[SEX],[AGE],[SAMPLE_KIND],[DOCTOR],[AREA],[BED],[DEPARTMENT],[ISSEND]) " +
