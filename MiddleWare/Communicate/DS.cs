@@ -530,14 +530,13 @@ namespace MiddleWare.Communicate
                         break;
                     case 1://电解质  未测试
                         {
-                            strSelect = String.Empty;
-                            /*strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
+                            strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
                             "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
                             "a.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
                             "FROM (((SAMPLE_ELEC_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
                             "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
                             " WHERE a.SAMPLE_ID ='" + testID +
-                            "'";*/
+                            "'";
                         }
                         break;
                     case 2://质控  未测试
@@ -567,8 +566,7 @@ namespace MiddleWare.Communicate
                     default: break;
                 }
             }
-            if (strSelect != String.Empty || Device != 1 || type != 1)//非DS400 电解质项目 执行
-            {
+            //if (strSelect != String.Empty || Device != 1 || type != 1)//非DS400 电解质项目 执行            
                 using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                 {
                     ds = new DataSet();
@@ -680,7 +678,7 @@ namespace MiddleWare.Communicate
                         }
                     }
                 }
-            }
+            
 
             #region DS400 特别读取信息
             if (Device == 1)//DS400额外添加内容
@@ -820,9 +818,52 @@ namespace MiddleWare.Communicate
                             #endregion
                         }
                         break;
-                    case 1:
+                    case 1://电解质
                         {
-                            strSelect = "select a.ITEM,a.FULL_NAME as FULLNAME, a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH from SAMPLE_ELEC_RESULT where ";
+                            #region SAMPLE_ELEC_RESULT
+                            /*strSelect = "select a.ITEM, a.FULL_NAME as FULLNAME, a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ELEC_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "'";
+                            using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
+                            {
+                                ds = new DataSet();
+                                try
+                                {
+                                    if (oa.Fill(ds, "EleResult") != 0)
+                                    {
+                                        foreach (DataRow dr in ds.Tables["EleResult"].Rows)
+                                        {
+                                            {
+                                                result = new DI800Manager.DI800Result();
+                                                result.ITEM = (string)dr["ITEM"];
+                                                result.RESULT = dr["RESULT"] == DBNull.Value ? -1 : (double)dr["RESULT"];
+                                                result.FULL_NAME = dr["FULLNAME"] == DBNull.Value ? blank : (string)dr["FULLNAME"];
+                                                result.UNIT = dr["UNIT"] == DBNull.Value ? blank : (string)dr["UNIT"];
+                                                result.NORMAL_LOW = dr["NORMALLOW"] == DBNull.Value ? -1 : (double)dr["NORMALLOW"];
+                                                result.NORMAL_HIGH = dr["NORMALHIGH"] == DBNull.Value ? -1 : (double)dr["NORMALHIGH"];
+                                                if (result.RESULT == -1 || result.NORMAL_LOW == -1 || result.NORMAL_HIGH == -1 || result.NORMAL_HIGH == 0) //如果最高值为0，则肯定不正确
+                                                {
+                                                    result.INDICATE = string.Empty;
+                                                }
+                                                else
+                                                {
+                                                    result.INDICATE = result.RESULT > result.NORMAL_HIGH ? "H" : (result.RESULT < result.NORMAL_LOW ? "L" : "N");
+                                                }
+                                                di800.Result.Add(result);
+                                                Count++;
+                                            }
+                                        }
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    ReadEquipAccessMessage.Invoke("设备数据库选择错误\r\n请检查后重新建立连接\r\n", "DEVICE");
+                                    ds.Clear();
+                                    conn.Close();
+                                    AccessManagerDS.EquipMutex.ReleaseMutex();
+                                    return;
+                                }
+
+                            }*/
+                            #endregion
                         }
                         break;
                     case 2://不做
