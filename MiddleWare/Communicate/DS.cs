@@ -504,6 +504,13 @@ namespace MiddleWare.Communicate
                 {
                     case 0://生化
                         {
+                            /*
+                             a -> SAMPLE_ITEM_TEST_RESULT -> sample_id √  item √ time √ result √ unit √ normal_low √ normal_high √ OD1 ×
+                             b -> SAMPLE_MAIN  -> sample_id  √ sample_kind  √ SEND_TIME √  多emergency patientid
+                             c -> ITEM_PARA_MAIN ->  full_name  √
+                             d -> SAMPLE_PATIENT_INFO -> first_name √  sex √  age √
+                             e -> SAMPLE_REGISTER_INFO -> department √  treat_area √ silkbed_no √  doctor √
+                             */
                             strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
                             "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
                             "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
