@@ -607,7 +607,7 @@ namespace MiddleWare.Communicate
             }
             catch
             {
-                hl7info.DateOfBrith = Convert.ToDateTime("1900-01-01 00:00:00");
+                hl7info.DateOfBrith = GlobalVariable.DefalutTime;
             }
             hl7info.Sex = dsr.GetDSP(4).DataLine.Value;
             hl7info.PatientAlias = dsr.GetDSP(5).DataLine.Value;
@@ -626,14 +626,16 @@ namespace MiddleWare.Communicate
             hl7info.BirthPlace = dsr.GetDSP(18).DataLine.Value;
             hl7info.Nationality = dsr.GetDSP(19).DataLine.Value;
             hl7info.BarCode = dsr.GetDSP(20).DataLine.Value;
-            hl7info.SampleID = dsr.GetDSP(21).DataLine.Value;
+            //hl7info.SampleID = dsr.GetDSP(21).DataLine.Value;
+            hl7info.SampleID = "915066351347";
             try
             {
-                hl7info.SampleTime = DateTime.ParseExact(dsr.GetDSP(22).DataLine.Value, "yyyyMMddHHmmss", System.Globalization.CultureInfo.CurrentCulture);
+                //hl7info.SampleTime = DateTime.ParseExact(dsr.GetDSP(22).DataLine.Value, "yyyyMMddHHmmss", System.Globalization.CultureInfo.CurrentCulture);
+                hl7info.SampleTime = GlobalVariable.DefalutTime;
             }
             catch
             {
-                hl7info.SampleTime = Convert.ToDateTime("1900-01-01 00:00:00");
+                hl7info.SampleTime = GlobalVariable.DefalutTime;
             }
             hl7info.IsEmergency = dsr.GetDSP(23).DataLine.Value == null ? "N" : dsr.GetDSP(23).DataLine.Value;
             hl7info.CollcetionVolume = dsr.GetDSP(24).DataLine.Value;

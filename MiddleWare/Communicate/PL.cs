@@ -421,7 +421,7 @@ namespace MiddleWare.Communicate
             }
             catch
             {
-                data.TIME = Convert.ToDateTime("1900-01-01 00:00:00");//如果传送时间为空,则改为当前时间
+                data.TIME = GlobalVariable.DefalutTime;//如果传送时间为空,则改为当前时间
             }
             data.PACBit = readBuffer[79];
             data.PAC1 = readBuffer[80];

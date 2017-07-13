@@ -185,7 +185,7 @@ namespace MiddleWare
         {
             if (this.WindowState == WindowState.Minimized)//最小化
             {
-                this.Hide();
+                //this.Hide();  
             }
         }
 

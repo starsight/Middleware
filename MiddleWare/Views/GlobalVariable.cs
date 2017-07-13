@@ -94,7 +94,7 @@ namespace MiddleWare.Views
         public static string miniConn = "√";
         public static string miniUnConn = "×";
 
-
+        public static DateTime DefalutTime = Convert.ToDateTime("1900-01-01 00:00:00");
 
     }
 

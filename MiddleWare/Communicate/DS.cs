@@ -447,48 +447,54 @@ namespace MiddleWare.Communicate
                 switch(type)
                 {
                     case 0://生化
-                        {//缺少BioMain其中的Biokind，StartTime，Kind
+                        {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
-                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
-                                 "e.StartTime,e.Kind"+
+                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
+                                 "e.StartTime,e.Kind "+
                                  "FROM ((((BioResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
                                  "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
-                                 "INNER JOIN Register d ON a.BioID = d.BioID)"+
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) "+
                                  "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";
                         }
                         break;
                     case 1://电解质 未测试
-                        {//缺少BioMain其中的Biokind，StartTime，Kind
+                        {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
-                                 "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
-                                 "FROM (((ElecResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
+                                 "e.StartTime,e.Kind " +
+                                 "FROM ((((ElecResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
                                  "INNER JOIN ElecItem c ON a.ITEM = c.ITEM) " +
-                                 "INNER JOIN Register d ON a.BioID = d.BioID) WHERE a.BioID " + "='" + testID +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) "+
+                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";
                         }
                         break;
                     case 2://质控 未测试
-                        {//缺少BioMain其中的Biokind，StartTime，Kind
+                        {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
-                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
-                                 "FROM (((BioResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
+                                 "e.StartTime,e.Kind " +
+                                 "FROM ((((BioResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
                                  "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
-                                 "INNER JOIN Register d ON a.BioID = d.BioID) WHERE a.BioID " + "='" + testID +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) "+
+                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";
                         }
                         break;
                     case 3://定标 未测试
-                        {//缺少BioMain，Biokind，StartTime，Kind
+                        {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
-                                 "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
-                                 "FROM (((CalResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
+                                 "e.StartTime,e.Kind " +
+                                 "FROM ((((CalResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
                                  "INNER JOIN CalItem c ON a.ITEM = c.ITEM) " +
-                                 "INNER JOIN Register d ON a.BioID = d.BioID) WHERE a.BioID " + "='" + testID +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) "+
+                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";
                         }
                         break;
@@ -581,8 +587,8 @@ namespace MiddleWare.Communicate
                     {
                         #region 解析数据库数据
                         di800.PATIENT_ID = dr["PATIENTID"] == DBNull.Value ? blank : (string)dr["PATIENTID"];
-                        di800.TIME = dr["TEST_TIME"] == DBNull.Value ? Convert.ToDateTime("1900-01-01 00:00:00") : ((DateTime)dr["TEST_TIME"]);
-                        di800.SEND_TIME = dr["StartTime"] == DBNull.Value ? Convert.ToDateTime("1900-01-01 00:00:00") : ((DateTime)dr["StartTime"]);//检验开始时间
+                        di800.TIME = dr["TEST_TIME"] == DBNull.Value ? GlobalVariable.DefalutTime : ((DateTime)dr["TEST_TIME"]);
+                        di800.SEND_TIME = dr["StartTime"] == DBNull.Value ? GlobalVariable.DefalutTime : ((DateTime)dr["StartTime"]);//检验开始时间
                         di800.SAMPLE_ID = testID;
                         if (Device == 0)
                             di800.Device = "DS_800";
@@ -665,9 +671,6 @@ namespace MiddleWare.Communicate
         private static string strConnection;
         private static string strDSInsert;
         private static string strJudge;
-        private static string strIns;
-        private static int IsTable;
-        private static int device;
 
         public WriteEquipAccess()
         {
@@ -675,319 +678,80 @@ namespace MiddleWare.Communicate
             strConnection += "Data Source=";
             strConnection += GlobalVariable.DSDEVICEADDRESS;
 
-            device = GlobalVariable.DSDEVICE;
             conn = new OleDbConnection(strConnection);
-
-            conn.Open();
-            if(device==0)//下面程序有误,故意不让其进去
-            {
-                #region CAL表
-                strDSInsert = "SELECT Count(*) AS RTab FROM MSysObjects WHERE(((MSysObjects.Name)Like 'CalTask'))";
-                using (OleDbDataAdapter oa = new OleDbDataAdapter(strDSInsert, conn))
-                {
-                    DataSet ds = new DataSet();
-                    if (oa.Fill(ds, "Item") != 0)
-                    {
-                        foreach (DataRow dr in ds.Tables["Item"].Rows)
-                        {
-                            IsTable = dr["RTab"] == DBNull.Value ? -1 : (int)dr["RTab"];//是否存在表,返回0则是没有,返回1则是有
-
-                            if (IsTable == 0)//如果没有表,就创建一个新的
-                            {
-                                strDSInsert = "create table CalTask (BioID char(50) not null,Item char(50) not null);";
-                                using (OleDbCommand cmd = new OleDbCommand(strDSInsert, conn))
-                                {
-                                    cmd.ExecuteNonQuery();
-                                }
-                            }
-                        }
-                    }
-                }
-                #endregion
-            }
-            else if(device==1)
-            {
-                #region BIO表
-                strDSInsert = "SELECT Count(*) AS RTab FROM MSysObjects WHERE(((MSysObjects.Name)Like 'SAMPLE_BIO_TASK'))";
-                using (OleDbDataAdapter oa = new OleDbDataAdapter(strDSInsert, conn))
-                {
-                    DataSet ds = new DataSet();
-                    if (oa.Fill(ds, "Item") != 0)
-                    {
-                        foreach (DataRow dr in ds.Tables["Item"].Rows)
-                        {
-                            IsTable = dr["RTab"] == DBNull.Value ? -1 : (int)dr["RTab"];//是否存在表,返回0则是没有,返回1则是有
-
-                            if (IsTable == 0)//如果没有表,就创建一个新的
-                            {
-                                strDSInsert = "create table SAMPLE_BIO_TASK (BioID char(50) not null,Item char(50) not null);";
-                                using (OleDbCommand cmd = new OleDbCommand(strDSInsert, conn))
-                                {
-                                    cmd.ExecuteNonQuery();
-                                }
-                            }
-                        }
-                    }
-                }
-                #endregion
-                #region ELE表
-                strDSInsert = "SELECT Count(*) AS RTab FROM MSysObjects WHERE(((MSysObjects.Name)Like 'SAMPLE_ELEC_TASK'))";
-                using (OleDbDataAdapter oa = new OleDbDataAdapter(strDSInsert, conn))
-                {
-                    DataSet ds = new DataSet();
-                    if (oa.Fill(ds, "Item") != 0)
-                    {
-                        foreach (DataRow dr in ds.Tables["Item"].Rows)
-                        {
-                            IsTable = dr["RTab"] == DBNull.Value ? -1 : (int)dr["RTab"];//是否存在表,返回0则是没有,返回1则是有
-
-                            if (IsTable == 0)//如果没有表,就创建一个新的
-                            {
-                                strDSInsert = "create table SAMPLE_ELEC_TASK (BioID char(50) not null,Item char(50) not null);";
-                                using (OleDbCommand cmd = new OleDbCommand(strDSInsert, conn))
-                                {
-                                    cmd.ExecuteNonQuery();
-                                }
-                            }
-                        }
-                    }
-                }
-                #endregion
-                #region CAL表
-                strDSInsert = "SELECT Count(*) AS RTab FROM MSysObjects WHERE(((MSysObjects.Name)Like 'SAMPLE_CAL_TASK'))";
-                using (OleDbDataAdapter oa = new OleDbDataAdapter(strDSInsert, conn))
-                {
-                    DataSet ds = new DataSet();
-                    if (oa.Fill(ds, "Item") != 0)
-                    {
-                        foreach (DataRow dr in ds.Tables["Item"].Rows)
-                        {
-                            IsTable = dr["RTab"] == DBNull.Value ? 0 : (int)dr["RTab"];//是否存在表,返回0则是没有,返回1则是有
-
-                            if (IsTable == 0)//如果没有表,就创建一个新的
-                            {
-                                strDSInsert = "create table SAMPLE_CAL_TASK (BioID char(50) not null,Item char(50) not null);";
-                                using (OleDbCommand cmd = new OleDbCommand(strDSInsert, conn))
-                                {
-                                    cmd.ExecuteNonQuery();
-                                }
-                            }
-                        }
-                    }
-                }
-                #endregion
-                conn.Close();
-            }
         }
-
-        public static void WriteApplySampleDS(string SampleID, string type, string name)
+        //public static void WriteApplySampleDS(HL7Manager.HL7SampleInfo SampleInfo, string AllItem)
+        public static void WriteApplySampleDS(string PatientID, string BarCode, string PatName, int PatAge, string PatSex, string AllItem, DateTime TestTime, string Emergency)
         {
-            if (type != "bio" && type != "ele" && type != "cal") 
+            if (BarCode == string.Empty)//不可能发生的事
             {
-                return;
+                return;//无样本ID号,但这种不可能发生
             }
-            AccessManagerDS.EquipMutex.WaitOne();
-            if (conn.State == ConnectionState.Closed)//先连接数据库
+            if (conn.State == System.Data.ConnectionState.Closed)
             {
-                conn.Open();
+                conn.Open();//打开连接
             }
-            
-            switch (type)
+            AccessManagerDS.EquipMutex.WaitOne();//上锁
+            strJudge = "select * from LISInputInfo where [BarCode]='" + BarCode + "'";
+            using (OleDbDataAdapter oaJudge = new OleDbDataAdapter(strJudge, conn))//判断是否写入重复
             {
-                case "bio":
+                DataSet ds = new DataSet();
+                if (oaJudge.Fill(ds, "ItemResult") == 0) //如果没有的话就先插入
+                {
+                    strDSInsert = "insert into LISInputInfo([PatientID],[BarCode],[PAT_Name],[PAT_Age],[PAT_Gender],[Item],[TestTime],[Emergency]) " +
+                                  "values (@PatientID,@BarCode,@PAT_Name,@PAT_Age,@PAT_Gender,@Item,@TestTime,@Emergency)";
+                    using (OleDbCommand cmd = new OleDbCommand(strDSInsert, conn))
                     {
-                        #region bio
-                        if (device == 0 || device == 1) 
+                        cmd.Parameters.Add("@PatientID", OleDbType.VarChar).Value = PatientID;
+                        cmd.Parameters.Add("@BarCode", OleDbType.VarChar).Value = BarCode == null ? string.Empty : BarCode;
+                        cmd.Parameters.Add("@PAT_Name", OleDbType.VarChar).Value = PatName == null ? string.Empty : PatName;
+                        cmd.Parameters.Add("@PAT_Age", OleDbType.Integer).Value = PatAge;
+                        cmd.Parameters.Add("@PAT_Gender", OleDbType.VarChar).Value = PatSex == null ? string.Empty : PatSex; ;
+                        cmd.Parameters.Add("@Item", OleDbType.VarChar).Value = AllItem;
+                        cmd.Parameters.Add("@TestTime", OleDbType.Date).Value = TestTime == null ? DateTime.Now : TestTime;
+                        cmd.Parameters.Add("@Emergency", OleDbType.Boolean).Value = Emergency == "Y" ? true : false;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                else
+                {
+                    //如果已存在项目，需要将后续项目追加进去
+                    string OldItem = string.Empty;
+                    foreach (DataRow dr in ds.Tables["ItemResult"].Rows)
+                    {
+                        OldItem += dr["Item"].ToString();
+                    }
+                    string[] oldArray = OldItem.Split(',');
+                    HashSet<string> hItem = new HashSet<string>(oldArray);
+                    if (hItem.Contains("0")) 
+                    {
+                        hItem.Remove("0");
+                    }
+                    string[] newArray = AllItem.Split(',');
+                    foreach(var item in newArray)
+                    {
+                        if (!hItem.Contains(item))
                         {
-                            if(device==0)//DS800
+                            if (OldItem == string.Empty) 
                             {
-                                //如果是DS800，需要先向BioMain表插入数据，先进行判断
-                                strJudge = "select * from BioMain where [BioID]='" + SampleID + "'";
-                                using (OleDbDataAdapter oaJudge = new OleDbDataAdapter(strJudge, conn))//判断是否写入重复
-                                {
-                                    DataSet ds = new DataSet();
-                                    if (oaJudge.Fill(ds) == 0) //如果没有的话就先插入
-                                    {
-                                        strDSInsert = "insert into BioMain([BioID],[AddTime],[StartTime],[Kind],[CupPosition],[ItemCount],[AddedItemCount],[TestTime]) " +
-                                                      "values (@BioID,@AddTime,@StartTime,@Kind,@CupPosition,@ItemCount,@AddedItemCount,@TestTime)";
-                                        using (OleDbCommand cmd = new OleDbCommand(strDSInsert, conn))
-                                        {
-                                            cmd.Parameters.Add("@BioID", OleDbType.VarChar).Value = SampleID;
-                                            cmd.Parameters.Add("@AddTime", OleDbType.Date).Value = DateTime.Now;
-                                            cmd.Parameters.Add("@StartTime", OleDbType.Date).Value = DateTime.Now;
-                                            cmd.Parameters.Add("@Kind", OleDbType.VarChar).Value = "血清";
-                                            cmd.Parameters.Add("@CupPosition", OleDbType.Integer).Value = 101;
-                                            cmd.Parameters.Add("@ItemCount", OleDbType.Integer).Value = 1;
-                                            cmd.Parameters.Add("@AddedItemCount", OleDbType.Integer).Value = 1;
-                                            cmd.Parameters.Add("@TestTime", OleDbType.Date).Value = DateTime.Now;
-                                            cmd.ExecuteNonQuery();
-                                        }
-                                    }
-                                    else//如果有值的话就更新+1 
-                                    {
-                                        strIns = "update BioMain set ItemCount=ItemCount+1 where " + "BioID='" + SampleID + "'";
-                                        using (OleDbCommand cmd = new OleDbCommand(strIns, conn))
-                                        {
-                                            cmd.ExecuteNonQuery();
-                                        }
-                                        strIns = "update BioMain set AddedItemCount=AddedItemCount+1 where " + "BioID='" + SampleID + "'";
-                                        using (OleDbCommand cmd = new OleDbCommand(strIns, conn))
-                                        {
-                                            cmd.ExecuteNonQuery();
-                                        }
-
-                                    }
-                                    ds.Clear();
-                                }
-                                strDSInsert = "insert into BioTask([BioID],[Item]) " +
-                            "values (@BioID,@Item)";
+                                OldItem += item;
                             }
-                            else//DS400
+                            else
                             {
-                                strDSInsert = "insert into SAMPLE_BIO_TASK([BioID],[Item]) " +
-                            "values (@BioID,@Item)";
-                            }
-                            using (OleDbCommand cmd = new OleDbCommand(strDSInsert, conn))
-                            {
-                                cmd.Parameters.Add("@BioID", OleDbType.VarChar).Value = SampleID;
-                                cmd.Parameters.Add("@Item", OleDbType.VarChar).Value = name;
-                                cmd.ExecuteNonQuery();
+                                OldItem += ("," + item);
                             }
                         }
-                        #endregion
                     }
-                    break;
-                case "ele":
+                    string strDSUpdate = "update LISInputInfo set [Item] = '" + OldItem + "' , [TestTime] = #" + TestTime.ToString() + "# where [BarCode]='" + BarCode + "'";
+                    using (OleDbCommand cmd = new OleDbCommand(strDSUpdate, conn))
                     {
-                        #region ele
-                        if (device == 0 || device == 1)
-                        {
-                            if (device == 0)//DS800
-                            {
-                                //如果是DS800，需要先向BioMain表插入数据，先进行判断
-                                strJudge = "select * from BioMain where [BioID]='" + SampleID + "'";
-                                using (OleDbDataAdapter oaJudge = new OleDbDataAdapter(strJudge, conn))//判断是否写入重复
-                                {
-                                    DataSet ds = new DataSet();
-                                    if (oaJudge.Fill(ds) == 0) //如果没有的话就先插入
-                                    {
-                                        strDSInsert = "insert into BioMain([BioID],[AddTime],[StartTime],[Kind],[CupPosition],[ItemCount],[AddedItemCount],[TestTime]) " +
-                                                      "values (@BioID,@AddTime,@StartTime,@Kind,@CupPosition,@ItemCount,@AddedItemCount,@TestTime)";
-                                        using (OleDbCommand cmd = new OleDbCommand(strDSInsert, conn))
-                                        {
-                                            cmd.Parameters.Add("@BioID", OleDbType.VarChar).Value = SampleID;
-                                            cmd.Parameters.Add("@AddTime", OleDbType.Date).Value = DateTime.Now;
-                                            cmd.Parameters.Add("@StartTime", OleDbType.Date).Value = DateTime.Now;
-                                            cmd.Parameters.Add("@Kind", OleDbType.VarChar).Value = "血清";
-                                            cmd.Parameters.Add("@CupPosition", OleDbType.Integer).Value = 101;
-                                            cmd.Parameters.Add("@ItemCount", OleDbType.Integer).Value = 1;
-                                            cmd.Parameters.Add("@AddedItemCount", OleDbType.Integer).Value = 1;
-                                            cmd.Parameters.Add("@TestTime", OleDbType.Date).Value = DateTime.Now;
-                                            cmd.ExecuteNonQuery();
-                                        }
-                                    }
-                                    else//如果有值的话就更新+1 
-                                    {
-                                        strIns = "update BioMain set ItemCount=ItemCount+1 where " + "BioID='" + SampleID + "'";
-                                        using (OleDbCommand cmd = new OleDbCommand(strIns, conn))
-                                        {
-                                            cmd.ExecuteNonQuery();
-                                        }
-                                        strIns = "update BioMain set AddedItemCount=AddedItemCount+1 where " + "BioID='" + SampleID + "'";
-                                        using (OleDbCommand cmd = new OleDbCommand(strIns, conn))
-                                        {
-                                            cmd.ExecuteNonQuery();
-                                        }
-
-                                    }
-                                    ds.Clear();
-                                }
-                                strDSInsert = "insert into ElecTask([BioID],[Item]) " +
-                            "values (@BioID,@Item)";
-                            }
-                            else//DS400
-                            {
-                                strDSInsert = "insert into SAMPLE_ELEC_TASK([SAMPLE_ID],[ITEM]) " +
-                            "values (@SAMPLE_ID,@ITEM)";
-                            }
-                            using (OleDbCommand cmd = new OleDbCommand(strDSInsert, conn))
-                            {
-                                cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = SampleID;
-                                cmd.Parameters.Add("@ITEM", OleDbType.VarChar).Value = name;
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
-                        #endregion
+                        cmd.ExecuteNonQuery();
                     }
-                    break;
-                case "cal":
-                    {
-                        #region cal
-                        if (device == 0 || device == 1)
-                        {
-                            if (device == 0)//DS800
-                            {
-                                //cal是自己加入的表,还不需要往BioMain里同步写值
-                                //如果是DS800，需要先向BioMain表插入数据，先进行判断
-                                strJudge = "select * from BioMain where [BioID]='" + SampleID + "'";
-                                using (OleDbDataAdapter oaJudge = new OleDbDataAdapter(strJudge, conn))//判断是否写入重复
-                                {
-                                    DataSet ds = new DataSet();
-                                    if (oaJudge.Fill(ds) == 0) //如果没有的话就先插入
-                                    {
-                                        strDSInsert = "insert into BioMain([BioID],[AddTime],[StartTime],[Kind],[CupPosition],[ItemCount],[AddedItemCount],[TestTime]) " +
-                                                      "values (@BioID,@AddTime,@StartTime,@Kind,@CupPosition,@ItemCount,@AddedItemCount,@TestTime)";
-                                        using (OleDbCommand cmd = new OleDbCommand(strDSInsert, conn))
-                                        {
-                                            cmd.Parameters.Add("@BioID", OleDbType.VarChar).Value = SampleID;
-                                            cmd.Parameters.Add("@AddTime", OleDbType.Date).Value = DateTime.Now;
-                                            cmd.Parameters.Add("@StartTime", OleDbType.Date).Value = DateTime.Now;
-                                            cmd.Parameters.Add("@Kind", OleDbType.VarChar).Value = "血清";
-                                            cmd.Parameters.Add("@CupPosition", OleDbType.Integer).Value = 101;
-                                            cmd.Parameters.Add("@ItemCount", OleDbType.Integer).Value = 1;
-                                            cmd.Parameters.Add("@AddedItemCount", OleDbType.Integer).Value = 1;
-                                            cmd.Parameters.Add("@TestTime", OleDbType.Date).Value = DateTime.Now;
-                                            cmd.ExecuteNonQuery();
-                                        }
-                                    }
-                                    else//如果有值的话就更新+1 
-                                    {
-                                        strIns = "update BioMain set ItemCount=ItemCount+1 where " + "BioID='" + SampleID + "'";
-                                        using (OleDbCommand cmd = new OleDbCommand(strIns, conn))
-                                        {
-                                            cmd.ExecuteNonQuery();
-                                        }
-                                        strIns = "update BioMain set AddedItemCount=AddedItemCount+1 where " + "BioID='" + SampleID + "'";
-                                        using (OleDbCommand cmd = new OleDbCommand(strIns, conn))
-                                        {
-                                            cmd.ExecuteNonQuery();
-                                        }
-
-                                    }
-                                    ds.Clear();
-                                }
-                                strDSInsert = "insert into CalTask([BioID],[Item]) " +
-                            "values (@BioID,@Item)";
-                            }
-                            else//DS400
-                            {
-                                strDSInsert = "insert into SAMPLE_CAL_TASK([BioID],[Item]) " +
-                            "values (@BioID,@Item)";
-                            }
-                            using (OleDbCommand cmd = new OleDbCommand(strDSInsert, conn))
-                            {
-                                cmd.Parameters.Add("@BioID", OleDbType.VarChar).Value = SampleID;
-                                cmd.Parameters.Add("@Item", OleDbType.VarChar).Value = name;
-                                cmd.ExecuteNonQuery();
-                            }
-                        }
-                        #endregion
-                    }
-                    break;
-                default:break;
+                }
+                ds.Clear();
             }
+            AccessManagerDS.EquipMutex.ReleaseMutex();//卸锁
             conn.Close();
-            AccessManagerDS.EquipMutex.ReleaseMutex();
         }
     }
 
@@ -1149,16 +913,24 @@ namespace MiddleWare.Communicate
         }
         public static void WriteRequestSampleDataHL7(HL7Manager.HL7SampleInfo SampleInfo)
         {
+            string age;//病人年龄
             if (SampleInfo.SampleID == string.Empty)//不可能发生的事
             {
                 return;//无样本ID号,但这种不可能发生
             }
             AccessManagerDS.mutex.WaitOne();
+            age= SampleInfo.DateOfBrith == null ? string.Empty : ((DateTime.Now.Month < SampleInfo.DateOfBrith.Value.Month || (DateTime.Now.Month == SampleInfo.DateOfBrith.Value.Month &&
+                    DateTime.Now.Day < SampleInfo.DateOfBrith.Value.Day)) ? (DateTime.Now.Year - SampleInfo.DateOfBrith.Value.Year).ToString() : (DateTime.Now.Year - SampleInfo.DateOfBrith.Value.Year - 1).ToString());
+            string AllItem = string.Empty;
+
             if (conn.State == System.Data.ConnectionState.Closed)
             {
                 conn.Open();//打开连接
             }
-            strJudge = "select * from lisinput where [SAMPLE_ID]='" + SampleInfo.SampleID + "'AND [Device]='" + SampleInfo.Device + "'";
+
+            DateTime SendTime = SampleInfo.SampleTime == null ? DateTime.Now : SampleInfo.SampleTime;
+            //时间也作为主键，也要查询时间
+            strJudge = "select * from lisinput where [SAMPLE_ID]='" + SampleInfo.SampleID + "' AND [Device] = '" + SampleInfo.Device + "' AND [SEND_TIME] = #" + SendTime.ToString() + "#";
             using (OleDbDataAdapter oaJudge = new OleDbDataAdapter(strJudge, conn))//判断是否写入重复
             {
                 DataSet ds = new DataSet();
@@ -1166,6 +938,7 @@ namespace MiddleWare.Communicate
                 {
                     if (oaJudge.Fill(ds) != 0)
                     {
+                        
                         WriteAccessDSMessage.Invoke(SampleInfo.SampleID + "申请样本重复\r\n", "DEVICE");
                         conn.Close();
                         AccessManagerDS.mutex.ReleaseMutex();
@@ -1185,16 +958,15 @@ namespace MiddleWare.Communicate
                 cmd.Parameters.Add("@PATIENT_ID", OleDbType.VarChar).Value = SampleInfo.AdmissionNumber == null ? string.Empty : SampleInfo.AdmissionNumber;
                 cmd.Parameters.Add("@FIRST_NAME", OleDbType.VarChar).Value = SampleInfo.PatientName == null ? string.Empty : SampleInfo.PatientName;
                 cmd.Parameters.Add("@SEX", OleDbType.VarChar).Value = SampleInfo.Sex == null ? string.Empty : SampleInfo.Sex;
-                cmd.Parameters.Add("@AGE", OleDbType.VarChar).Value = SampleInfo.DateOfBrith == null ? string.Empty : ((DateTime.Now.Month < SampleInfo.DateOfBrith.Value.Month || (DateTime.Now.Month == SampleInfo.DateOfBrith.Value.Month &&
-                    DateTime.Now.Day < SampleInfo.DateOfBrith.Value.Day)) ? (DateTime.Now.Year - SampleInfo.DateOfBrith.Value.Year).ToString() : (DateTime.Now.Year - SampleInfo.DateOfBrith.Value.Year - 1).ToString());
-                cmd.Parameters.Add("@SEND_TIME", OleDbType.Date).Value = SampleInfo.SampleTime == null ? DateTime.Now : SampleInfo.SampleTime;
+                cmd.Parameters.Add("@AGE", OleDbType.VarChar).Value = age;
+                cmd.Parameters.Add("@SEND_TIME", OleDbType.Date).Value = SendTime;
                 cmd.Parameters.Add("@EMERGENCY", OleDbType.Boolean).Value = SampleInfo.IsEmergency == "Y" ? true : false;
                 cmd.Parameters.Add("@SAMPLE_KIND", OleDbType.VarChar).Value = SampleInfo.SampleType == null ? string.Empty : SampleInfo.SampleType;//血清血浆尿液
                 cmd.Parameters.Add("@Device", OleDbType.VarChar).Value = SampleInfo.Device == null ? string.Empty : SampleInfo.Device;
                 cmd.Parameters.Add("@IsSend", OleDbType.Boolean).Value = false;
                 cmd.ExecuteNonQuery();
             }
-            strJudge = "select * from listask where [SAMPLE_ID]='" + SampleInfo.SampleID + "'AND [Device]='" + SampleInfo.Device + "'";
+            strJudge = "select * from listask where [SAMPLE_ID]='" + SampleInfo.SampleID + "'AND [Device]='" + SampleInfo.Device + "'AND [SEND_TIME] = #" + SendTime.ToString() + "#"; 
             using (OleDbDataAdapter oaJudge = new OleDbDataAdapter(strJudge, conn))//判断是否写入重复
             {
                 DataSet ds = new DataSet();
@@ -1249,17 +1021,25 @@ namespace MiddleWare.Communicate
                                         WriteAccessDSMessage.Invoke(SampleInfo.ExtraInfo[i].TextName + "项目无编号\r\n", "DEVICE");
                                         break;
                                     }
-                                    WriteEquipAccess.WriteApplySampleDS(SampleInfo.SampleID, (string)dr["Type"], SampleInfo.ExtraInfo[i].TextName);
+                                    if(AllItem==string.Empty)
+                                    {
+                                        AllItem += SampleInfo.ExtraInfo[i].TextName;
+                                    }
+                                    else
+                                    {
+                                        AllItem += ("," + SampleInfo.ExtraInfo[i].TextName);
+                                    }
+                                    //WriteEquipAccess.WriteApplySampleDS(SampleInfo.SampleID, (string)dr["Type"], SampleInfo.ExtraInfo[i].TextName);
                                     //往本地数据库写任务
-                                    strInsert = "insert into listask([SAMPLE_ID],[Item],[Type],[Device])" +
-                                                "values (@SAMPLE_ID,@Item,@Type,@Device)";
+                                    strInsert = "insert into listask([SAMPLE_ID],[Item],[Type],[Device],[SEND_TIME])" +
+                                                "values (@SAMPLE_ID,@Item,@Type,@Device,@SEND_TIME)";
                                     using (OleDbCommand cmd = new OleDbCommand(strInsert, conn))
                                     {
                                         cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = SampleInfo.SampleID == null ? string.Empty : SampleInfo.SampleID;
                                         cmd.Parameters.Add("@Item", OleDbType.VarChar).Value = SampleInfo.ExtraInfo[i].TextName;
                                         cmd.Parameters.Add("@Type", OleDbType.VarChar).Value = (string)dr["Type"];
                                         cmd.Parameters.Add("@Device", OleDbType.VarChar).Value = SampleInfo.Device;
-                                        
+                                        cmd.Parameters.Add("@SEND_TIME", OleDbType.Date).Value = SendTime;
                                         cmd.ExecuteNonQuery();
                                     }
                                 }
@@ -1291,17 +1071,25 @@ namespace MiddleWare.Communicate
                                     //万一出现没有Type或者Item的值,就返回,但这种情况是几乎不可能的
                                     break;
                                 }
-                                WriteEquipAccess.WriteApplySampleDS(SampleInfo.SampleID, (string)dr["Type"], (string)dr["Item"]);
+                                if (AllItem == string.Empty)
+                                {
+                                    AllItem += dr["Item"].ToString();
+                                }
+                                else
+                                {
+                                    AllItem += ("," + dr["Item"].ToString());
+                                }
+                                //WriteEquipAccess.WriteApplySampleDS(SampleInfo.SampleID, (string)dr["Type"], (string)dr["Item"]);
                                 //往本地数据库写任务
-                                strInsert = "insert into listask([SAMPLE_ID],[Item],[Type],[Device])" +
-                                                "values (@SAMPLE_ID,@Item,@Type,@Device)";
+                                strInsert = "insert into listask([SAMPLE_ID],[Item],[Type],[Device],[SEND_TIME])" +
+                                                "values (@SAMPLE_ID,@Item,@Type,@Device,@SEND_TIME)";
                                 using (OleDbCommand cmd = new OleDbCommand(strInsert, conn))
                                 {
                                     cmd.Parameters.Add("@SAMPLE_ID", OleDbType.VarChar).Value = SampleInfo.SampleID == null ? string.Empty : SampleInfo.SampleID;
                                     cmd.Parameters.Add("@Item", OleDbType.VarChar).Value = (string)dr["Item"];
                                     cmd.Parameters.Add("@Type", OleDbType.VarChar).Value = (string)dr["Type"];
                                     cmd.Parameters.Add("@Device", OleDbType.VarChar).Value = SampleInfo.Device;
-
+                                    cmd.Parameters.Add("@SEND_TIME", OleDbType.Date).Value = SendTime;
                                     cmd.ExecuteNonQuery();
                                 }
                             }
@@ -1310,12 +1098,15 @@ namespace MiddleWare.Communicate
                     }
                 }
             }
-            WriteAccessDSMessage.Invoke(SampleInfo.SampleID + "申请样本任务成功\r\n", "DEVICE");
             conn.Close();
             AccessManagerDS.mutex.ReleaseMutex();
+            WriteEquipAccess.WriteApplySampleDS(SampleInfo.SampleID, SampleInfo.BarCode, SampleInfo.PatientName, int.Parse(age), SampleInfo.Sex, AllItem, SampleInfo.SampleTime, SampleInfo.IsEmergency);
+            WriteAccessDSMessage.Invoke(SampleInfo.SampleID + "申请样本任务成功\r\n", "DEVICE");
+            
         }
         public static void WriteRequestSampleDataASTM(ASTMManager.ASTMPatientInfo PatientInfo)
         {
+            
             AccessManagerDS.mutex.WaitOne();
             if (conn.State == ConnectionState.Closed)
             {
@@ -1323,6 +1114,7 @@ namespace MiddleWare.Communicate
             }
             foreach(ASTMManager.ASTMSampleInfo SampleInfo in PatientInfo.SampleInfo)
             {
+                string AllItem = string.Empty;
                 if (SampleInfo.SampleID == string.Empty) //不可能发生的事
                 {
                     conn.Close();
@@ -1425,7 +1217,14 @@ namespace MiddleWare.Communicate
                                             WriteAccessDSMessage.Invoke(SampleInfo.ExtraInfo[i].ItemName + "项目无编号\r\n", "DEVICE");
                                             break;
                                         }
-                                        WriteEquipAccess.WriteApplySampleDS(SampleInfo.SampleID, (string)dr["Type"], SampleInfo.ExtraInfo[i].ItemName);
+                                        if (AllItem == string.Empty)
+                                        {
+                                            AllItem += SampleInfo.ExtraInfo[i].ItemName;
+                                        }
+                                        else
+                                        {
+                                            AllItem += ("," + SampleInfo.ExtraInfo[i].ItemName);
+                                        }
                                         //往本地数据库写任务
                                         strInsert = "insert into listask([SAMPLE_ID],[Item],[Type],[Device])" +
                                                     "values (@SAMPLE_ID,@Item,@Type,@Device)";
@@ -1467,7 +1266,14 @@ namespace MiddleWare.Communicate
                                         //万一出现没有Type或者Item的值,就返回,但这种情况是几乎不可能的
                                         break;
                                     }
-                                    WriteEquipAccess.WriteApplySampleDS(SampleInfo.SampleID, (string)dr["Type"], (string)dr["Item"]);
+                                    if (AllItem == string.Empty)
+                                    {
+                                        AllItem += SampleInfo.ExtraInfo[i].ItemName;
+                                    }
+                                    else
+                                    {
+                                        AllItem += ("," + SampleInfo.ExtraInfo[i].ItemName);
+                                    }
                                     //往本地数据库写任务
                                     strInsert = "insert into listask([SAMPLE_ID],[Item],[Type],[Device])" +
                                                     "values (@SAMPLE_ID,@Item,@Type,@Device)";
@@ -1486,6 +1292,7 @@ namespace MiddleWare.Communicate
                         }
                     }
                 }
+                WriteEquipAccess.WriteApplySampleDS(SampleInfo.SampleID, SampleInfo.BarCode, PatientInfo.PatientName, PatientInfo.Age, PatientInfo.Sex, AllItem, SampleInfo.TestTime, string.Empty);
                 WriteAccessDSMessage.Invoke(SampleInfo.SampleID + "申请样本任务成功\r\n", "DEVICE");
             }
             conn.Close();
