@@ -450,11 +450,11 @@ namespace MiddleWare.Communicate
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
-                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
-                                 "e.StartTime,e.Kind" +
+                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
+                                 "e.StartTime,e.Kind " +
                                  "FROM ((((BioResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
                                  "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
-                                 "INNER JOIN Register d ON a.BioID = d.BioID)" +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) " +
                                  "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";
                         }
@@ -463,10 +463,12 @@ namespace MiddleWare.Communicate
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
-                                 "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
-                                 "FROM (((ElecResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
+                                 "e.StartTime,e.Kind " +
+                                 "FROM ((((ElecResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
                                  "INNER JOIN ElecItem c ON a.ITEM = c.ITEM) " +
-                                 "INNER JOIN Register d ON a.BioID = d.BioID) WHERE a.BioID " + "='" + testID +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) " +
+                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";
                         }
                         break;
@@ -474,10 +476,12 @@ namespace MiddleWare.Communicate
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
-                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
-                                 "FROM (((BioResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
+                                 "e.StartTime,e.Kind " +
+                                 "FROM ((((BioResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
                                  "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
-                                 "INNER JOIN Register d ON a.BioID = d.BioID) WHERE a.BioID " + "='" + testID +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) " +
+                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";
                         }
                         break;
@@ -485,10 +489,12 @@ namespace MiddleWare.Communicate
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
-                                 "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
-                                 "FROM (((CalResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
+                                 "e.StartTime,e.Kind " +
+                                 "FROM ((((CalResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
                                  "INNER JOIN CalItem c ON a.ITEM = c.ITEM) " +
-                                 "INNER JOIN Register d ON a.BioID = d.BioID) WHERE a.BioID " + "='" + testID +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) " +
+                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";
                         }
                         break;
@@ -594,14 +600,14 @@ namespace MiddleWare.Communicate
                         {
                             #region 解析数据库数据
                             di800.PATIENT_ID = dr["PATIENTID"] == DBNull.Value ? blank : (string)dr["PATIENTID"];
-                            di800.TIME = dr["TEST_TIME"] == DBNull.Value ? Convert.ToDateTime("1900-01-01 00:00:00") : ((DateTime)dr["TEST_TIME"]);
+                            di800.TIME = dr["TEST_TIME"] == DBNull.Value ? GlobalVariable.DefalutTime : ((DateTime)dr["TEST_TIME"]);
                             if (Device == 0)
                             {
-                                di800.SEND_TIME = dr["StartTime"] == DBNull.Value ? Convert.ToDateTime("1900-01-01 00:00:00") : ((DateTime)dr["StartTime"]);//检验开始时间
+                                di800.SEND_TIME = dr["StartTime"] == DBNull.Value ? GlobalVariable.DefalutTime : ((DateTime)dr["StartTime"]);//检验开始时间
                             }
                             else if (Device == 1)
                             {
-                                di800.SEND_TIME = dr["SEND_TIME"] == DBNull.Value ? Convert.ToDateTime("1900-01-01 00:00:00") : ((DateTime)dr["SEND_TIME"]);
+                                di800.SEND_TIME = dr["SEND_TIME"] == DBNull.Value ? GlobalVariable.DefalutTime : ((DateTime)dr["SEND_TIME"]);
                             }
                             di800.SAMPLE_ID = testID;
                             if (Device == 0)
