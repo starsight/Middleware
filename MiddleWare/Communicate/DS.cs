@@ -24,17 +24,15 @@ namespace MiddleWare.Communicate
     {
         public event GlobalVariable.MessageHandler NamedPipeMessage;
         public static NamedPipeServerStream pipeServer;
-
-       // public event GlobalVariable.MessageHandler NamedPipeMessage_write;
         public static NamedPipeServerStream pipeServer_write;
 
         public static string Pipename = "sinnowa";
         public static string Pipename_write = "sinnowa_write";
-        public static int close_type = 0;
-        public static int pipe_read = 0;
-        public static int pipe_write = 0;
 
-        /*             xubinbin      */
+        public static int pipe_read = 0;//读管道开关情况
+        public static int pipe_write = 0;//写管道开关情况
+        public static bool run_status = false;//命名管道整体开关情况
+
         public delegate void MessTrans(string str);
         public static event MessTrans Openpipe;
         /// <summary>
@@ -92,7 +90,6 @@ namespace MiddleWare.Communicate
             }
             catch
             {
-                close_type = 1;
                 NamedPipeMessage.BeginInvoke("命名管道已关闭\r\n", "DEVICE", null, null);
                 Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
                 DisconnectPipe(1);//非正常关闭，对面取消了连接，被动关闭
@@ -109,7 +106,6 @@ namespace MiddleWare.Communicate
             }
             if(!flag)
             {
-                close_type = 1;
                 NamedPipeMessage.BeginInvoke("命名管道已关闭\r\n", "DEVICE", null, null);
                 Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
                 DisconnectPipe(1);//非正常关闭，对面取消了连接，被动关闭
@@ -171,9 +167,9 @@ namespace MiddleWare.Communicate
         /// </summary>
         public void NamedPipeCreat(object name,object name_write)
         {
-            pipe_read = 0;
-            pipe_write = 0;
-            close_type = 1;
+            pipe_read = 0;//0代表没有建立管道，1代表建立管道并连接，2代表建立管道未连接
+            pipe_write = 0;//0代表没有建立管道，1代表建立管道并连接，2代表建立管道未连接
+            run_status = false;
             try
             {
                 pipeServer = new NamedPipeServerStream(name.ToString(), PipeDirection.InOut, 1);
@@ -197,16 +193,15 @@ namespace MiddleWare.Communicate
 
                     Statusbar.SBar.DeviceStatus = GlobalVariable.miniConn;// for mini mode
 
-                    close_type = 0;
                     pipe_read = 1;
                     pipe_write = 1;
+                    run_status = true;
                 }
             }
             catch(Exception e)
             {
                 string str = e.Message.ToString();
-                NamedPipeMessage.Invoke("命名管道建立异常\r\n请重新打开\r\n", "DEVICE");
-                close_type = 2;
+                NamedPipeMessage.Invoke("命名管道建立异常\r\n正在重新打开\r\n", "DEVICE");
                 DisconnectPipe(2);
             }
         }
@@ -215,10 +210,10 @@ namespace MiddleWare.Communicate
         /// </summary>
         public static void DisconnectPipe(int CloseStatus)
         {
-            //CloseStatus:0  主动正常关闭；1：被动异常关闭：2：主动异常关闭
+            //CloseStatus:0  主动正常关闭；1：被动关闭：2：主动异常关闭
             //1和2状态下需要重新建立连接
             DSCancel.Cancell();
-            close_type = 1;
+            run_status = false;
             if (!pipeServer.IsConnected && pipe_read == 2)
             {
                 connectSelf(0);//重要
@@ -239,9 +234,8 @@ namespace MiddleWare.Communicate
             {
                 GlobalVariable.DSNum = true;
                 Openpipe.BeginInvoke(GlobalVariable.DSDEVICEADDRESS, null, null);
-                Thread.Sleep(400);
+                Thread.Sleep(200);
             }
-
         }
         /// <summary>
         /// 自己建立个命名管道客户端去解脱阻塞的服务器
@@ -291,10 +285,10 @@ namespace MiddleWare.Communicate
         {
             Task.Factory.StartNew(Run, ProcessPipesCancel.Token);
         }
-        public void Run()
+        public async void Run()
         {
             namedpipe.NamedPipeCreat(NamedPipe.Pipename,NamedPipe.Pipename_write);//读 写
-            while ((!ProcessPipesCancel.IsCancellationRequested) && NamedPipe.close_type == 0) 
+            while ((!ProcessPipesCancel.IsCancellationRequested) && NamedPipe.run_status) 
             {
                 NamedPipe.PipeMessage receiveData = new NamedPipe.PipeMessage();
                 namedpipe.ReadNamedPipe(NamedPipe.pipeServer, ref receiveData);
@@ -304,13 +298,19 @@ namespace MiddleWare.Communicate
 
                     bool canClose = false;//当前连接是否可以安全关闭
                     if (ProcessHL7.hl7Manager != null)
+                    {
                         canClose = canClose || (ProcessHL7.hl7Manager.IsHL7Available);
+                    }
 
                     if (ProcessASTM.astmManager != null)
+                    {
                         canClose = canClose || (ProcessASTM.astmManager.IsASTMAvailable);
-
+                    }
+                        
                     if (Statusbar.SBar.SoftStatus == GlobalVariable.miniBusy)
+                    {
                         canClose = true;
+                    }
 
                     if (canClose)
                     {
@@ -318,13 +318,17 @@ namespace MiddleWare.Communicate
                         System.Windows.Forms.DialogResult result = System.Windows.Forms.MessageBox.Show("是否直接退出程序？", "警告", System.Windows.Forms.MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, System.Windows.Forms.MessageBoxOptions.DefaultDesktopOnly);
                         if (result == DialogResult.No)
                         {
-
+                            continue;
                         }
                         else if (result == DialogResult.Yes)
                         {
                             Environment.Exit(0);
                         }
-
+                    }
+                    else
+                    {
+                        //可以直接关闭
+                        Environment.Exit(0);
                     }
                 }
                 else if (receiveData.GetTestEnd == 1 && receiveData.CheckBit != 1) //如果测试完成   CheckBit 1表示主动下发返回 客户端不需要处理
