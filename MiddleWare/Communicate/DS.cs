@@ -444,17 +444,17 @@ namespace MiddleWare.Communicate
             }
             if (Device == 0)//DS800数据库
             {
-                switch(type)
+                switch (type)
                 {
                     case 0://生化
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
-                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
-                                 "e.StartTime,e.Kind "+
+                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
+                                 "e.StartTime,e.Kind" +
                                  "FROM ((((BioResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
                                  "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
-                                 "INNER JOIN Register d ON a.BioID = d.BioID) "+
+                                 "INNER JOIN Register d ON a.BioID = d.BioID)" +
                                  "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";
                         }
@@ -463,12 +463,10 @@ namespace MiddleWare.Communicate
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
-                                 "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
-                                 "e.StartTime,e.Kind " +
-                                 "FROM ((((ElecResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
+                                 "FROM (((ElecResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
                                  "INNER JOIN ElecItem c ON a.ITEM = c.ITEM) " +
-                                 "INNER JOIN Register d ON a.BioID = d.BioID) "+
-                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";
                         }
                         break;
@@ -476,12 +474,10 @@ namespace MiddleWare.Communicate
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
-                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
-                                 "e.StartTime,e.Kind " +
-                                 "FROM ((((BioResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
+                                 "FROM (((BioResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
                                  "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
-                                 "INNER JOIN Register d ON a.BioID = d.BioID) "+
-                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";
                         }
                         break;
@@ -489,18 +485,16 @@ namespace MiddleWare.Communicate
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
-                                 "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
-                                 "e.StartTime,e.Kind " +
-                                 "FROM ((((CalResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR " +
+                                 "FROM (((CalResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
                                  "INNER JOIN CalItem c ON a.ITEM = c.ITEM) " +
-                                 "INNER JOIN Register d ON a.BioID = d.BioID) "+
-                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";
                         }
                         break;
-                    default:break;
+                    default: break;
                 }
-                
+
             }
             else if (Device == 1) //DS400数据库
             {
@@ -508,6 +502,14 @@ namespace MiddleWare.Communicate
                 {
                     case 0://生化
                         {
+                            /* 17-07-13 之前
+                             a -> SAMPLE_ITEM_TEST_RESULT -> sample_id √  item √ time √ result √ unit √ normal_low √ normal_high √ OD1 ×
+                             b -> SAMPLE_MAIN  -> sample_id  √ sample_kind  √ SEND_TIME √  多emergency patientid
+                             c -> ITEM_PARA_MAIN ->  full_name  √
+                             d -> SAMPLE_PATIENT_INFO -> first_name √  sex √  age √
+                             e -> SAMPLE_REGISTER_INFO -> department √  treat_area √ silkbed_no √  doctor √
+                             */
+                            //wenjie 新增 OD1 17-07-13
                             strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
                             "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
                             "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
@@ -516,17 +518,20 @@ namespace MiddleWare.Communicate
                             "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
                             " WHERE a.SAMPLE_ID ='" + testID +
                             "'";
+
+                            //strSelect = "select a.ITEM from SAMPLE_ITEM_TEST_RESULT as a where a.SAMPLE_ID ='"+testID+"'";
                         }
                         break;
                     case 1://电解质  未测试
                         {
-                            strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
+                            strSelect = String.Empty;
+                            /*strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
                             "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
                             "a.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
                             "FROM (((SAMPLE_ELEC_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
                             "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
                             " WHERE a.SAMPLE_ID ='" + testID +
-                            "'";
+                            "'";*/
                         }
                         break;
                     case 2://质控  未测试
@@ -556,106 +561,279 @@ namespace MiddleWare.Communicate
                     default: break;
                 }
             }
-            using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
+            if (strSelect != String.Empty || Device != 1 || type != 1)//非DS400 电解质项目 执行
             {
-                ds = new DataSet();
-                di800 = new DI800Manager.DI800();
-                di800.Result = new List<DI800Manager.DI800Result>();
-                Count = 0;
-                try
+                using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                 {
-                    if (oa.Fill(ds, "BioResult") == 0)
+                    ds = new DataSet();
+                    di800 = new DI800Manager.DI800();
+                    di800.Result = new List<DI800Manager.DI800Result>();
+                    Count = 0;
+                    try
                     {
-                        ReadEquipAccessMessage.Invoke("设备数据库没有" + testID + "信息\r\n", "DEVICE");
+                        if (oa.Fill(ds, "BioResult") == 0)
+                        {
+                            ReadEquipAccessMessage.Invoke("设备数据库没有" + testID + "信息\r\n", "DEVICE");
+                            ds.Clear();
+                            conn.Close();
+                            AccessManagerDS.EquipMutex.ReleaseMutex();
+                            return;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        ReadEquipAccessMessage.Invoke("设备数据库选择错误\r\n请检查后重新建立连接\r\n", "DEVICE");
                         ds.Clear();
                         conn.Close();
                         AccessManagerDS.EquipMutex.ReleaseMutex();
                         return;
                     }
-                }
-                catch
-                {
-                    ReadEquipAccessMessage.Invoke("设备数据库选择错误\r\n请检查后重新建立连接\r\n", "DEVICE");
-                    ds.Clear();
-                    conn.Close();
-                    AccessManagerDS.EquipMutex.ReleaseMutex();
-                    return;
-                }
-                
-                foreach (DataRow dr in ds.Tables["BioResult"].Rows)
-                {
+
+                    foreach (DataRow dr in ds.Tables["BioResult"].Rows)
                     {
-                        #region 解析数据库数据
-                        di800.PATIENT_ID = dr["PATIENTID"] == DBNull.Value ? blank : (string)dr["PATIENTID"];
-                        di800.TIME = dr["TEST_TIME"] == DBNull.Value ? GlobalVariable.DefalutTime : ((DateTime)dr["TEST_TIME"]);
-                        di800.SEND_TIME = dr["StartTime"] == DBNull.Value ? GlobalVariable.DefalutTime : ((DateTime)dr["StartTime"]);//检验开始时间
-                        di800.SAMPLE_ID = testID;
-                        if (Device == 0)
-                            di800.Device = "DS_800";
-                        else if (Device == 1)
-                            di800.Device = "DS_400";
-                        else
-                            di800.Device = string.Empty;
-                        di800.FIRST_NAME = dr["FIRSTNAME"] == DBNull.Value ? blank : (string)dr["FIRSTNAME"];
-                        di800.SEX = dr["SEX"] == DBNull.Value ? blank : (string)dr["SEX"];
-                        di800.AGE = dr["AGE"] == DBNull.Value ? blank : (string)dr["AGE"];
-                        if (Device == 0)//800
                         {
-                            di800.SAMPLE_KIND = dr["Kind"] == DBNull.Value ? blank : (string)dr["Kind"];
+                            #region 解析数据库数据
+                            di800.PATIENT_ID = dr["PATIENTID"] == DBNull.Value ? blank : (string)dr["PATIENTID"];
+                            di800.TIME = dr["TEST_TIME"] == DBNull.Value ? Convert.ToDateTime("1900-01-01 00:00:00") : ((DateTime)dr["TEST_TIME"]);
+                            if (Device == 0)
+                            {
+                                di800.SEND_TIME = dr["StartTime"] == DBNull.Value ? Convert.ToDateTime("1900-01-01 00:00:00") : ((DateTime)dr["StartTime"]);//检验开始时间
+                            }
+                            else if (Device == 1)
+                            {
+                                di800.SEND_TIME = dr["SEND_TIME"] == DBNull.Value ? Convert.ToDateTime("1900-01-01 00:00:00") : ((DateTime)dr["SEND_TIME"]);
+                            }
+                            di800.SAMPLE_ID = testID;
+                            if (Device == 0)
+                                di800.Device = "DS_800";
+                            else if (Device == 1)
+                                di800.Device = "DS_400";
+                            else
+                                di800.Device = string.Empty;
+                            di800.FIRST_NAME = dr["FIRSTNAME"] == DBNull.Value ? blank : (string)dr["FIRSTNAME"];
+                            di800.SEX = dr["SEX"] == DBNull.Value ? blank : (string)dr["SEX"];
+                            di800.AGE = dr["AGE"] == DBNull.Value ? blank : (string)dr["AGE"];
+                            if (Device == 0)//800
+                            {
+                                di800.SAMPLE_KIND = dr["Kind"] == DBNull.Value ? blank : (string)dr["Kind"];
+                            }
+                            else if (Device == 1)//400
+                            {
+                                di800.SAMPLE_KIND = dr["SAMPLE_KIND"] == DBNull.Value ? blank : (string)dr["SAMPLE_KIND"];
+                            }
+                            di800.DOCTOR = dr["DOCTOR"] == DBNull.Value ? blank : (string)dr["DOCTOR"];
+                            di800.AREA = dr["AERA"] == DBNull.Value ? blank : (string)dr["AERA"];
+                            di800.BED = dr["BedNum"] == DBNull.Value ? blank : (string)dr["BedNum"];
+                            di800.DEPARTMENT = dr["DEPARTMENT"] == DBNull.Value ? blank : (string)dr["DEPARTMENT"];
+                            switch (type)
+                            {
+                                case 0:
+                                    {
+                                        di800.Type = "生化";
+                                    }
+                                    break;
+                                case 1:
+                                    {
+                                        di800.Type = "电解质";
+                                    }
+                                    break;
+                                case 2:
+                                    {
+                                        di800.Type = "质控";
+                                    }
+                                    break;
+                                case 3:
+                                    {
+                                        di800.Type = "定标";
+                                    }
+                                    break;
+                                default: break;
+                            }
+                            if ((Device == 1) && ((bool)dr["EMERGENCY"] == true))
+                            {
+                                di800.Type += " 急诊";
+                            }
+                            result = new DI800Manager.DI800Result();
+                            result.ITEM = (string)dr["ITEM"];
+                            result.FULL_NAME = dr["FULLNAME"] == DBNull.Value ? blank : (string)dr["FULLNAME"];
+                            result.RESULT = dr["RESULT"] == DBNull.Value ? -1 : (double)dr["RESULT"];
+                            result.UNIT = dr["UNIT"] == DBNull.Value ? blank : (string)dr["UNIT"];
+                            result.NORMAL_LOW = dr["NORMALLOW"] == DBNull.Value ? -1 : (double)dr["NORMALLOW"];
+                            result.NORMAL_HIGH = dr["NORMALHIGH"] == DBNull.Value ? -1 : (double)dr["NORMALHIGH"];
+                            if (result.RESULT == -1 || result.NORMAL_LOW == -1 || result.NORMAL_HIGH == -1 || result.NORMAL_HIGH == 0) //如果最高值为0，则肯定不正确
+                            {
+                                result.INDICATE = string.Empty;
+                            }
+                            else
+                            {
+                                result.INDICATE = result.RESULT > result.NORMAL_HIGH ? "H" : (result.RESULT < result.NORMAL_LOW ? "L" : "N");
+                            }
+                            #endregion
+                            di800.Result.Add(result);
+                            Count++;
                         }
-                        else if (Device == 1)//400
-                        {
-                            di800.SAMPLE_KIND = dr["SAMPLE_KIND"] == DBNull.Value ? blank : (string)dr["SAMPLE_KIND"];
-                        }
-                        di800.DOCTOR = dr["DOCTOR"] == DBNull.Value ? blank : (string)dr["DOCTOR"];
-                        di800.AREA = dr["AERA"] == DBNull.Value ? blank : (string)dr["AERA"];
-                        di800.BED = dr["BedNum"] == DBNull.Value ? blank : (string)dr["BedNum"];
-                        di800.DEPARTMENT = dr["DEPARTMENT"] == DBNull.Value ? blank : (string)dr["DEPARTMENT"];
-                        switch(type)
-                        {
-                            case 0:
-                                {
-                                    di800.Type = "生化";
-                                }break;
-                            case 1:
-                                {
-                                    di800.Type = "电解质";
-                                }break;
-                            case 2:
-                                {
-                                    di800.Type = "质控";
-                                }break;
-                            case 3:
-                                {
-                                    di800.Type = "定标";
-                                }break;
-                            default:break;
-                        }
-                        if ((Device == 1)&&((bool)dr["EMERGENCY"] == true))
-                        {
-                            di800.Type += " 急诊";
-                        }
-                        result = new DI800Manager.DI800Result();
-                        result.ITEM = (string)dr["ITEM"];
-                        result.FULL_NAME = dr["FULLNAME"] == DBNull.Value ? blank : (string)dr["FULLNAME"];
-                        result.RESULT = dr["RESULT"] == DBNull.Value ? -1 : (double)dr["RESULT"];
-                        result.UNIT = dr["UNIT"] == DBNull.Value ? blank : (string)dr["UNIT"];
-                        result.NORMAL_LOW = dr["NORMALLOW"] == DBNull.Value ? -1 : (double)dr["NORMALLOW"];
-                        result.NORMAL_HIGH = dr["NORMALHIGH"] == DBNull.Value ? -1 : (double)dr["NORMALHIGH"];
-                        if (result.RESULT == -1 || result.NORMAL_LOW == -1 || result.NORMAL_HIGH == -1 || result.NORMAL_HIGH == 0) //如果最高值为0，则肯定不正确
-                        {
-                            result.INDICATE = string.Empty;
-                        }
-                        else
-                        {
-                            result.INDICATE = result.RESULT > result.NORMAL_HIGH ? "H" : (result.RESULT < result.NORMAL_LOW ? "L" : "N");
-                        }
-                        #endregion
-                        di800.Result.Add(result);
-                        Count++;
                     }
                 }
             }
+
+            #region DS400 特别读取信息
+            if (Device == 1)//DS400额外添加内容
+            {
+                switch (type)
+                {
+                    case 0:
+                        {
+                            #region SAMPLE_ITEM_CAL_RESULT
+                            strSelect = "select a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_CAL_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "'";
+                            using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
+                            {
+                                ds = new DataSet();
+                                try
+                                {
+                                    if (oa.Fill(ds, "CalResult") != 0)
+                                    {
+                                        foreach (DataRow dr in ds.Tables["CalResult"].Rows)
+                                        {
+                                            {
+                                                result = new DI800Manager.DI800Result();
+                                                result.ITEM = (string)dr["ITEM"];
+                                                result.RESULT = dr["RESULT"] == DBNull.Value ? -1 : (double)dr["RESULT"];
+                                                result.FULL_NAME = String.Empty;
+                                                result.UNIT = dr["UNIT"] == DBNull.Value ? blank : (string)dr["UNIT"];
+                                                result.NORMAL_LOW = dr["NORMALLOW"] == DBNull.Value ? -1 : (double)dr["NORMALLOW"];
+                                                result.NORMAL_HIGH = dr["NORMALHIGH"] == DBNull.Value ? -1 : (double)dr["NORMALHIGH"];
+                                                if (result.RESULT == -1 || result.NORMAL_LOW == -1 || result.NORMAL_HIGH == -1 || result.NORMAL_HIGH == 0) //如果最高值为0，则肯定不正确
+                                                {
+                                                    result.INDICATE = string.Empty;
+                                                }
+                                                else
+                                                {
+                                                    result.INDICATE = result.RESULT > result.NORMAL_HIGH ? "H" : (result.RESULT < result.NORMAL_LOW ? "L" : "N");
+                                                }
+                                                di800.Result.Add(result);
+                                                Count++;
+                                            }
+                                        }
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    ReadEquipAccessMessage.Invoke("设备数据库选择错误\r\n请检查后重新建立连接\r\n", "DEVICE");
+                                    ds.Clear();
+                                    conn.Close();
+                                    AccessManagerDS.EquipMutex.ReleaseMutex();
+                                    return;
+                                }
+
+                            }
+                            #endregion
+
+                            #region SAMPLE_ITEM_INPUT_RESULT
+                            strSelect = "select a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_INPUT_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "'";
+                            using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
+                            {
+                                ds = new DataSet();
+                                try
+                                {
+                                    if (oa.Fill(ds, "InpResult") != 0)
+                                    {
+                                        foreach (DataRow dr in ds.Tables["InpResult"].Rows)
+                                        {
+                                            {
+                                                result = new DI800Manager.DI800Result();
+                                                result.ITEM = (string)dr["ITEM"];
+                                                result.RESULT = dr["RESULT"] == DBNull.Value ? -1 : (double)dr["RESULT"];
+                                                result.FULL_NAME = String.Empty;
+                                                result.UNIT = dr["UNIT"] == DBNull.Value ? blank : (string)dr["UNIT"];
+                                                result.NORMAL_LOW = dr["NORMALLOW"] == DBNull.Value ? -1 : (double)dr["NORMALLOW"];
+                                                result.NORMAL_HIGH = dr["NORMALHIGH"] == DBNull.Value ? -1 : (double)dr["NORMALHIGH"];
+                                                if (result.RESULT == -1 || result.NORMAL_LOW == -1 || result.NORMAL_HIGH == -1 || result.NORMAL_HIGH == 0) //如果最高值为0，则肯定不正确
+                                                {
+                                                    result.INDICATE = string.Empty;
+                                                }
+                                                else
+                                                {
+                                                    result.INDICATE = result.RESULT > result.NORMAL_HIGH ? "H" : (result.RESULT < result.NORMAL_LOW ? "L" : "N");
+                                                }
+                                                di800.Result.Add(result);
+                                                Count++;
+                                            }
+                                        }
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    ReadEquipAccessMessage.Invoke("设备数据库选择错误\r\n请检查后重新建立连接\r\n", "DEVICE");
+                                    ds.Clear();
+                                    conn.Close();
+                                    AccessManagerDS.EquipMutex.ReleaseMutex();
+                                    return;
+                                }
+
+                            }
+                            #endregion
+
+                            #region SAMPLE_ITEM_PRINT_RESULT
+                            //RESULT_D -> RESULT    RESULT_S -> INDICATE
+                            strSelect = "select a.ITEM,a.RESULT_D as RESULT,a.RESULT_S as INDICATE ,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_PRINT_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "'";
+                            using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
+                            {
+                                ds = new DataSet();
+                                try
+                                {
+                                    if (oa.Fill(ds, "PriResult") != 0)
+                                    {
+                                        foreach (DataRow dr in ds.Tables["PriResult"].Rows)
+                                        {
+                                            {
+                                                result = new DI800Manager.DI800Result();
+                                                result.ITEM = (string)dr["ITEM"];
+                                                result.RESULT = dr["RESULT"] == DBNull.Value ? -1 : (double)dr["RESULT"];
+                                                result.FULL_NAME = String.Empty;
+                                                result.UNIT = dr["UNIT"] == DBNull.Value ? blank : (string)dr["UNIT"];
+                                                result.NORMAL_LOW = dr["NORMALLOW"] == DBNull.Value ? -1 : (double)dr["NORMALLOW"];
+                                                result.NORMAL_HIGH = dr["NORMALHIGH"] == DBNull.Value ? -1 : (double)dr["NORMALHIGH"];
+                                                result.INDICATE = dr["INDICATE"] == DBNull.Value ? blank : (string)dr["INDICATE"];
+
+                                                di800.Result.Add(result);
+                                                Count++;
+                                            }
+                                        }
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    ReadEquipAccessMessage.Invoke("设备数据库选择错误\r\n请检查后重新建立连接\r\n", "DEVICE");
+                                    ds.Clear();
+                                    conn.Close();
+                                    AccessManagerDS.EquipMutex.ReleaseMutex();
+                                    return;
+                                }
+
+                            }
+                            #endregion
+                        }
+                        break;
+                    case 1:
+                        {
+                            strSelect = "select a.ITEM,a.FULL_NAME as FULLNAME, a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH from SAMPLE_ELEC_RESULT where ";
+                        }
+                        break;
+                    case 2://不做
+                        {
+
+                        }
+                        break;
+                    case 3://不做
+                        {
+
+                        }
+                        break;
+                    default: break;
+                }
+            }
+            #endregion
+
             am.AddDI800Access(di800);
             am.DI800SignalAccess.Set();
             ReadEquipAccessMessage.Invoke(di800.SAMPLE_ID + "读取设备数据库成功\r\n", "DEVICE");
