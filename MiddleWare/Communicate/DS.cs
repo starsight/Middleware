@@ -285,7 +285,7 @@ namespace MiddleWare.Communicate
         {
             Task.Factory.StartNew(Run, ProcessPipesCancel.Token);
         }
-        public async void Run()
+        public void Run()
         {
             namedpipe.NamedPipeCreat(NamedPipe.Pipename,NamedPipe.Pipename_write);//读 写
             while ((!ProcessPipesCancel.IsCancellationRequested) && NamedPipe.run_status) 
