@@ -626,12 +626,12 @@ namespace MiddleWare.Communicate
             hl7info.BirthPlace = dsr.GetDSP(18).DataLine.Value;
             hl7info.Nationality = dsr.GetDSP(19).DataLine.Value;
             hl7info.BarCode = dsr.GetDSP(20).DataLine.Value;
-            //hl7info.SampleID = dsr.GetDSP(21).DataLine.Value;
-            hl7info.SampleID = "915066351347";
+            hl7info.SampleID = dsr.GetDSP(21).DataLine.Value;
+            //hl7info.SampleID = "915066351347";
             try
             {
-                //hl7info.SampleTime = DateTime.ParseExact(dsr.GetDSP(22).DataLine.Value, "yyyyMMddHHmmss", System.Globalization.CultureInfo.CurrentCulture);
-                hl7info.SampleTime = GlobalVariable.DefalutTime;
+                hl7info.SampleTime = DateTime.ParseExact(dsr.GetDSP(22).DataLine.Value, "yyyyMMddHHmmss", System.Globalization.CultureInfo.CurrentCulture);
+                //hl7info.SampleTime = GlobalVariable.DefalutTime;
             }
             catch
             {
