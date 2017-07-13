@@ -1022,7 +1022,6 @@ namespace MiddleWare.Views
             {
                 //关闭DS连接
                 GlobalVariable.DSNum = false;
-                NamedPipe.close_type = 0;
                 NamedPipe.DisconnectPipe(0);//关闭命名通道,里面包括了关闭所有相关线程
                 AddItem(textbox_deviceshow, "与生化仪器断开连接\r\n");
             }
