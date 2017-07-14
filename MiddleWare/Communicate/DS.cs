@@ -95,7 +95,6 @@ namespace MiddleWare.Communicate
             catch
             {
                 NamedPipeMessage.BeginInvoke("命名管道已关闭\r\n", "DEVICE", null, null);
-                Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
                 DisconnectPipe(1);//非正常关闭，对面取消了连接，被动关闭
                 return;
             }
@@ -111,7 +110,6 @@ namespace MiddleWare.Communicate
             if (!flag && run_status) 
             {
                 NamedPipeMessage.BeginInvoke("命名管道已关闭\r\n", "DEVICE", null, null);
-                Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
                 DisconnectPipe(1);//非正常关闭，对面取消了连接，被动关闭
                 return;
             }
@@ -165,7 +163,6 @@ namespace MiddleWare.Communicate
 
             sw.WriteLine(sendDataStr);
         }
-       
         /// <summary>
         /// 创建一个命名通道
         /// </summary>
@@ -200,6 +197,10 @@ namespace MiddleWare.Communicate
                     pipe_read = 1;
                     pipe_write = 1;
                     run_status = true;
+
+                    /*此处添加数据库查询处理  未上传样本和未下发样本*/
+                    ReadAccessDS.CheckUnDoneSampleNum(false);
+                    ReadAccessDS.CheckUnDoneSampleNum(true);
                 }
             }
             catch(Exception e)
@@ -218,6 +219,7 @@ namespace MiddleWare.Communicate
             //1和2状态下需要重新建立连接
             DSCancel.Cancell();
             run_status = false;
+            Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
             if (!pipeServer.IsConnected && pipe_read == 2)
             {
                 connectSelf(false);//重要
@@ -371,11 +373,19 @@ namespace MiddleWare.Communicate
             NamedPipe.PipeMessage message = new NamedPipe.PipeMessage();
             message.ID = _ID;
             message.IDNum = _ID.Length;
-            message.BarCode = "";
+            message.BarCode = string.Empty;
             message.BarCodeNum = 0;
             message.CheckBit = 1;
 
             namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref message);
+            if (GlobalVariable.DSDEVICE == 0)
+            {
+                WriteAccessDS.UpdateDBIn(_ID, "DS800");
+            }
+            else if (GlobalVariable.DSDEVICE == 1) 
+            {
+                WriteAccessDS.UpdateDBIn(_ID, "DS400");
+            }
         }
     }
 
@@ -1127,7 +1137,6 @@ namespace MiddleWare.Communicate
                     request.AddParameter("dsJSON", json);
                     IRestResponse response = client.Execute(request);
                     */
-                    /**/
                 }
                 #endregion
             }
@@ -1527,7 +1536,7 @@ namespace MiddleWare.Communicate
             conn.Close();
             AccessManagerDS.mutex.ReleaseMutex();
         }
-        public static void UpdateDB(string SAMPLE_ID, List<string> ITEM, string DEVICE)
+        public static void UpdateDBOut(string SAMPLE_ID, List<string> ITEM, string DEVICE)
         {
             if (DEVICE != "DS_800" && DEVICE != "DS_400") 
             {
@@ -1543,9 +1552,9 @@ namespace MiddleWare.Communicate
             {
                 //todo : issend=-1 in access file  2017-05-10 wenjie
                 strIns = "update lisoutput set ISSEND='" + "1" + "'" + " where " + "SAMPLE_ID='" + SAMPLE_ID + "'" + " and " + " ITEM='" + ITEM[i] + "'";
-                using (OleDbCommand command = new OleDbCommand(strIns, conn))
+                using (OleDbCommand cmd = new OleDbCommand(strIns, conn))
                 {
-                    command.ExecuteNonQuery();
+                    cmd.ExecuteNonQuery();
 
                     var tempEntity = new
                     {
@@ -1569,6 +1578,25 @@ namespace MiddleWare.Communicate
             
 
             AccessManagerDS.mutex.ReleaseMutex();
+        }
+        public static void UpdateDBIn(string SAMPLE_ID, string DEVICE)
+        {
+            if (DEVICE != "DS800" && DEVICE != "DS400")
+            {
+                return;
+            }
+            AccessManagerDS.mutex.WaitOne();//上锁
+            if (conn.State == System.Data.ConnectionState.Closed)
+            {
+                conn.Open();//打开连接
+            }
+            strIns = "update lisinput set IsSend='" + "1" + "'" + " where " + "SAMPLE_ID='" + SAMPLE_ID + "' AND DEVICE ='" + DEVICE + "'";
+            using (OleDbCommand cmd = new OleDbCommand(strIns, conn))
+            {
+                cmd.ExecuteNonQuery();
+            }
+            conn.Close();
+            AccessManagerDS.mutex.ReleaseMutex();//卸锁
         }
     }
 
@@ -1664,6 +1692,66 @@ namespace MiddleWare.Communicate
             ds.Clear();//清楚DataSet所有数据
             conn.Close();//关闭
             AccessManagerDS.mutex.ReleaseMutex();
+        }
+        /// <summary>
+        /// 检查数据库内未上传和未下发样本数目
+        /// </summary>
+        /// <param name="UpDown">false:未上传;true:未下发</param>
+        public static void CheckUnDoneSampleNum(bool UpDown)
+        {
+            AccessManagerDS.mutex.WaitOne();//上锁
+            if (conn.State == ConnectionState.Closed) 
+            {
+                conn.Open();
+            }
+            string strSelect;
+            if (!UpDown)
+            {
+                //未上传
+                strSelect = "select * from lisoutput where [ISSEND] = false";
+                ds = new DataSet();
+                using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
+                {
+                    if (oa.Fill(ds, "tempID") != 0)
+                    {
+                        HashSet<string> hID = new HashSet<string>();//选用哈希表来消除重复
+                        foreach (DataRow dr in ds.Tables["tempID"].Rows)
+                        {
+                            hID.Add(dr["SAMPLE_ID"].ToString());
+                        }
+                        Statusbar.SBar.NoSendNum = hID.Count;
+                    }
+                    else
+                    {
+                        Statusbar.SBar.NoSendNum = 0;
+                    }
+                }
+            }
+            else
+            {
+                //未下发
+                strSelect = "select * from lisinput where [IsSend] = false";
+                ds = new DataSet();
+                using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
+                {
+                    if (oa.Fill(ds, "tempID") != 0)
+                    {
+                        HashSet<string> hID = new HashSet<string>();//选用哈希表来消除重复
+                        foreach (DataRow dr in ds.Tables["tempID"].Rows)
+                        {
+                            hID.Add(dr["SAMPLE_ID"].ToString());
+                        }
+                        Statusbar.SBar.NoIssueNum = hID.Count;
+                    }
+                    else
+                    {
+                        Statusbar.SBar.NoIssueNum = 0;
+                    }
+                }
+
+            }
+            conn.Close();
+            AccessManagerDS.mutex.ReleaseMutex();//卸锁
         }
     }
 

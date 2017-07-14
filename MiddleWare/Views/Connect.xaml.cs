@@ -89,8 +89,8 @@ namespace MiddleWare.Views
             NamedPipe.Openpipe += new NamedPipe.MessTrans(OpenDs);//管道连接异常后，自动重新打开
             ProcessHL7.ActiveSampleData += new ProcessHL7.ActiveSampleDataEventHandle(ProcessPipes.ActiveSend);//当生化仪有样本申请信息时，将样本ID通过管道发送到生化仪
 
-            
             ReadConnectConfigForAutoRun(); //自动连接
+
         }
 
         private Boolean isAutoConnectLisServer = false;
@@ -153,7 +153,6 @@ namespace MiddleWare.Views
 
         private void AddItem(TextBox textbox, string text)
         {
-
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 textbox.Clear();//先清空之前内容
@@ -296,7 +295,7 @@ namespace MiddleWare.Views
                     //HL7传输
                     HL7Manager hm = new HL7Manager();//新建一个hl7操作和队列
                     ProcessHL7 ph = new ProcessHL7(hm);//新建一个HL7数据操作，包括socket给LIS服务器发送数据
-                    ph.UpdateDB += new ProcessHL7.UpdateAccessEventHandle(WriteAccessDS.UpdateDB);//根据HL7服务器反馈消息修改数据库数据
+                    ph.UpdateDB += new ProcessHL7.UpdateAccessEventHandle(WriteAccessDS.UpdateDBOut);//根据HL7服务器反馈消息修改数据库数据
                     ph.UpdateDB += new ProcessHL7.UpdateAccessEventHandle(WriteAccessPL.UpdateDB);
                     ph.RequestSampleData += new ProcessHL7.RequestSampleDataEventHandle(WriteAccessDS.WriteRequestSampleDataHL7);//申请样本信息传输
                     ph.ProcessHL7Message += Monitor.AddItemState;
@@ -314,7 +313,7 @@ namespace MiddleWare.Views
                     //ASTM传输
                     ASTMManager am = new ASTMManager();
                     ProcessASTM pa = new ProcessASTM(am);
-                    pa.UpdateDB += new ProcessASTM.UpdateAccessEventHandle(WriteAccessDS.UpdateDB);//根据ASTM服务器反馈消息修改数据库数据
+                    pa.UpdateDB += new ProcessASTM.UpdateAccessEventHandle(WriteAccessDS.UpdateDBOut);//根据ASTM服务器反馈消息修改数据库数据
                     pa.UpdateDB += new ProcessASTM.UpdateAccessEventHandle(WriteAccessPL.UpdateDB);
                     pa.RequestSampleData += new ProcessASTM.RequestSampleDataEventHandle(WriteAccessDS.WriteRequestSampleDataASTM);//申请样本信息传输
                     pa.ProcessASTMMessage += Monitor.AddItemState;
@@ -513,7 +512,7 @@ namespace MiddleWare.Views
             //ASTM传输
             ASTMManager am = new ASTMManager();
             ProcessASTM pa = new ProcessASTM(am);
-            pa.UpdateDB += new ProcessASTM.UpdateAccessEventHandle(WriteAccessDS.UpdateDB);//根据ASTM服务器反馈消息修改数据库数据
+            pa.UpdateDB += new ProcessASTM.UpdateAccessEventHandle(WriteAccessDS.UpdateDBOut);//根据ASTM服务器反馈消息修改数据库数据
             pa.UpdateDB += new ProcessASTM.UpdateAccessEventHandle(WriteAccessPL.UpdateDB);
             pa.RequestSampleData += new ProcessASTM.RequestSampleDataEventHandle(WriteAccessDS.WriteRequestSampleDataASTM);//申请样本信息传输
             pa.ProcessASTMMessage += Monitor.AddItemState;
@@ -941,9 +940,7 @@ namespace MiddleWare.Views
                 DSCancel.DSCancellMessage += Monitor.AddItemState;
             }
 
-            
-
-            GlobalVariable.IsDSRepeat = true;
+            GlobalVariable.IsDSRepeat = true;//已经连接过生化仪
             AddItem(textbox_deviceshow, "等待生化仪器连接\r\n");
 
             //写入配置文件

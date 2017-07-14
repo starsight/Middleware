@@ -350,7 +350,7 @@ namespace MiddleWare.Communicate
 
                                 //双重判断,既判断是否为LIS主动发送样本信息,也要判断是否OK
                                 HL7Manager.HL7SampleInfo hl7info = HL7_ParserSampleInfo(receiveString);
-                                RequestSampleData.BeginInvoke(hl7info, null, null);//这个地方应该要判断一下是否为DS
+                                RequestSampleData.Invoke(hl7info);//这个地方应该要判断一下是否为DS
                                 //接收成功后就要发送应答信号
                                 Connect.sendSocket(CreatACKQ03(dsr.MSH.ReceivingFacility.NamespaceID.Value));
                                 //ProcessHL7Message.Invoke(hl7Manager.GetHL7RequestSampleDataSample_ID() + "LIS服务器主动发送样本申请信息\r\n", "LIS");
