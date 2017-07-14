@@ -183,7 +183,6 @@ namespace MiddleWare.Communicate
                 //创建一个写的管道
                 if (pipeServer.IsConnected && pipe_read == 2)
                 {
-                    //pipeServer_write = new NamedPipeServerStream(name_write.ToString(), PipeDirection.InOut, 1);
                     pipe_write = 2;
                     pipeServer_write.WaitForConnection();//等待连接
                     

@@ -1414,7 +1414,7 @@ namespace MiddleWare.Views
             table_listask.ParentCatalog = cat;
             table_listask.Name = "listask";
 
-            ADOX.Column[] column_listask = new ADOX.Column[4];
+            ADOX.Column[] column_listask = new ADOX.Column[5];
             column_listask[0] = new ADOX.Column();
             column_listask[0].ParentCatalog = cat;
             column_listask[0].Name = "SAMPLE_ID";
@@ -1431,16 +1431,24 @@ namespace MiddleWare.Views
             column_listask[3].ParentCatalog = cat;
             column_listask[3].Name = "Device";
 
+            column_listask[4] = new ADOX.Column();
+            column_listask[4].ParentCatalog = cat;
+            column_listask[4].Name = "SEND_TIME";
+            column_listask[4].Properties["Nullable"].Value = true;
+            column_listask[4].Type = DataTypeEnum.adDate;
+
             table_listask.Columns.Append("SAMPLE_ID", DataTypeEnum.adVarWChar, 50);
             table_listask.Columns.Append("ITEM", DataTypeEnum.adVarWChar, 50);
             table_listask.Columns.Append("Type", DataTypeEnum.adVarWChar, 50);
             table_listask.Columns.Append("Device", DataTypeEnum.adVarWChar, 50);
+            table_listask.Columns.Append("SEND_TIME", DataTypeEnum.adDate, 0);
 
             ADOX.Key Key_listask = new ADOX.Key();
             Key_listask.Columns.Append("SAMPLE_ID");
             Key_listask.Columns.Append("ITEM");
             Key_listask.Columns.Append("Type");
             Key_listask.Columns.Append("Device");
+            Key_listask.Columns.Append("SEND_TIME");
             Key_listask.Name = "PrimaryKey";
             table_listask.Keys.Append(Key_listask, ADOX.KeyTypeEnum.adKeyPrimary);
             cat.Tables.Append(table_listask);
