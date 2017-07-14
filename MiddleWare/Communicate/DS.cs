@@ -82,6 +82,10 @@ namespace MiddleWare.Communicate
         /// <param name="receiveData"></param>
         public void ReadNamedPipe(NamedPipeServerStream pipeServer, ref PipeMessage receiveData)
         {
+            if (run_status == false) 
+            {
+                return;
+            }
             StreamReader sr = new StreamReader(pipeServer);//准备读通道
             char[] buf = new char[100];//读取缓存区
             try
@@ -104,7 +108,7 @@ namespace MiddleWare.Communicate
                     break;
                 }
             }
-            if(!flag)
+            if (!flag && run_status) 
             {
                 NamedPipeMessage.BeginInvoke("命名管道已关闭\r\n", "DEVICE", null, null);
                 Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
