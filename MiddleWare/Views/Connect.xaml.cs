@@ -89,12 +89,16 @@ namespace MiddleWare.Views
             NamedPipe.Openpipe += new NamedPipe.MessTrans(OpenDs);//管道连接异常后，自动重新打开
             ProcessHL7.ActiveSampleData += new ProcessHL7.ActiveSampleDataEventHandle(ProcessPipes.ActiveSend);//当生化仪有样本申请信息时，将样本ID通过管道发送到生化仪
 
+            
             ReadConnectConfigForAutoRun(); //自动连接
         }
 
         private Boolean isAutoConnectLisServer = false;
         private Boolean isAutoConnectDevice = false;
 
+        /// <summary>
+        /// 自动连接
+        /// </summary>
         private void ReadConnectConfigForAutoRun()
         {
             string str = AppConfig.GetAppConfig("LisServerConnectWay");
@@ -684,7 +688,6 @@ namespace MiddleWare.Views
             DisableButton(button_closedevice);
             Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
 
-
             switch (devicecontent)
             {
                 case "DS400":
@@ -739,6 +742,7 @@ namespace MiddleWare.Views
 
            if (isAutoConnectDevice)
             {
+                Thread.Sleep(500);
                 isAutoConnectDevice = false;
                 button_opendevice_Click(null, null);
             }
@@ -824,15 +828,13 @@ namespace MiddleWare.Views
                         GlobalVariable.PLCOM = AppConfig.GetAppConfig("PLCom");//自动连接
                         //PLconnect.combobox_plcom.SelectedItem = 0;
                     }
-                    else*/
+                    */
+                    if (PLconnect.combobox_plcom.SelectedValue == null)
                     {
-                        if (PLconnect.combobox_plcom.SelectedValue == null)
-                        {
-                            AddItem(textbox_deviceshow, "请输入端口号与波特率\r\n");
-                            return;
-                        }
-                        GlobalVariable.PLCOM = (string)PLconnect.combobox_plcom.SelectedValue;
+                        AddItem(textbox_deviceshow, "请输入端口号与波特率\r\n");
+                        return;
                     }
+                    GlobalVariable.PLCOM = (string)PLconnect.combobox_plcom.SelectedValue;
                     GlobalVariable.PLBUAD = (int)PLconnect.combobox_plbuad.SelectedValue;
 
                     #region 用于判断是PL12还是PL16
@@ -876,6 +878,9 @@ namespace MiddleWare.Views
 
                 if(GlobalVariable.PLNum)
                 {
+                    AddItem(textbox_deviceshow, "已存在血小板连接\r\n");
+                    DisableButton(button_opendevice);
+                    EnableButton(button_closedevice);
                     return;
                 }
                 if (!GlobalVariable.IsContainsKey(GlobalVariable.PLCOM + "+" + GlobalVariable.PLBUAD.ToString()))//如果之前没有建立过
@@ -892,7 +897,6 @@ namespace MiddleWare.Views
             }
             DisableButton(button_opendevice);
             EnableButton(button_closedevice);
-
         }
         private void OpenDs(string DSaddress)//
         {
@@ -905,6 +909,7 @@ namespace MiddleWare.Views
             WriteEquipAccess wea = new WriteEquipAccess();//新建一个往仪器数据库写数据操作
 
             NamedPipe np = new NamedPipe();//先建一个命名管道及各种操作
+            np.NamedPipeMessage += Monitor.AddItemState;//命名管道建立成功
             ProcessPipes pPipes = new ProcessPipes(np, amd);//读命名管道
             pPipes.PipeMessage += new ProcessPipes.PipeTransmit(ReadEquipAccess.ReadData);//从命名管道读到相关ID，就从仪器数据库开始读此ID信息
             
@@ -927,7 +932,7 @@ namespace MiddleWare.Views
             }
             pd.DItransmit += new ProcessDI800s.DIEventHandle(Monitor.ReceiveResult);//将数据同时传给界面显示
 
-            np.NamedPipeMessage += Monitor.AddItemState;//命名管道建立成功
+            
             if (!GlobalVariable.IsDSRepeat)//只需要写一次就够了
             {
                 ReadEquipAccess.ReadEquipAccessMessage += Monitor.AddItemState;//

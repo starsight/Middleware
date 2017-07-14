@@ -172,9 +172,9 @@ namespace MiddleWare.Communicate
             run_status = false;
             try
             {
+                Thread.Sleep(500);//延迟500ms，等待一下。要不跑的太快了。
                 pipeServer = new NamedPipeServerStream(name.ToString(), PipeDirection.InOut, 1);
                 pipe_read = 2;//等于2代表有读命名管道，但不代表已经连接
-                Thread.Sleep(200);//延迟200ms
                 pipeServer_write = new NamedPipeServerStream(name_write.ToString(), PipeDirection.InOut, 1);
                 NamedPipeMessage.Invoke("命名管道创建中\r\n", "DEVICE");
                 
@@ -183,6 +183,7 @@ namespace MiddleWare.Communicate
                 //创建一个写的管道
                 if (pipeServer.IsConnected && pipe_read == 2)
                 {
+                    //pipeServer_write = new NamedPipeServerStream(name_write.ToString(), PipeDirection.InOut, 1);
                     pipe_write = 2;
                     pipeServer_write.WaitForConnection();//等待连接
                     
