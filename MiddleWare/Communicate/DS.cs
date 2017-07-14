@@ -34,7 +34,7 @@ namespace MiddleWare.Communicate
         public static bool run_status = false;//命名管道整体开关情况
 
         public delegate void MessTrans(string str);
-        public static event MessTrans Openpipe;
+        public static event MessTrans Openpipe;//用于自动打开软件连接
         /// <summary>
         /// 命名通道传送数据结构体
         /// </summary>
@@ -220,13 +220,13 @@ namespace MiddleWare.Communicate
             run_status = false;
             if (!pipeServer.IsConnected && pipe_read == 2)
             {
-                connectSelf(0);//重要
+                connectSelf(false);//重要
             }
             pipeServer.Close();
             pipeServer.Dispose();
             if (!pipeServer_write.IsConnected && pipe_write == 2) //pipeServer_write在后面创建的
             {
-                connectSelf(1);//重要
+                connectSelf(true);//重要
             }
             pipeServer_write.Close();
             pipeServer_write.Dispose();
@@ -244,10 +244,10 @@ namespace MiddleWare.Communicate
         /// <summary>
         /// 自己建立个命名管道客户端去解脱阻塞的服务器
         /// </summary>
-        private static void connectSelf(int flag)
+        private static void connectSelf(bool flag)
         {
             //flag:0：代表读管道；1代表写管道
-            if (flag == 0) 
+            if (!flag) 
             {
                 using (NamedPipeClientStream npcs = new NamedPipeClientStream(Pipename))
                 {
