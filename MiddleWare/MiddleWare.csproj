@@ -161,6 +161,12 @@
     <Compile Include="Views\Number_Item.xaml.cs">
       <DependentUpon>Number_Item.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\OneKeyDownload.xaml.cs">
+      <DependentUpon>OneKeyDownload.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OneKeyUpload.xaml.cs">
+      <DependentUpon>OneKeyUpload.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Personal_set.xaml.cs">
       <DependentUpon>Personal_set.xaml</DependentUpon>
     </Compile>
@@ -264,6 +270,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Number_Item.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OneKeyDownload.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OneKeyUpload.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -7,8 +7,6 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib" 
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="900">
-    <UserControl.Resources>
-    </UserControl.Resources>
     <Grid >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>

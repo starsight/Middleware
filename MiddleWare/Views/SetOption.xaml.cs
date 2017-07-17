@@ -33,6 +33,8 @@ namespace MiddleWare.Views
 
         private void number_item_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            OneKeyDownload.Visibility = Visibility.Collapsed;
+            OneKeyUpload.Visibility = Visibility.Collapsed;
             Personal_Set.Visibility = Visibility.Collapsed;
             About.Visibility = Visibility.Collapsed;
             Number_Item.Visibility = Visibility.Visible;
@@ -41,15 +43,37 @@ namespace MiddleWare.Views
         private void personal_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             Number_Item.Visibility = Visibility.Collapsed;
+            OneKeyDownload.Visibility = Visibility.Collapsed;
+            OneKeyUpload.Visibility = Visibility.Collapsed;
             About.Visibility = Visibility.Collapsed;
             Personal_Set.Visibility = Visibility.Visible;
         }
 
         private void about_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            OneKeyDownload.Visibility = Visibility.Collapsed;
+            OneKeyUpload.Visibility = Visibility.Collapsed;
             Personal_Set.Visibility = Visibility.Collapsed;
             Number_Item.Visibility = Visibility.Collapsed;
             About.Visibility = Visibility.Visible;
+        }
+
+        private void onekeyupload_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Personal_Set.Visibility = Visibility.Collapsed;
+            Number_Item.Visibility = Visibility.Collapsed;
+            About.Visibility = Visibility.Collapsed;
+            OneKeyDownload.Visibility = Visibility.Collapsed;
+            OneKeyUpload.Visibility = Visibility.Visible;
+        }
+
+        private void onekeydownload_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Personal_Set.Visibility = Visibility.Collapsed;
+            Number_Item.Visibility = Visibility.Collapsed;
+            About.Visibility = Visibility.Collapsed;
+            OneKeyUpload.Visibility = Visibility.Collapsed;
+            OneKeyDownload.Visibility = Visibility.Visible;
         }
     }
 }
