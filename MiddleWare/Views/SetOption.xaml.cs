@@ -58,7 +58,7 @@ namespace MiddleWare.Views
             About.Visibility = Visibility.Visible;
         }
 
-        private void onekeyupload_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        public void onekeyupload_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             Personal_Set.Visibility = Visibility.Collapsed;
             Number_Item.Visibility = Visibility.Collapsed;
@@ -67,7 +67,7 @@ namespace MiddleWare.Views
             OneKeyUpload.Visibility = Visibility.Visible;
         }
 
-        private void onekeydownload_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        public void onekeydownload_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             Personal_Set.Visibility = Visibility.Collapsed;
             Number_Item.Visibility = Visibility.Collapsed;

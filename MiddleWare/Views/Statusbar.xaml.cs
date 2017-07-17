@@ -34,6 +34,24 @@ namespace MiddleWare.Views
             SBar.NoSendNum = 0;
             SBar.NoIssueNum = 0;
         }
+
+        private void ChangePage(int index)
+        {
+            MainWindow mainwin = (MainWindow)Application.Current.MainWindow;
+            mainwin.MainTabControl.SelectedIndex = 3;
+
+            SetOption setoption = mainwin.SetOption;
+            if (index == 1)
+            {
+                setoption.onekeyupload_MouseLeftButtonUp(null, null);
+                setoption.onekeyupload.IsSelected = true;
+            }
+            else if (index == 2)
+            {
+                setoption.onekeydownload_MouseLeftButtonUp(null, null);
+                setoption.onekeydownload.IsSelected = true;
+            }
+        }
     }
 
     public class StatusBar : INotifyPropertyChanged

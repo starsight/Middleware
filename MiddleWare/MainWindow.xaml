@@ -21,7 +21,7 @@
                 <Views:Query DataContext="{Binding}"/>
             </TabItem>
             <TabItem Header="设置">
-                <Views:SetOption DataContext="{Binding}"/>
+                <Views:SetOption x:Name="SetOption" DataContext="{Binding}"/>
             </TabItem>
         </Controls:MetroAnimatedSingleRowTabControl>
         <Grid VerticalAlignment="Bottom" Height="36">
