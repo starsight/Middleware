@@ -39,7 +39,15 @@
                     </Style.Triggers>
                 </Style>
             </DataGrid.RowStyle>
+            
             <DataGrid.Columns>
+                <DataGridCheckBoxColumn Binding="{Binding Path=IsSelected,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridRow}}}">
+                    <DataGridCheckBoxColumn.HeaderTemplate>
+                        <DataTemplate>
+                            <CheckBox x:Name="ckbSelectedAll" IsChecked="False" />
+                        </DataTemplate>
+                    </DataGridCheckBoxColumn.HeaderTemplate>
+                </DataGridCheckBoxColumn>
                 <DataGridTextColumn Header="编   号" Width="50*"  IsReadOnly="True" Binding="{Binding number}"/>
                 <DataGridTextColumn Header="样本 ID" Width="100*"  IsReadOnly="True" Binding="{Binding Sample_ID}"/>
                 <DataGridTextColumn Header="病人 ID" Width="100*" IsReadOnly="True" Binding="{Binding Patient_ID}"/>

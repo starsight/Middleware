@@ -32,6 +32,18 @@ namespace MiddleWare.Views
 
             datagrid_upload.ItemsSource = UploadList;
 
+            UploadList.Add(new Upload_Show
+            {
+                Device = "400",
+                Patient_ID = "33",
+                Sample_ID = "112",
+                IsSelected = false,
+                number = 1,
+                Kind = "3df",
+                Test_Time = "3333333",
+                Item = "cal"
+            });
+
         }
 
         private void button_onekeyupload_Click(object sender, RoutedEventArgs e)
