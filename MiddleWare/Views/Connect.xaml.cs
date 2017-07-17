@@ -751,7 +751,6 @@ namespace MiddleWare.Views
         {
             AppConfig.UpdateAppConfig("DeviceConnectType", "kong");
 
-            
             if (IsDSshow && !IsPLshow)
 
             {
@@ -760,8 +759,19 @@ namespace MiddleWare.Views
                     GlobalVariable.DSDEVICEADDRESS = DSconnect.textbox_dsdb.Text;
                     if (GlobalVariable.DSDEVICEADDRESS == string.Empty)
                     {
-                        AddItem(textbox_deviceshow, "请输入数据库地址\r\n");
-                        return;
+                        string abadPath = System.IO.Directory.GetCurrentDirectory();//当前目录
+                        string abadFile = abadPath + "\\ABAD.mdb";
+                        if (File.Exists(abadFile))//检测DSDB数据库是否存在
+                        {
+                            //存在
+                            AddItem(textbox_deviceshow, "生化仪数据库存在\r\n");
+                            GlobalVariable.DSDEVICEADDRESS = abadFile;
+                        }
+                        else
+                        {
+                            AddItem(textbox_deviceshow, "请输入数据库地址\r\n");
+                            return;
+                        }
                     }
                 }
                 catch
