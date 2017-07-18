@@ -291,10 +291,10 @@ namespace MiddleWare.Communicate
         {
             Task.Factory.StartNew(Run, ProcessPipesCancel.Token);
         }
-        public void Run()
+        public async void Run()
         {
-            namedpipe.NamedPipeCreat(NamedPipe.Pipename,NamedPipe.Pipename_write);//读 写
-            while ((!ProcessPipesCancel.IsCancellationRequested) && NamedPipe.run_status) 
+            namedpipe.NamedPipeCreat(NamedPipe.Pipename, NamedPipe.Pipename_write);//读 写
+            while ((!ProcessPipesCancel.IsCancellationRequested) && NamedPipe.run_status)
             {
                 NamedPipe.PipeMessage receiveData = new NamedPipe.PipeMessage();
                 namedpipe.ReadNamedPipe(NamedPipe.pipeServer, ref receiveData);
@@ -312,7 +312,7 @@ namespace MiddleWare.Communicate
                     {
                         canClose = canClose || (ProcessASTM.astmManager.IsASTMAvailable);
                     }
-                        
+
                     if (Statusbar.SBar.SoftStatus == GlobalVariable.miniBusy)
                     {
                         canClose = true;
@@ -321,15 +321,17 @@ namespace MiddleWare.Communicate
                     if (canClose)
                     {
                         //不可以安全关闭
-                        System.Windows.Forms.DialogResult result = System.Windows.Forms.MessageBox.Show("是否直接退出程序？", "警告", System.Windows.Forms.MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, System.Windows.Forms.MessageBoxOptions.DefaultDesktopOnly);
-                        if (result == DialogResult.No)
+                        MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+                        MessageDialogResult clickresult = await mainwin.ShowMessageAsync("警告", "确定是否退出软件", MessageDialogStyle.AffirmativeAndNegative);
+                        if (clickresult == MessageDialogResult.Negative)//取消
                         {
                             continue;
                         }
-                        else if (result == DialogResult.Yes)
+                        else
                         {
+                            //确认
                             Environment.Exit(0);
-                        }
+                        }   
                     }
                     else
                     {

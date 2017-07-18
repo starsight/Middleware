@@ -27,7 +27,7 @@
         <DatePicker Name="Query_datetime" HorizontalAlignment="Center" Text="choose" SelectedDate="{x:Static sys:DateTime.Today}" Grid.Column="2" Grid.Row="0" VerticalAlignment="Center"/>
         <TextBlock  HorizontalAlignment="Center" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" TextWrapping="Wrap" Text="选择查询日期" FontSize="20" VerticalAlignment="Center"/>
         <TextBlock  HorizontalAlignment="Center" Grid.Column="3" Grid.Row="0" TextWrapping="Wrap" Text="选择查询仪器" FontSize="20" VerticalAlignment="Center"/>
-        <ComboBox x:Name="comboBox_device" DropDownOpened="comboBox_device_DropDownOpened" HorizontalAlignment="Center" Grid.Column="4" Grid.Row="0" VerticalAlignment="Center" Width="120" SelectedValue="NAME" DisplayMemberPath="NAME" SelectedValuePath="NAME"/>
+        <ComboBox x:Name="comboBox_device" DropDownOpened="comboBox_device_DropDownOpened" HorizontalAlignment="Center" Grid.Column="4" Grid.Row="0" VerticalAlignment="Center" Width="120" DisplayMemberPath="NAME" SelectedValuePath="NAME"/>
         <Button x:Name="button_query" Content="确定" HorizontalAlignment="Center" Grid.Column="7" Grid.ColumnSpan="2" VerticalAlignment="Center" Width="75" Click="button_query_Click" />
         <TextBlock HorizontalAlignment="Center" Grid.Column="5" Grid.Row="0" TextWrapping="Wrap" Text="样本ID查询" FontSize="20" VerticalAlignment="Center"/>
         <TextBox x:Name="Query_ID" HorizontalAlignment="Center" FontSize="15" Height="23" Grid.Column="6" Grid.Row="0" TextWrapping="Wrap" VerticalAlignment="Center" Width="130">

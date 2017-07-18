@@ -196,7 +196,7 @@ namespace MiddleWare.Views
                 await mainwin.ShowMessageAsync("提醒", "无样本数据可处理");
                 return;
             }
-
+            
             ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
             foreach (var single in BackStageList)
             {

@@ -7,6 +7,7 @@ using System.Data.OleDb;
 using System.IO;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace MiddleWare.Views
 {
@@ -44,11 +45,11 @@ namespace MiddleWare.Views
                 NDeviceList.Add(new Device { NAME = "PL" });
             }
         }
-        
+
         /// <summary>
         /// 得到PL数据
         /// </summary>
-        private void GetPLDB()
+        private async void GetPLDB()
         {
             item_show.Clear();
             List<Item_Number> item_number = new List<Item_Number>();//变量
@@ -70,7 +71,8 @@ namespace MiddleWare.Views
                 if (oa.Fill(ds, "Item") == 0)
                 {
                     ds.Clear();
-                    MessageBox.Show("请检查血小板数据库","通知");
+                    MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+                    await mainwin.ShowMessageAsync("警告", "请检查血小板数据库");
                     return;
                 }
                 else
@@ -103,62 +105,7 @@ namespace MiddleWare.Views
         /// <summary>
         /// 得到DS400数据
         /// </summary>
-        private void GetDS400DB()
-        {
-            item_show.Clear();
-            List<Item_Number> item_number = new List<Item_Number>();//显示的数据
-            DataSet ds = new DataSet();
-            OleDbConnection conn;
-            string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-            string pathto = GlobalVariable.topDir.Parent.FullName;
-            strConnection += "Data Source=" + @pathto + "\\DSDB.mdb";
-            conn = new OleDbConnection(strConnection);
-            if (conn.State == ConnectionState.Closed)
-            {
-                conn.Open();
-            }
-            string strSelect;
-            strSelect = "SELECT* FROM  item_info";
-            using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn)) 
-            {
-                if(oa.Fill(ds,"Item")==0)
-                {
-                    ds.Clear();
-                    MessageBox.Show("请更新生化数据库", "通知");
-                }
-                else
-                {
-                    foreach (DataRow dr in ds.Tables["Item"].Rows)
-                    {
-                        if((string)dr["Device"]=="DS400")
-                        {
-                            Item_Number item = new Item_Number();
-                            item.Item = dr["Item"] == DBNull.Value ? string.Empty : (string)dr["Item"];
-                            item.FullName = dr["FullName"] == DBNull.Value ? string.Empty : (string)dr["FullName"];
-                            item.Type = dr["Type"] == DBNull.Value ? string.Empty : (string)dr["Type"];
-                            item.Index = dr["Index"] == DBNull.Value ? string.Empty : (string)dr["Index"];
-                            item_number.Add(item);
-                        }
-                    }
-                    for(int i=0;i<item_number.Count;++i)
-                    {
-                        Item_Number_Show item = new Item_Number_Show();
-                        item.Item = item_number[i].Item;
-                        item.FullName = item_number[i].FullName;
-                        item.Index = item_number[i].Index;
-                        item.Type = item_number[i].Type;
-                        item_show.Add(item);
-                    }
-                }
-            }
-            ds.Clear();
-            conn.Close();
-            item_total = item_number;
-        }
-        /// <summary>
-        /// 得到DS800数据
-        /// </summary>
-        private void GetDS800DB()
+        private async void GetDS400DB()
         {
             item_show.Clear();
             List<Item_Number> item_number = new List<Item_Number>();//显示的数据
@@ -179,7 +126,64 @@ namespace MiddleWare.Views
                 if (oa.Fill(ds, "Item") == 0)
                 {
                     ds.Clear();
-                    MessageBox.Show("请更新生化数据库", "通知");
+                    MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+                    await mainwin.ShowMessageAsync("警告", "请更新生化数据库");
+                }
+                else
+                {
+                    foreach (DataRow dr in ds.Tables["Item"].Rows)
+                    {
+                        if ((string)dr["Device"] == "DS400")
+                        {
+                            Item_Number item = new Item_Number();
+                            item.Item = dr["Item"] == DBNull.Value ? string.Empty : (string)dr["Item"];
+                            item.FullName = dr["FullName"] == DBNull.Value ? string.Empty : (string)dr["FullName"];
+                            item.Type = dr["Type"] == DBNull.Value ? string.Empty : (string)dr["Type"];
+                            item.Index = dr["Index"] == DBNull.Value ? string.Empty : (string)dr["Index"];
+                            item_number.Add(item);
+                        }
+                    }
+                    for (int i = 0; i < item_number.Count; ++i)
+                    {
+                        Item_Number_Show item = new Item_Number_Show();
+                        item.Item = item_number[i].Item;
+                        item.FullName = item_number[i].FullName;
+                        item.Index = item_number[i].Index;
+                        item.Type = item_number[i].Type;
+                        item_show.Add(item);
+                    }
+                }
+            }
+            ds.Clear();
+            conn.Close();
+            item_total = item_number;
+        }
+        /// <summary>
+        /// 得到DS800数据
+        /// </summary>
+        private async void GetDS800DB()
+        {
+            item_show.Clear();
+            List<Item_Number> item_number = new List<Item_Number>();//显示的数据
+            DataSet ds = new DataSet();
+            OleDbConnection conn;
+            string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
+            string pathto = GlobalVariable.topDir.Parent.FullName;
+            strConnection += "Data Source=" + @pathto + "\\DSDB.mdb";
+            conn = new OleDbConnection(strConnection);
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+            string strSelect;
+            strSelect = "SELECT* FROM  item_info";
+            using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
+            {
+                if (oa.Fill(ds, "Item") == 0)
+                {
+                    ds.Clear();
+                    MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+                    await mainwin.ShowMessageAsync("警告", "请更新生化数据库");
                 }
                 else
                 {
@@ -215,17 +219,18 @@ namespace MiddleWare.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Number_OK_Click(object sender, RoutedEventArgs e)
+        private async void Number_OK_Click(object sender, RoutedEventArgs e)
         {
             string device;
             device = (string)NcomboBox.SelectedValue;
 
-            if (device == null) 
+            if (device == null)
             {
-                MessageBox.Show("请选择仪器", "警告");
+                MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+                await mainwin.ShowMessageAsync("警告", "请选择仪器");
                 return;
             }
-            switch(device)
+            switch (device)
             {
                 case "PL":
                     {
@@ -235,12 +240,14 @@ namespace MiddleWare.Views
                 case "DS400":
                     {
                         GetDS400DB();
-                    }break;
+                    }
+                    break;
                 case "DS800":
                     {
                         GetDS800DB();
-                    }break;
-                default:break;
+                    }
+                    break;
+                default: break;
             }
         }
         /// <summary>
@@ -248,14 +255,15 @@ namespace MiddleWare.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Modefy_OK_Click(object sender, RoutedEventArgs e)
+        private async void Modefy_OK_Click(object sender, RoutedEventArgs e)
         {
+            MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
             string device;
             device = (string)NcomboBox.SelectedValue;
 
             if (device == null)
             {
-                MessageBox.Show("请选择仪器", "警告");
+                await mainwin.ShowMessageAsync("警告", "请选择仪器");
                 return;
             }
             if (device == "DS400" || device == "DS800") //DS
@@ -282,7 +290,7 @@ namespace MiddleWare.Views
                         }
                         if (data.ContainsKey(tempIndex))
                         {
-                            MessageBox.Show("记录" + data[tempIndex].ToString() + "编号与" + item_show[i].Item.ToString() + "重复", "通知");
+                            await mainwin.ShowMessageAsync("通知", "记录" + data[tempIndex].ToString() + "编号与" + item_show[i].Item.ToString() + "重复");
                             return;
                         }
                         else
@@ -307,14 +315,14 @@ namespace MiddleWare.Views
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show(ex.ToString());
+                                await mainwin.ShowMessageAsync("警告", ex.ToString());
                                 return;
                             }
                         }
                     }
                 }
                 conn.Close();
-                MessageBox.Show("修改成功", "通知");
+                await mainwin.ShowMessageAsync("警告", "修改成功");
             }
             else if (device == "PL") //PL
             {
@@ -331,16 +339,16 @@ namespace MiddleWare.Views
                 }
                 for (int i = 0; i < item_show.Count; i++)//用于判断是否重复
                 {
-                    if (item_show[i].Index != item_total[i].Index||item_show[i].Index!=""||item_show[i].Index!=" ") //这样做是为了从有编号改为无编号,并且避免与已存在的重复
+                    if (item_show[i].Index != item_total[i].Index || item_show[i].Index != "" || item_show[i].Index != " ") //这样做是为了从有编号改为无编号,并且避免与已存在的重复
                     {
                         string tempIndex = item_show[i].Index;
-                        if(tempIndex==""||tempIndex==" ")
+                        if (tempIndex == "" || tempIndex == " ")
                         {
                             continue;
                         }
                         if (data.ContainsKey(tempIndex))
                         {
-                            MessageBox.Show("记录" + data[tempIndex].ToString() + "编号与" + item_show[i].Item.ToString() + "重复", "通知");
+                            await mainwin.ShowMessageAsync("通知", "记录" + data[tempIndex].ToString() + "编号与" + item_show[i].Item.ToString() + "重复");
                             return;
                         }
                         else
@@ -351,7 +359,7 @@ namespace MiddleWare.Views
                 }
                 for (int i = 0; i < item_show.Count; i++)
                 {
-                    if (item_show[i].Index != item_total[i].Index) 
+                    if (item_show[i].Index != item_total[i].Index)
                     {
                         string strUpdate;
                         strUpdate = "update PL_FullName set [Index] = @Index where StrComp(Item,@Item,0)=0";//加上对大小写严格区分
@@ -365,14 +373,14 @@ namespace MiddleWare.Views
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show(ex.ToString());
+                                await mainwin.ShowMessageAsync("警告", ex.ToString());
                                 return;
                             }
                         }
                     }
                 }
                 conn.Close();
-                MessageBox.Show("修改修改成功", "通知");
+                await mainwin.ShowMessageAsync("警告", "修改成功");
             }
         }
         /// <summary>
@@ -392,7 +400,7 @@ namespace MiddleWare.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Updata_DS_Click(object sender, RoutedEventArgs e)
+        private async void Updata_DS_Click(object sender, RoutedEventArgs e)
         {
             int num = 0;
             string strConnection;
@@ -400,10 +408,11 @@ namespace MiddleWare.Views
             string insert;
             DataSet ds = new DataSet();
             OleDbConnection conn;
+            MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
             List<Item_Number> item_number = new List<Item_Number>();//缓存
             if (GlobalVariable.DSDEVICE != 0 && GlobalVariable.DSDEVICE != 1)
             {
-                MessageBox.Show("未连接生化仪", "通知");
+                await mainwin.ShowMessageAsync("警告", "未连接生化仪");
                 return;
             }
             else if (GlobalVariable.DSDEVICE == 0) //DS800运行
@@ -565,7 +574,7 @@ namespace MiddleWare.Views
                 strSelect = "SELECT* FROM  item_info WHERE [Item]='" + item_number[i].Item + "' AND [Type]='" + item_number[i].Type + "' AND [Device]='" + item_number[i].Device + "'";
                 using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                 {
-                    if(oa.Fill(ds,"Item")==0)
+                    if (oa.Fill(ds, "Item") == 0)
                     {
                         //如果DS数据库没有这个ITEM,此时就添加进去
                         ++num;
@@ -595,7 +604,7 @@ namespace MiddleWare.Views
                 //DS400
                 GetDS400DB();
             }
-            MessageBox.Show("更新生化仪数据成功\r\n\r\n共更新" + num.ToString() + "条数据", "通知");
+            await mainwin.ShowMessageAsync("通知", "更新生化仪数据成功\r\n\r\n共更新" + num.ToString() + "条数据");
         }
         /// <summary>
         /// 点击仪器选择下拉框时

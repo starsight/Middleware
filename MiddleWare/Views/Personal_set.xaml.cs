@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MahApps.Metro.Controls.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -43,7 +44,6 @@ namespace MiddleWare.Views
             if (AppConfig.GetAppConfig("Language") != null) 
             {
                 GlobalVariable.Language = Convert.ToInt16(AppConfig.GetAppConfig("Language"));
-                //MessageBox.Show(GlobalVariable.Language.ToString(), "通知");
             }
             else
             {
@@ -67,8 +67,9 @@ namespace MiddleWare.Views
             Application.Current.Resources.MergedDictionaries.Add(dict);          
         }
 
-        private void button_languageOK_Click(object sender, RoutedEventArgs e)
+        private async void button_languageOK_Click(object sender, RoutedEventArgs e)
         {
+
             try
             {
                 GlobalVariable.Language = (int)combobox_language.SelectedValue;//GlobalVariable.Language对应ID号 
@@ -78,7 +79,7 @@ namespace MiddleWare.Views
                 if (GlobalVariable.Language == 1)//english
                 {
                     dict.Source = new Uri(@"Resources\en.xaml", UriKind.Relative);
-                    
+
                 }
                 else//chinese
                 {
@@ -89,7 +90,8 @@ namespace MiddleWare.Views
             }
             catch
             {
-                MessageBox.Show("请选择语言", "通知");
+                MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+                await mainwin.ShowMessageAsync("通知", "请选择语言");
             }
             /*多语言切换程序 信号量GlobalVariable.Language*/
 

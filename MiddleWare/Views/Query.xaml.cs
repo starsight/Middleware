@@ -20,6 +20,7 @@ using System.IO;
 using System.ComponentModel;
 using Newtonsoft.Json;
 using RestSharp;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace MiddleWare.Views
 {
@@ -106,7 +107,7 @@ namespace MiddleWare.Views
         /// <param name="device">仪器类型</param>
         /// <param name="date">时间</param>
         /// <param name="ID">样本号</param>
-        private void getdata_database(string device, DateTime date, string ID)
+        private async void getdata_database(string device, DateTime date, string ID)
         {
             Result.Clear();
             //result = new List<signal_record>();
@@ -140,7 +141,10 @@ namespace MiddleWare.Views
                     if (oa.Fill(ds, "LISOUTPUT") == 0)
                     {
                         if (device != "所有仪器")
-                            MessageBox.Show("这个ID没有数据");
+                        {
+                            MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+                            await mainwin.ShowMessageAsync("通知", "这个ID没有数据");
+                        }
                         ds.Clear();
                     }
                     else
@@ -182,7 +186,7 @@ namespace MiddleWare.Views
                             singleResult.item = dr["ITEM"] == DBNull.Value ? blank : (string)dr["ITEM"];
                             singleResult.fullname = dr["FULL_NAME"] == DBNull.Value ? blank : (string)dr["FULL_NAME"];
                             singleResult.result = dr["RESULT"] == DBNull.Value ? blank : dr["RESULT"].ToString();
-                            singleResult.unit = dr["UNIT"] == DBNull.Value   ? blank : (string)dr["UNIT"];
+                            singleResult.unit = dr["UNIT"] == DBNull.Value ? blank : (string)dr["UNIT"];
                             singleResult.normal_high = dr["NORMAL_HIGH"] == DBNull.Value ? blank : dr["NORMAL_HIGH"].ToString();
                             singleResult.normal_low = dr["NORMAL_lOW"] == DBNull.Value ? blank : dr["NORMAL_lOW"].ToString();
                             singleResult.indicate = dr["INDICATE"] == DBNull.Value ? blank : (string)dr["INDICATE"];
@@ -208,7 +212,7 @@ namespace MiddleWare.Views
                 DataSet ds = new DataSet();
                 OleDbConnection conn;
                 string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-                
+
                 strConnection += "Data Source=" + @pathto + "\\PLDB.mdb";
                 conn = new OleDbConnection(strConnection);
                 if (conn.State == System.Data.ConnectionState.Closed)
@@ -228,7 +232,10 @@ namespace MiddleWare.Views
                     if (oa.Fill(ds, "LISOUTPUT") == 0)
                     {
                         if (device != "所有仪器")
-                            MessageBox.Show("这个ID没有数据");
+                        {
+                            MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+                            await mainwin.ShowMessageAsync("通知", "这个ID没有数据");
+                        }
                         ds.Clear();
                     }
                     else
@@ -242,7 +249,7 @@ namespace MiddleWare.Views
                             string tempID = dr["SAMPLE_ID"] == DBNull.Value ? blank : (string)dr["SAMPLE_ID"];
                             if (!tempID.Equals(numID))
                             {
-                                if (numID != string.Empty) 
+                                if (numID != string.Empty)
                                 {
                                     Result.Add(record);
                                     record = new single_record();
@@ -329,7 +336,7 @@ namespace MiddleWare.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button_query_Click(object sender, RoutedEventArgs e)
+        private async void button_query_Click(object sender, RoutedEventArgs e)
         {
             string device;
             DateTime date;
@@ -360,10 +367,16 @@ namespace MiddleWare.Views
             try
             {
                 device = ((string)(comboBox_device.SelectedValue));
+                if (device == null) 
+                {
+                    MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+                    await mainwin.ShowMessageAsync("通知", "请选择需要查询的仪器类型！！");
+                }
             }
             catch
             {
-                MessageBox.Show("请选择需要查询的仪器类型！！");
+                MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+                await mainwin.ShowMessageAsync("通知", "请选择需要查询的仪器类型！！");
             }
             try
             {
@@ -371,7 +384,8 @@ namespace MiddleWare.Views
             }
             catch
             {
-                MessageBox.Show("请选择需要查询的日期！！");
+                MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+                await mainwin.ShowMessageAsync("通知", "请选择需要查询的日期！！");
             }
             ID = Query_ID.Text;
             device = ((string)(comboBox_device.SelectedValue));
