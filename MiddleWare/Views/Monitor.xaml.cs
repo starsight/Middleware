@@ -200,6 +200,11 @@ namespace MiddleWare.Views
             if (name == "DS")
             {
                 DI800Manager.DI800 di800 = (DI800Manager.DI800)data;
+                if(GlobalVariable.NoDisplaySampleID.Contains(di800.SAMPLE_ID))
+                {
+                    GlobalVariable.NoDisplaySampleID.Remove(di800.SAMPLE_ID);
+                    return;
+                }
                 cq.AddDS(di800);
                 while (cq.IsConvertDsMorethanOne)//队列中就保持一个
                 {

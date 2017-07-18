@@ -22,7 +22,7 @@ namespace MiddleWare.Views
     public partial class Statusbar
     {
         public static StatusBar SBar = new StatusBar();
-        
+        private MainWindow mainwin = (MainWindow)Application.Current.MainWindow;
         public Statusbar()
         {
             InitializeComponent();
@@ -37,20 +37,26 @@ namespace MiddleWare.Views
 
         private void ChangePage(int index)
         {
-            MainWindow mainwin = (MainWindow)Application.Current.MainWindow;
             mainwin.MainTabControl.SelectedIndex = 3;
-
-            SetOption setoption = mainwin.SetOption;
             if (index == 1)
             {
-                setoption.onekeyupload_MouseLeftButtonUp(null, null);
-                setoption.onekeyupload.IsSelected = true;
+                //从0开始检索，这是第2行，代表一键上传
+                mainwin.SetOption.onekeyupload_MouseLeftButtonUp(null, null);
+                mainwin.SetOption.onekeyupload.IsSelected = true;
             }
             else if (index == 2)
             {
-                setoption.onekeydownload_MouseLeftButtonUp(null, null);
-                setoption.onekeydownload.IsSelected = true;
+                //从0开始检索，这是第三行，代表一键下发
+                mainwin.SetOption.onekeydownload_MouseLeftButtonUp(null, null);
+                mainwin.SetOption.onekeydownload.IsSelected = true;
             }
+        }
+
+        private void button_nosendnum_Click(object sender, RoutedEventArgs e)
+        {
+            ChangePage(1);//转到一键上传界面
+            OneKeyUpload onekeyupload = mainwin.SetOption.OneKeyUpload;
+            onekeyupload.button_viewsamole_Click(null, null);
         }
     }
 

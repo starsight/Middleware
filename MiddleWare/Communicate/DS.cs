@@ -919,7 +919,6 @@ namespace MiddleWare.Communicate
 
             conn = new OleDbConnection(strConnection);
         }
-        //public static void WriteApplySampleDS(HL7Manager.HL7SampleInfo SampleInfo, string AllItem)
         public static void WriteApplySampleDS(string PatientID, string BarCode, string PatName, int PatAge, string PatSex, string AllItem, DateTime TestTime, string Emergency)
         {
             if (BarCode == string.Empty)//不可能发生的事
@@ -1640,6 +1639,7 @@ namespace MiddleWare.Communicate
                 {
                     //ReadAccessDSMessage?.Invoke("这个ID没有数据");
                     ds.Clear();
+                    conn.Close();
                     AccessManagerDS.mutex.ReleaseMutex();
                     return;
                 }

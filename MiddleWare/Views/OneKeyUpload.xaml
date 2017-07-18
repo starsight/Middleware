@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:MiddleWare.Views"
              mc:Ignorable="d" 
              d:DesignHeight="550" d:DesignWidth="780">
-    <Grid>
+    <Grid x:Name="grid_upload">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30*"/>
             <ColumnDefinition Width="200*"/>
@@ -21,9 +21,11 @@
             <RowDefinition Height="50*"/>
         </Grid.RowDefinitions>
         <TextBlock Text="未上传样本数目：" FontSize="20" FontFamily="宋体" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-        <Button x:Name="button_onekeyupload" Content="一键上传" Click="button_onekeyupload_Click" FontSize="18" FontFamily="宋体" Height="35" Width="100" Grid.Column="3" Grid.ColumnSpan="2" Grid.Row="0" FontWeight="Normal"/>
+        <Button x:Name="button_onekeyupload" Content="一键上传" Click="button_onekeyupload_Click" FontSize="18" FontFamily="宋体" Height="35" Width="100" Grid.Column="3" Grid.Row="0" FontWeight="Normal"/>
+        <Button x:Name="button_viewsamole" Content="查看未上传样本" Click="button_viewsamole_Click" FontSize="18" FontFamily="宋体" Height="35" Width="140" Grid.Column="4" Grid.Row="0" FontWeight="Normal"/>
         <Button x:Name="button_allselect" Content="全选" Click="button_allselect_Click" FontSize="18" FontFamily="宋体" Height="35" Width="100" Grid.Column="3" Grid.Row="2" FontWeight="Normal"/>
         <Button x:Name="button_upload" Content="确定上传" Click="button_upload_Click" FontSize="18" FontFamily="宋体" Height="35" Width="100" Grid.Column="4" Grid.Row="2" FontWeight="Normal"/>
+        <TextBlock Text="{Binding Path=NoSendNum}" FontSize="15" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="2" Grid.Row="0"/>
         <DataGrid x:Name="datagrid_upload" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="1" HorizontalAlignment="Center" VerticalContentAlignment="Top" AlternatingRowBackground="BlanchedAlmond" Background="WhiteSmoke" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False">
             <DataGrid.RowStyle>
                 <Style  TargetType="DataGridRow">
@@ -41,20 +43,20 @@
             </DataGrid.RowStyle>
             
             <DataGrid.Columns>
-                <DataGridCheckBoxColumn Binding="{Binding Path=IsSelected,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridRow}}}">
+                <DataGridCheckBoxColumn Width="30*" Binding="{Binding Path=IsSelected, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
                     <DataGridCheckBoxColumn.HeaderTemplate>
                         <DataTemplate>
-                            <CheckBox x:Name="ckbSelectedAll" IsChecked="False" />
+                            <CheckBox x:Name="SelectedAll" IsChecked="False" Checked="SelectedAll_Checked" Unchecked="SelectedAll_Unchecked"/>
                         </DataTemplate>
                     </DataGridCheckBoxColumn.HeaderTemplate>
                 </DataGridCheckBoxColumn>
                 <DataGridTextColumn Header="编   号" Width="50*"  IsReadOnly="True" Binding="{Binding number}"/>
-                <DataGridTextColumn Header="样本 ID" Width="100*"  IsReadOnly="True" Binding="{Binding Sample_ID}"/>
-                <DataGridTextColumn Header="病人 ID" Width="100*" IsReadOnly="True" Binding="{Binding Patient_ID}"/>
+                <DataGridTextColumn Header="样本 ID" Width="110*"  IsReadOnly="True" Binding="{Binding Sample_ID}"/>
+                <DataGridTextColumn Header="病人 ID" Width="110*" IsReadOnly="True" Binding="{Binding Patient_ID}"/>
                 <DataGridTextColumn Header="测试项目" Width="100*" IsReadOnly="True" Binding="{Binding Item}"/>
-                <DataGridTextColumn Header="测试仪器"  Width="100*" IsReadOnly="True" Binding="{Binding Device}"/>
-                <DataGridTextColumn Header="测试类别"  Width="100*" IsReadOnly="True" Binding="{Binding Kind}"/>
-                <DataGridTextColumn Header="检测时间"  Width="100*" IsReadOnly="True" Binding="{Binding Test_Time}"/>
+                <DataGridTextColumn Header="测试仪器"  Width="80*" IsReadOnly="True" Binding="{Binding Device}"/>
+                <DataGridTextColumn Header="测试类别"  Width="80*" IsReadOnly="True" Binding="{Binding Kind}"/>
+                <DataGridTextColumn Header="检测时间"  Width="160*" IsReadOnly="True" Binding="{Binding Test_Time}"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

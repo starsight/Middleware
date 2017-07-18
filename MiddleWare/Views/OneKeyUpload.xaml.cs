@@ -1,9 +1,15 @@
-﻿using System;
+﻿using MahApps.Metro.Controls.Dialogs;
+using MiddleWare.Communicate;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
+using System.Data.OleDb;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -21,48 +27,273 @@ namespace MiddleWare.Views
     /// </summary>
     public partial class OneKeyUpload : UserControl
     {
+        private static OleDbConnection conn;
+        private string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
+        private string pathto = GlobalVariable.topDir.Parent.FullName;
+        private Upload_Show singleSample;
+        private int num;
+        private DataSet ds;
+        private string blank = string.Empty;
+        private MainWindow mainwin = (MainWindow)Application.Current.MainWindow;
 
+        private List<Upload_Show> chooseList;
         public ObservableCollection<Upload_Show> UploadList;
 
         public OneKeyUpload()
         {
             InitializeComponent();
-            UploadList = new ObservableCollection<Upload_Show>();
 
+            UploadList = new ObservableCollection<Upload_Show>();
+            chooseList = new List<Upload_Show>();
 
             datagrid_upload.ItemsSource = UploadList;
 
-            UploadList.Add(new Upload_Show
-            {
-                Device = "400",
-                Patient_ID = "33",
-                Sample_ID = "112",
-                IsSelected = false,
-                number = 1,
-                Kind = "3df",
-                Test_Time = "3333333",
-                Item = "cal"
-            });
+            strConnection += "Data Source=" + @pathto + "\\DSDB.mdb";
+            conn = new OleDbConnection(strConnection);
 
+            grid_upload.DataContext = Statusbar.SBar;
         }
-
-        private void button_onekeyupload_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 获取没有上传的样本数据
+        /// </summary>
+        private void GetNoSendData()
         {
-
+            AccessManagerDS.mutex.WaitOne();
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+            num = 0;
+            ds = new DataSet();
+            UploadList.Clear();
+            string strSelect = "select * from lisoutput where [ISSEND]= false";
+            using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
+            {
+                if (oa.Fill(ds, "Up") == 0)
+                {
+                    //已经全部上传了
+                    ds.Clear();
+                    conn.Close();
+                    AccessManagerDS.mutex.ReleaseMutex();
+                    return;
+                }
+                else
+                {
+                    //有一些样本没有上传
+                    //先往哈希表里写入样本号
+                    Hashtable htID = new Hashtable();//选用哈希表来消除重复
+                    string tempItem;
+                    string tempID;
+                    string tempAllItem;
+                    foreach (DataRow dr in ds.Tables["Up"].Rows)
+                    {
+                        tempID = dr["SAMPLE_ID"].ToString();
+                        tempItem = dr["ITEM"].ToString();
+                        if (!htID.ContainsKey(tempID))
+                        {
+                            //第一次进入这个样本号
+                            singleSample = new Upload_Show();
+                            htID.Add(tempID, tempItem);//首先给项目赋值
+                        }
+                        else
+                        {
+                            tempAllItem = htID[tempID].ToString();
+                            tempAllItem += ("," + tempItem);
+                            htID[tempID] = tempAllItem;
+                        }
+                    }
+                    DataSet tempDs;
+                    foreach (var tempSampleID in htID.Keys)
+                    {
+                        singleSample = new Upload_Show();
+                        singleSample.number = ++num;
+                        singleSample.IsSelected = false;
+                        singleSample.Sample_ID = (string)tempSampleID;
+                        singleSample.Item = (string)htID[tempSampleID];
+                        strSelect = "select * from lisoutput where [ISSEND]= false and [SAMPLE_ID]='" + (string)tempSampleID + "'";
+                        using (OleDbDataAdapter tempOa = new OleDbDataAdapter(strSelect, conn))
+                        {
+                            tempDs = new DataSet();
+                            if (tempOa.Fill(tempDs, "temp") != 0)
+                            {
+                                foreach (DataRow dr in tempDs.Tables["temp"].Rows)
+                                {
+                                    singleSample.Test_Time = dr["SEND_TIME"] == DBNull.Value ? DateTime.Now.ToString() : dr["SEND_TIME"].ToString();
+                                    singleSample.Patient_ID = dr["PATIENT_ID"] == DBNull.Value ? blank : (string)dr["PATIENT_ID"];
+                                    singleSample.Device = dr["Device"] == DBNull.Value ? blank : (string)dr["Device"];
+                                    singleSample.Kind = dr["Type"] == DBNull.Value ? blank : (string)dr["Type"];
+                                    break;
+                                }
+                            }
+                            tempDs.Clear();
+                        }
+                        UploadList.Add(singleSample);
+                    }
+                }
+            }
+            AccessManagerDS.mutex.ReleaseMutex();
+            conn.Close();
         }
+        /// <summary>
+        /// 一键上传所有未发送样本
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void button_onekeyupload_Click(object sender, RoutedEventArgs e)
+        {
+            if (!GlobalVariable.DSNum)
+            {
+                //如果没连接生化仪，会不进行此操作
+                await mainwin.ShowMessageAsync("警告", "未连接生化仪");
+                return;
+            }
 
+            AccessManagerDS.mutex.WaitOne();
+            HashSet<string> hID = new HashSet<string>();
+            if (conn.State == ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+            num = 0;
+            ds = new DataSet();
+            string strSelect = "select * from lisoutput where [ISSEND]= false";
+            using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
+            {
+                if (oa.Fill(ds, "Up") == 0)
+                {
+                    //已经全部上传了
+                    UploadList.Clear();
+                    ds.Clear();
+                    conn.Close();
+                    AccessManagerDS.mutex.ReleaseMutex();
+                    return;
+                }
+                else
+                {
+                    //有一些样本没有上传
+                    //先往哈希表里写入样本号
+                    foreach (DataRow dr in ds.Tables["Up"].Rows)
+                    {
+                        hID.Add(dr["SAMPLE_ID"].ToString());
+                    }
+                }
+            }
+            AccessManagerDS.mutex.ReleaseMutex();
+            conn.Close();
+            foreach (string singleID in hID)
+            {
+                ReadAccessDS.ReadData("SAMPLE_ID", singleID);
+                GlobalVariable.NoDisplaySampleID.Add(singleID);
+            }
+
+            ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
+
+            for (int i = 0; i < (hID.Count * 5); i++)
+            {
+                System.Windows.Forms.Application.DoEvents();
+                Thread.Sleep(100);
+            }
+
+            UploadList.Clear();
+            Statusbar.SBar.NoSendNum = 0;
+
+            await controller.CloseAsync();
+            
+        }
+        /// <summary>
+        /// 全选
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button_allselect_Click(object sender, RoutedEventArgs e)
         {
+            foreach (var single in UploadList)
+            {
+                single.IsSelected = true;
+            }
+        }
+        /// <summary>
+        /// 确定上传选择样本
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void button_upload_Click(object sender, RoutedEventArgs e)
+        {
+            
+            if (!GlobalVariable.DSNum)
+            {
+                //如果没连接生化仪，会不进行此操作
+                await mainwin.ShowMessageAsync("警告", "未连接生化仪");
+                return;
+            }
+            foreach (var single in UploadList) 
+            {
+                if (single.IsSelected) 
+                {
+                    chooseList.Add(single);
+                }
+            }
+            if (chooseList.Count == 0) 
+            {
+                MessageBox.Show("请选择样本", "提醒");
+                return;
+            }
+            foreach(var single in chooseList)
+            {
+                ReadAccessDS.ReadData("SAMPLE_ID", single.Sample_ID);
+                GlobalVariable.NoDisplaySampleID.Add(single.Sample_ID);
+            }
+            ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
+
+            for (int i = 0; i < (chooseList.Count*5); i++)
+            {
+                System.Windows.Forms.Application.DoEvents();
+                Thread.Sleep(100);
+            }
+
+            GetNoSendData();//重新获取数据
+
+            ReadAccessDS.CheckUnDoneSampleNum(false);//重新获取未发送样本
+
+            await controller.CloseAsync();
 
         }
-
-        private void button_upload_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 全选
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SelectedAll_Checked(object sender, RoutedEventArgs e)
         {
-
+            foreach (var single in UploadList)
+            {
+                single.IsSelected = true;
+            }
+        }
+        /// <summary>
+        /// 全不选
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SelectedAll_Unchecked(object sender, RoutedEventArgs e)
+        {
+            foreach (var single in UploadList)
+            {
+                single.IsSelected = false;
+            }
+        }
+        /// <summary>
+        /// 未上传样本显示
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void button_viewsamole_Click(object sender, RoutedEventArgs e)
+        {
+            GetNoSendData();
         }
     }
-    
-    public class Upload_Show: INotifyPropertyChanged
+
+    public class Upload_Show : INotifyPropertyChanged
     {
         private int _number;
         private string _Sample_ID;
@@ -81,7 +312,7 @@ namespace MiddleWare.Views
             }
             set
             {
-                if(this._number!=value)
+                if (this._number != value)
                 {
                     this._number = value;
                     OnPropertyChanged("number");
@@ -96,7 +327,7 @@ namespace MiddleWare.Views
             }
             set
             {
-                if(this._Sample_ID!=value)
+                if (this._Sample_ID != value)
                 {
                     this._Sample_ID = value;
                     OnPropertyChanged("Sample_ID");
@@ -111,7 +342,7 @@ namespace MiddleWare.Views
             }
             set
             {
-                if(this._Patient_ID!=value)
+                if (this._Patient_ID != value)
                 {
                     this._Patient_ID = value;
                     OnPropertyChanged("Patient_ID");
@@ -126,7 +357,7 @@ namespace MiddleWare.Views
             }
             set
             {
-                if(this._Item!=value)
+                if (this._Item != value)
                 {
                     this._Item = value;
                     OnPropertyChanged("Item");
@@ -141,7 +372,7 @@ namespace MiddleWare.Views
             }
             set
             {
-                if(this._Kind!=value)
+                if (this._Kind != value)
                 {
                     this._Kind = value;
                     OnPropertyChanged("Kind");
@@ -156,7 +387,7 @@ namespace MiddleWare.Views
             }
             set
             {
-                if(this._Device!=value)
+                if (this._Device != value)
                 {
                     this._Device = value;
                     OnPropertyChanged("Device");
@@ -186,7 +417,7 @@ namespace MiddleWare.Views
             }
             set
             {
-                if(this._IsSelected!=value)
+                if (this._IsSelected != value)
                 {
                     this._IsSelected = value;
                     OnPropertyChanged("IsSelected");

@@ -96,6 +96,8 @@ namespace MiddleWare.Views
 
         public static DateTime DefalutTime = Convert.ToDateTime("1900-01-01 00:00:00");
 
+        public static HashSet<string> NoDisplaySampleID = new HashSet<string>();
+
     }
 
 }
