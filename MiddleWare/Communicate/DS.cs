@@ -930,7 +930,7 @@ namespace MiddleWare.Communicate
                 conn.Open();//打开连接
             }
             AccessManagerDS.EquipMutex.WaitOne();//上锁
-            strJudge = "select * from LISInputInfo where [BarCode]='" + BarCode + "' and [PatientID] ='" + PatientID + "'";
+            strJudge = "select * from LISInputInfo where [BarCode]='" + BarCode + "'";
             using (OleDbDataAdapter oaJudge = new OleDbDataAdapter(strJudge, conn))//判断是否写入重复
             {
                 DataSet ds = new DataSet();
