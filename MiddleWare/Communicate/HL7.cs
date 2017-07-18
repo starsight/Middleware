@@ -186,9 +186,6 @@ namespace MiddleWare.Communicate
         public event GlobalVariable.MessageHandler ProcessHL7Message;
         public static CancellationTokenSource ProcessHL7Cancel;
 
-        public delegate void ActiveSampleDataEventHandle(string sampleId);//主动下发样本信息时，管道传递样本Id
-        public static event ActiveSampleDataEventHandle ActiveSampleData;// xubinbin
-
         public ProcessHL7(HL7Manager hm)
         {
             hl7Manager = hm;
@@ -358,8 +355,6 @@ namespace MiddleWare.Communicate
 
                                 Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
                                 Statusbar.SBar.SampleId = hl7info.SampleID;//mini mode
-
-                                ActiveSampleData.BeginInvoke(hl7info.SampleID, null, null);//下发管道样本信息，但此处需要判断是否为DS数据才行
 
                                 Thread.Sleep(200);
                                 

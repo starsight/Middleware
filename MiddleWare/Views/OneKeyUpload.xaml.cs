@@ -30,21 +30,21 @@ namespace MiddleWare.Views
         private static OleDbConnection conn;
         private string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
         private string pathto = GlobalVariable.topDir.Parent.FullName;
-        private Upload_Show singleSample;
+        private UpOrDownload_Show singleSample;
         private int num;
         private DataSet ds;
         private string blank = string.Empty;
         private MainWindow mainwin = (MainWindow)Application.Current.MainWindow;
 
-        private List<Upload_Show> chooseList;
-        public ObservableCollection<Upload_Show> UploadList;
+        private List<UpOrDownload_Show> chooseList;
+        public ObservableCollection<UpOrDownload_Show> UploadList;
 
         public OneKeyUpload()
         {
             InitializeComponent();
 
-            UploadList = new ObservableCollection<Upload_Show>();
-            chooseList = new List<Upload_Show>();
+            UploadList = new ObservableCollection<UpOrDownload_Show>();
+            chooseList = new List<UpOrDownload_Show>();
 
             datagrid_upload.ItemsSource = UploadList;
 
@@ -92,7 +92,6 @@ namespace MiddleWare.Views
                         if (!htID.ContainsKey(tempID))
                         {
                             //第一次进入这个样本号
-                            singleSample = new Upload_Show();
                             htID.Add(tempID, tempItem);//首先给项目赋值
                         }
                         else
@@ -105,7 +104,7 @@ namespace MiddleWare.Views
                     DataSet tempDs;
                     foreach (var tempSampleID in htID.Keys)
                     {
-                        singleSample = new Upload_Show();
+                        singleSample = new UpOrDownload_Show();
                         singleSample.number = ++num;
                         singleSample.IsSelected = false;
                         singleSample.Sample_ID = (string)tempSampleID;
@@ -130,6 +129,7 @@ namespace MiddleWare.Views
                         UploadList.Add(singleSample);
                     }
                 }
+                ds.Clear();
             }
             AccessManagerDS.mutex.ReleaseMutex();
             conn.Close();
@@ -180,6 +180,11 @@ namespace MiddleWare.Views
             }
             AccessManagerDS.mutex.ReleaseMutex();
             conn.Close();
+            if (hID.Count == 0) 
+            {
+                await mainwin.ShowMessageAsync("提醒", "无样本数据可处理");
+                return;
+            }
             foreach (string singleID in hID)
             {
                 ReadAccessDS.ReadData("SAMPLE_ID", singleID);
@@ -195,7 +200,7 @@ namespace MiddleWare.Views
             }
 
             UploadList.Clear();
-            Statusbar.SBar.NoSendNum = 0;
+            ReadAccessDS.CheckUnDoneSampleNum(false);//重新获取未发送样本
 
             await controller.CloseAsync();
             
@@ -235,7 +240,7 @@ namespace MiddleWare.Views
             }
             if (chooseList.Count == 0) 
             {
-                MessageBox.Show("请选择样本", "提醒");
+                await mainwin.ShowMessageAsync("提醒", "请选择样本");
                 return;
             }
             foreach(var single in chooseList)
@@ -293,7 +298,7 @@ namespace MiddleWare.Views
         }
     }
 
-    public class Upload_Show : INotifyPropertyChanged
+    public class UpOrDownload_Show : INotifyPropertyChanged
     {
         private int _number;
         private string _Sample_ID;
@@ -303,6 +308,11 @@ namespace MiddleWare.Views
         private string _Device;
         private string _Test_Time;
         private bool _IsSelected;
+        //后续数据未在表格中显示用到,也没有数据绑定
+        public string Patient_Name;
+        public string Emergency;
+        public int Patient_Age;
+        public string Patient_Sex;
 
         public int number
         {

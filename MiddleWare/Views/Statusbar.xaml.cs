@@ -58,6 +58,13 @@ namespace MiddleWare.Views
             OneKeyUpload onekeyupload = mainwin.SetOption.OneKeyUpload;
             onekeyupload.button_viewsamole_Click(null, null);
         }
+
+        private void button_noissuenum_Click(object sender, RoutedEventArgs e)
+        {
+            ChangePage(2);
+            OneKeyDownload onkeydownload = mainwin.SetOption.OneKeyDownload;
+            onkeydownload.button_viewsamole_Click(null, null);
+        }
     }
 
     public class StatusBar : INotifyPropertyChanged

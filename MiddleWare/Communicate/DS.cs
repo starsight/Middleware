@@ -930,7 +930,7 @@ namespace MiddleWare.Communicate
                 conn.Open();//打开连接
             }
             AccessManagerDS.EquipMutex.WaitOne();//上锁
-            strJudge = "select * from LISInputInfo where [BarCode]='" + BarCode + "'";
+            strJudge = "select * from LISInputInfo where [BarCode]='" + BarCode + "' and [PatientID] ='" + PatientID + "'";
             using (OleDbDataAdapter oaJudge = new OleDbDataAdapter(strJudge, conn))//判断是否写入重复
             {
                 DataSet ds = new DataSet();
@@ -989,6 +989,7 @@ namespace MiddleWare.Communicate
                 ds.Clear();
             }
             AccessManagerDS.EquipMutex.ReleaseMutex();//卸锁
+            ProcessPipes.ActiveSend(PatientID); //将样本ID通过管道发送到生化仪
             conn.Close();
         }
     }

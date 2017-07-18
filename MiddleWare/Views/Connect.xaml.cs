@@ -87,7 +87,6 @@ namespace MiddleWare.Views
             Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
 
             NamedPipe.Openpipe += new NamedPipe.MessTrans(OpenDs);//管道连接异常后，自动重新打开
-            ProcessHL7.ActiveSampleData += new ProcessHL7.ActiveSampleDataEventHandle(ProcessPipes.ActiveSend);//当生化仪有样本申请信息时，将样本ID通过管道发送到生化仪
 
             ReadConnectConfigForAutoRun(); //自动连接
 

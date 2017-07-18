@@ -34,7 +34,8 @@
             <TextBlock Text="{Binding Path=NoSendNum}" FontSize="15" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="7" Grid.Row="0"/>
             <TextBlock Text="未下发样本数: " FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="8"/>
             <TextBlock Text="{Binding Path=NoIssueNum}" FontSize="15" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="9" Grid.Row="0"/>
-            <Button x:Name="button_nosendnum" Click="button_nosendnum_Click" Background="SkyBlue" BorderThickness="0" Opacity="0" Content="未上传样本数:" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="6"/>
+            <Button x:Name="button_nosendnum" Click="button_nosendnum_Click" Background="SkyBlue" BorderThickness="0" Opacity="0" Content="未上传样本数：" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="6"/>
+            <Button x:Name="button_noissuenum" Click="button_noissuenum_Click" Background="SkyBlue" BorderThickness="0" Opacity="0" Content="未下发样本数：" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="8"/>
         </Grid>
         <CheckBox Content="Lis单向传输"  IsChecked="{Binding Path=IsOneWay, Mode=TwoWay}" FontSize="15" FontFamily="Microsoft YaHei UI Light" Grid.Column="1" Grid.Row="0"/>
     </Grid>
