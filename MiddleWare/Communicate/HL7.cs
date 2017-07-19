@@ -11,6 +11,7 @@ using NHapi.Model.V231.Segment;
 using System.Threading;
 using MiddleWare.Views;
 using System.Threading.Tasks;
+using System.Net.Sockets;
 //1个线程  1个HL7队列
 namespace MiddleWare.Communicate
 {
@@ -202,16 +203,25 @@ namespace MiddleWare.Communicate
             string receiveString;
             PipeParser parser;
             IMessage m;
-            while (!ProcessHL7Cancel.IsCancellationRequested)
+            int SendNum = 0;
+            while (!ProcessHL7Cancel.IsCancellationRequested && GlobalVariable.IsSocketRun) 
             {
                 if (hl7Manager.IsHL7Available)
                 {
                     #region 向HL7发送样本测试结果
+                    if (SendNum == GlobalVariable.ReSendNum) 
+                    {
+                        //连续发送失败超过规定次数，不再发送
+                        hl7Manager.RemoveHL7();//移除队列中开始处的HL7
+                        SendNum = 0;
+                        continue;
+                    }
                     Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;// mini mode
                     try
                     {
                         HL7Message = hl7Manager.GetHL7Message();
                         Connect.sendSocket(HL7Message);
+                        ++SendNum;
                         ++Statusbar.SBar.SendNum;
                     }
                     catch
@@ -234,14 +244,21 @@ namespace MiddleWare.Communicate
                                 Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode 
                                 Statusbar.SBar.SampleId = hl7Manager.GetHL7Sample_ID();//mini mode
                                 ++Statusbar.SBar.ReplyNum;
+                                SendNum = 0;
                                 UpdateDB.Invoke(hl7Manager.GetHL7Sample_ID(), hl7Manager.GetHL7Item(), hl7Manager.GetHL7Device());
                                 hl7Manager.RemoveHL7();//移除队列中开始处的HL7
                             }
-                            else
+                            else 
                             {
                                 Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
-                                ProcessHL7Message.Invoke(hl7Manager.GetHL7Sample_ID() + "Lis服务器接收失败\r\n", "LIS");
+                                ProcessHL7Message.Invoke(hl7Manager.GetHL7Sample_ID() + "Lis服务器第" + SendNum.ToString() + "次接收失败\r\n", "LIS");
                             }
+                        }
+                        else
+                        {
+                            //接收异常
+                            Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
+                            ProcessHL7Message.Invoke(hl7Manager.GetHL7Sample_ID() + "Lis服务器第" + SendNum.ToString() + "次接收失败\r\n", "LIS");
                         }
                     }
                     else//单向
@@ -357,7 +374,6 @@ namespace MiddleWare.Communicate
                                 Statusbar.SBar.SampleId = hl7info.SampleID;//mini mode
 
                                 Thread.Sleep(200);
-                                
                             }
                         }
                     }

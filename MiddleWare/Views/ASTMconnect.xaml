@@ -29,8 +29,8 @@
         <TextBlock Text="网口设置:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left"/>
         <TextBlock Text="IP地址:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Width="100" HorizontalAlignment="Right"/>
         <TextBlock Text="端口:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" Width="100" HorizontalAlignment="Right"/>
-        <TextBox x:Name="textbox_astmip" FontSize="18" FontFamily="Consolas" Grid.Column="1" Grid.Row="2" Height="25" Width="160" VerticalAlignment="Center" HorizontalAlignment="Left" />
-        <TextBox x:Name="textbox_astmport" FontSize="18" FontFamily="Consolas" Grid.Column="1" Grid.Row="3" Height="25" Width="160" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBox x:Name="textbox_astmip" FontSize="18" FontFamily="Consolas" Grid.Column="1" Grid.Row="2" Height="25" Width="160" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" />
+        <TextBox x:Name="textbox_astmport" FontSize="18" FontFamily="Consolas" Grid.Column="1" Grid.Row="3" Height="25" Width="160" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
         <TextBlock Text="串口设置:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Left"/>
         <TextBlock Text="串口选择:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="6" VerticalAlignment="Center" Width="100" HorizontalAlignment="Right"/>
         <TextBlock Text="波特率:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="7" VerticalAlignment="Center" Width="100" HorizontalAlignment="Right"/>

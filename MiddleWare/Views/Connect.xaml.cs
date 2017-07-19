@@ -41,7 +41,7 @@ namespace MiddleWare.Views
         private bool LisNum = false;//确保每次只有一种方式与LIS连接
 
         private static Socket clientSocket;
-        private bool IsSocketRun;//判断Socket是否连接
+        //private bool IsSocketRun;//判断Socket是否连接
         private static byte[] recyBytes = new byte[1024];//socket接收缓冲区域
         private string host;//socket的全局参数
         private int port;//socket的全局参数
@@ -61,7 +61,12 @@ namespace MiddleWare.Views
 
         private static bool IsSocketRead = false;//Socket是否在读
 
+        private Boolean isAutoConnectLisServer = false;
+        private Boolean isAutoConnectDevice = false;
+
         private event GlobalVariable.MessageHandler LisMessage;
+
+        private static ManualResetEvent TimeoutObject = new ManualResetEvent(false);
         public Connect()
         {
             InitializeComponent();
@@ -91,9 +96,6 @@ namespace MiddleWare.Views
             ReadConnectConfigForAutoRun(); //自动连接
 
         }
-
-        private Boolean isAutoConnectLisServer = false;
-        private Boolean isAutoConnectDevice = false;
 
         /// <summary>
         /// 自动连接
@@ -284,90 +286,122 @@ namespace MiddleWare.Views
             try
             {
                 clientSocket.Connect(new IPEndPoint(ip, port));
-                clientSocket.ReceiveTimeout = 500;//设置读取超时时间500ms
+                clientSocket.ReceiveTimeout = 1000;//设置读取超时时间500ms
                 clientSocket.SendTimeout = 1000;//设置发送超时时间1s
                 AddItem(textbox_lisshow, "连接LIS服务器成功\r\n");
-                Statusbar.SBar.LISStatus = GlobalVariable.miniConn;// for mini mode
-                LisNum = true;
-                if (IsHL7show && !IsASTMshow) 
-                {
-                    //HL7传输
-                    HL7Manager hm = new HL7Manager();//新建一个hl7操作和队列
-                    ProcessHL7 ph = new ProcessHL7(hm);//新建一个HL7数据操作，包括socket给LIS服务器发送数据
-                    ph.UpdateDB += new ProcessHL7.UpdateAccessEventHandle(WriteAccessDS.UpdateDBOut);//根据HL7服务器反馈消息修改数据库数据
-                    ph.UpdateDB += new ProcessHL7.UpdateAccessEventHandle(WriteAccessPL.UpdateDB);
-                    ph.RequestSampleData += new ProcessHL7.RequestSampleDataEventHandle(WriteAccessDS.WriteRequestSampleDataHL7);//申请样本信息传输
-                    ph.ProcessHL7Message += Monitor.AddItemState;
-                    GlobalVariable.IsHL7Run = true;
-                    GlobalVariable.IsASTMRun = false;
-                    ph.Start();//开始发送数据
-
-                    //写入配置文件
-                    AppConfig.UpdateAppConfig("HL7IP", host);
-                    AppConfig.UpdateAppConfig("HL7PORT", port.ToString());
-                    AppConfig.UpdateAppConfig("LisServerConnectWay", "HL7");
-                }
-                else if (!IsHL7show && IsASTMshow && GlobalVariable.IsASTMNet && !GlobalVariable.IsASTMCom)
-                {
-                    //ASTM传输
-                    ASTMManager am = new ASTMManager();
-                    ProcessASTM pa = new ProcessASTM(am);
-                    pa.UpdateDB += new ProcessASTM.UpdateAccessEventHandle(WriteAccessDS.UpdateDBOut);//根据ASTM服务器反馈消息修改数据库数据
-                    pa.UpdateDB += new ProcessASTM.UpdateAccessEventHandle(WriteAccessPL.UpdateDB);
-                    pa.RequestSampleData += new ProcessASTM.RequestSampleDataEventHandle(WriteAccessDS.WriteRequestSampleDataASTM);//申请样本信息传输
-                    pa.ProcessASTMMessage += Monitor.AddItemState;
-                    GlobalVariable.IsASTMRun = true;
-                    GlobalVariable.IsHL7Run = false;
-                    pa.Start();
-
-                    //写入配置文件
-                    AppConfig.UpdateAppConfig("ASTMIP", host);
-                    AppConfig.UpdateAppConfig("ASTMPORT", port.ToString());
-                    AppConfig.UpdateAppConfig("LisServerConnectWay", "ASTM");
-                    AppConfig.UpdateAppConfig("ASTMUpLoadWay",0+"");//模式--网口
-
-                }
-                IsSocketRun = true;
             }
-            catch
+            catch (SocketException se)
             {
                 AddItem(textbox_lisshow, "连接失败\r\n请打开LIS服务器后重新连接\r\n");
-                LisNum = false;
-                //HL7 task令牌
-                if(GlobalVariable.IsHL7Run && !GlobalVariable.IsASTMRun)
-                {
-                    //HL7传输
-                    ProcessHL7.ProcessHL7Cancel.Cancel();
-                }
-                else if (!GlobalVariable.IsHL7Run && GlobalVariable.IsASTMRun && GlobalVariable.IsASTMNet && !GlobalVariable.IsASTMCom)
-                {
-                    ProcessASTM.ProcessASTMCancel.Cancel();
-                }
+                Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
                 DisableButton(button_closelis);
                 EnableButton(button_openlis);
-                Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
-
+                return;
             }
-            while (IsSocketRun)
+            Statusbar.SBar.LISStatus = GlobalVariable.miniConn;// for mini mode
+            LisNum = true;
+            GlobalVariable.IsSocketRun = true;
+
+            HL7Manager hm = new HL7Manager();//新建一个hl7操作和队列
+            ProcessHL7 ph = new ProcessHL7(hm);//新建一个HL7数据操作，包括socket给LIS服务器发送数据
+            if (IsHL7show && !IsASTMshow)
+            {
+                #region HL7传输
+                ph.UpdateDB += new ProcessHL7.UpdateAccessEventHandle(WriteAccessDS.UpdateDBOut);//根据HL7服务器反馈消息修改数据库数据
+                ph.UpdateDB += new ProcessHL7.UpdateAccessEventHandle(WriteAccessPL.UpdateDB);
+                ph.RequestSampleData += new ProcessHL7.RequestSampleDataEventHandle(WriteAccessDS.WriteRequestSampleDataHL7);//申请样本信息传输
+                ph.ProcessHL7Message += Monitor.AddItemState;
+                GlobalVariable.IsHL7Run = true;
+                GlobalVariable.IsASTMRun = false;
+                ph.Start();//开始发送数据
+
+                //写入配置文件
+                AppConfig.UpdateAppConfig("HL7IP", host);
+                AppConfig.UpdateAppConfig("HL7PORT", port.ToString());
+                AppConfig.UpdateAppConfig("LisServerConnectWay", "HL7");
+                #endregion
+            }
+            else if (!IsHL7show && IsASTMshow && GlobalVariable.IsASTMNet && !GlobalVariable.IsASTMCom)
+            {
+                #region ASTM传输
+                ASTMManager am = new ASTMManager();
+                ProcessASTM pa = new ProcessASTM(am);
+                pa.UpdateDB += new ProcessASTM.UpdateAccessEventHandle(WriteAccessDS.UpdateDBOut);//根据ASTM服务器反馈消息修改数据库数据
+                pa.UpdateDB += new ProcessASTM.UpdateAccessEventHandle(WriteAccessPL.UpdateDB);
+                pa.RequestSampleData += new ProcessASTM.RequestSampleDataEventHandle(WriteAccessDS.WriteRequestSampleDataASTM);//申请样本信息传输
+                pa.ProcessASTMMessage += Monitor.AddItemState;
+                GlobalVariable.IsASTMRun = true;
+                GlobalVariable.IsHL7Run = false;
+                pa.Start();
+
+                //写入配置文件
+                AppConfig.UpdateAppConfig("ASTMIP", host);
+                AppConfig.UpdateAppConfig("ASTMPORT", port.ToString());
+                AppConfig.UpdateAppConfig("LisServerConnectWay", "ASTM");
+                AppConfig.UpdateAppConfig("ASTMUpLoadWay", 0 + "");//模式--网口
+                #endregion
+            }
+
+            while (GlobalVariable.IsSocketRun)
             {
                 if (clientSocket.Poll(-1, SelectMode.SelectRead) && !IsSocketRead) //判断socket是否在连接状态
                 {
                     LisNum = false;
-                    AddItem(textbox_lisshow, "LIS服务器断开连接\r\n请打开LIS服务器后重新连接\r\n");
-                    LisMessage.Invoke("LIS服务器断开连接\r\n请打开LIS服务器后重新连接\r\n", "LIS");
-                    if (GlobalVariable.IsHL7Run && !GlobalVariable.IsASTMRun)
-                    {
-                        ProcessHL7.ProcessHL7Cancel.Cancel();
-                    }
-                    else if (!GlobalVariable.IsHL7Run && GlobalVariable.IsASTMRun && GlobalVariable.IsASTMNet && !GlobalVariable.IsASTMCom) 
-                    {
-                        ProcessASTM.ProcessASTMCancel.Cancel();
-                    }
-                    DisableButton(button_closelis);
-                    EnableButton(button_openlis);
-                    Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
+                    AddItem(textbox_lisshow, "LIS服务器断开连接\r\n正在重新连接\r\n");
+                    LisMessage.Invoke("LIS服务器断开连接\r\n正在重新连接\r\n", "LIS");
 
-                    break;//退出去
+                    GlobalVariable.IsSocketRun = false;
+                    
+                    /*自动连接，如果都还不行的话，直接放弃*/
+                    for (int i = 0; i < GlobalVariable.ReLisConnectNum; ++i) 
+                    {
+                        Thread.Sleep(1000);
+                        try
+                        {
+                            clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                            clientSocket.Connect(new IPEndPoint(ip, port));
+                            clientSocket.ReceiveTimeout = 1000;//设置读取超时时间500ms
+                            clientSocket.SendTimeout = 1000;//设置发送超时时间1s
+                            if (clientSocket.Connected)
+                            {
+                                break;
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            continue;
+                        }
+                        
+                    }
+                    if(clientSocket.Connected)
+                    {
+                        //重连成功
+                        AddItem(textbox_lisshow, "连接LIS服务器成功\r\n");
+                        LisMessage.Invoke("连接LIS服务器成功\r\n", "LIS");
+                        GlobalVariable.IsSocketRun = true;
+                        ph.Start();
+                        continue;
+                    }
+                    else
+                    {
+                        AddItem(textbox_lisshow, "LIS服务器断开连接\r\n请确定LIS后重新连接\r\n");
+                        LisMessage.Invoke("LIS服务器断开连接\r\n请确定LIS后重新连接\r\n", "LIS");
+                        if (GlobalVariable.IsHL7Run && !GlobalVariable.IsASTMRun)
+                        {
+                            ProcessHL7.ProcessHL7Cancel.Cancel();
+                            GlobalVariable.IsHL7Run = false;
+                        }
+                        else if (!GlobalVariable.IsHL7Run && GlobalVariable.IsASTMRun && GlobalVariable.IsASTMNet && !GlobalVariable.IsASTMCom)
+                        {
+                            ProcessASTM.ProcessASTMCancel.Cancel();
+                            GlobalVariable.IsASTMRun = false;
+                        }
+                        DisableButton(button_closelis);
+                        EnableButton(button_openlis);
+                        Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
+
+                        break;//退出去
+                    }
                 }
             }
         }
@@ -458,9 +492,9 @@ namespace MiddleWare.Views
                     return Encoding.UTF8.GetString(recyBytes, 0, receiveNumber);
                 }
             }
-            catch
+            catch(SocketException se)
             {
-                return "-1";//接收超时
+                return "ERROR";//接收超时
             }
             finally
             {
@@ -529,6 +563,7 @@ namespace MiddleWare.Views
                     if (!GlobalVariable.IsHL7Run && GlobalVariable.IsASTMRun && !GlobalVariable.IsASTMNet && GlobalVariable.IsASTMCom)
                     {
                         ProcessASTM.ProcessASTMCancel.Cancel();
+                        GlobalVariable.IsASTMRun = false;
                     }
                     DisableButton(button_closelis);
                     EnableButton(button_openlis);
@@ -648,18 +683,20 @@ namespace MiddleWare.Views
             {
                 //如果是网口传输模式
                 LisNum = false;
-                IsSocketRun = false;//停了创建线程
+                GlobalVariable.IsSocketRun = false;//停了创建线程
                 clientSocket.Close();
                 //HL7 task令牌
                 if (GlobalVariable.IsHL7Run && !GlobalVariable.IsASTMRun)
                 {
                     //HL7 网口连接方式
                     ProcessHL7.ProcessHL7Cancel.Cancel();
+                    GlobalVariable.IsHL7Run = false;
                 }
                 else if (!GlobalVariable.IsHL7Run && GlobalVariable.IsASTMRun && GlobalVariable.IsASTMNet && !GlobalVariable.IsASTMCom)
                 {
                     //ASTM 网口连接方式
                     ProcessASTM.ProcessASTMCancel.Cancel();
+                    GlobalVariable.IsASTMRun = false;
                 }
                 AddItem(textbox_lisshow, "已关闭与LIS服务器连接\r\n");
             }
@@ -669,12 +706,15 @@ namespace MiddleWare.Views
                 LisNum = false;
                 IsComRun = false;
                 if (Connect.ASTMseriaPort != null)
+                {
                     Connect.ASTMseriaPort.Close();
+                }
                 if (ProcessASTM.ProcessASTMCancel != null)
+                {
                     ProcessASTM.ProcessASTMCancel.Cancel();
-
-                //ASTMseriaPort.Close();
-                //ProcessASTM.ProcessASTMCancel.Cancel();
+                    GlobalVariable.IsASTMRun = false;
+                }
+                
                 AddItem(textbox_lisshow, "已关闭与LIS服务器连接\r\n");
             }
         }

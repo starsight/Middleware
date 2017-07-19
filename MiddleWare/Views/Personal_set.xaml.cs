@@ -98,6 +98,54 @@ namespace MiddleWare.Views
             /*todo 保存到配置文件*/
             AppConfig.UpdateAppConfig("Language", GlobalVariable.Language.ToString());
         }
+
+        private async void button_resendnum_Click(object sender, RoutedEventArgs e)
+        {
+            int resendnum = 0;
+            MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+            try
+            {
+                resendnum = Convert.ToInt32(textbox_resendnum.Text);
+            }
+            catch
+            {
+                await mainwin.ShowMessageAsync("通知", "请正确输入");
+                return;
+            }
+            if (resendnum > 0 && resendnum < 10) 
+            {
+                GlobalVariable.ReSendNum = resendnum;
+                await mainwin.ShowMessageAsync("通知", "修改成功");
+            }
+            else
+            {
+                await mainwin.ShowMessageAsync("通知", "请输入正常范围");
+            }
+        }
+
+        private async void button_relisconnectnum_Click(object sender, RoutedEventArgs e)
+        {
+            int relisconnectnum = 0;
+            MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+            try
+            {
+                relisconnectnum = Convert.ToInt32(textbox_relisconnectnum.Text);
+            }
+            catch
+            {
+                await mainwin.ShowMessageAsync("通知", "请正确输入");
+                return;
+            }
+            if (relisconnectnum > 0 && relisconnectnum < 6)
+            {
+                GlobalVariable.ReLisConnectNum = relisconnectnum;
+                await mainwin.ShowMessageAsync("通知", "修改成功");
+            }
+            else
+            {
+                await mainwin.ShowMessageAsync("通知", "请输入正常范围");
+            }
+        }
     }
 
     public class PersonalSet : INotifyPropertyChanged //界面中的绑定元素都可以在这个类内定义

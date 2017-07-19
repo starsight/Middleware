@@ -20,7 +20,7 @@
             <RowDefinition Height="250*"/>
         </Grid.RowDefinitions>
         <TextBlock Text="数据库路径:" FontSize="20" FontFamily="宋体" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-        <TextBox x:Name="textbox_dsdb" FontSize="18"  FontFamily="宋体" Grid.Row="3" Width="380" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBox x:Name="textbox_dsdb" FontSize="18"  FontFamily="宋体" Grid.Row="3" Width="380" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
         <Button x:Name="button_openfile" Content="F" Width="30" Height="33" Click="button_openfile_Click" FontSize="18" FontFamily="Consolas" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Right" Foreground="White" Background="#FF3FF10A" FontWeight="Medium" />
     </Grid>
 </UserControl>

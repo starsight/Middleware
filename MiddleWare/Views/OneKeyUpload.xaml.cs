@@ -199,6 +199,7 @@ namespace MiddleWare.Views
                 Thread.Sleep(100);
             }
 
+            Thread.Sleep(500);
             UploadList.Clear();
             ReadAccessDS.CheckUnDoneSampleNum(false);//重新获取未发送样本
 
@@ -256,8 +257,8 @@ namespace MiddleWare.Views
                 Thread.Sleep(100);
             }
 
+            Thread.Sleep(500);
             GetNoSendData();//重新获取数据
-
             ReadAccessDS.CheckUnDoneSampleNum(false);//重新获取未发送样本
 
             await controller.CloseAsync();

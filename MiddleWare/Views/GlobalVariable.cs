@@ -98,6 +98,11 @@ namespace MiddleWare.Views
 
         public static HashSet<string> NoDisplaySampleID = new HashSet<string>();
 
+        public static int ReSendNum = 5;
+        public static int ReLisConnectNum = 3;
+
+        public static bool IsSocketRun = false;
+
     }
 
 }
