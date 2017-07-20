@@ -82,7 +82,7 @@ namespace MiddleWare.Communicate
         /// <param name="receiveData"></param>
         public void ReadNamedPipe(NamedPipeServerStream pipeServer, ref PipeMessage receiveData)
         {
-            if (run_status == false) 
+            if (!run_status)
             {
                 return;
             }
@@ -113,20 +113,25 @@ namespace MiddleWare.Communicate
                 DisconnectPipe(1);//非正常关闭，对面取消了连接，被动关闭
                 return;
             }
-            string recDataStr = new string(buf);
-            receiveData.CheckBit = Convert.ToInt32(recDataStr.Substring(0, 1));
-            receiveData.GetNewData = Convert.ToInt32(recDataStr.Substring(1, 1));
-            receiveData.GetTestEnd = Convert.ToInt32(recDataStr.Substring(2, 1));
-            receiveData.GetTestType = Convert.ToInt32(recDataStr.Substring(3, 1));
-            receiveData.UploadEnd = Convert.ToInt32(recDataStr.Substring(4, 1));
-            receiveData.Device = Convert.ToInt32(recDataStr.Substring(5, 1));
-            receiveData.NotUse1 = Convert.ToInt32(recDataStr.Substring(6, 1));
-            receiveData.NotUse2 = Convert.ToInt32(recDataStr.Substring(7, 1));
-            receiveData.NotUse3 = Convert.ToInt32(recDataStr.Substring(8, 1));
-            receiveData.IDNum = Convert.ToInt32(recDataStr.Substring(9, 2));
-            receiveData.ID = recDataStr.Substring(11, receiveData.IDNum);
-            receiveData.BarCodeNum = Convert.ToInt32(recDataStr.Substring(11 + receiveData.IDNum, 2));
-            receiveData.BarCode = recDataStr.Substring(13 + receiveData.IDNum, receiveData.BarCodeNum);
+
+            if (run_status)
+            {
+                //再一次判断
+                string recDataStr = new string(buf);
+                receiveData.CheckBit = Convert.ToInt32(recDataStr.Substring(0, 1));
+                receiveData.GetNewData = Convert.ToInt32(recDataStr.Substring(1, 1));
+                receiveData.GetTestEnd = Convert.ToInt32(recDataStr.Substring(2, 1));
+                receiveData.GetTestType = Convert.ToInt32(recDataStr.Substring(3, 1));
+                receiveData.UploadEnd = Convert.ToInt32(recDataStr.Substring(4, 1));
+                receiveData.Device = Convert.ToInt32(recDataStr.Substring(5, 1));
+                receiveData.NotUse1 = Convert.ToInt32(recDataStr.Substring(6, 1));
+                receiveData.NotUse2 = Convert.ToInt32(recDataStr.Substring(7, 1));
+                receiveData.NotUse3 = Convert.ToInt32(recDataStr.Substring(8, 1));
+                receiveData.IDNum = Convert.ToInt32(recDataStr.Substring(9, 2));
+                receiveData.ID = recDataStr.Substring(11, receiveData.IDNum);
+                receiveData.BarCodeNum = Convert.ToInt32(recDataStr.Substring(11 + receiveData.IDNum, 2));
+                receiveData.BarCode = recDataStr.Substring(13 + receiveData.IDNum, receiveData.BarCodeNum);
+            }
         }
         /// <summary>
         /// 往命名通道写结构体
@@ -215,28 +220,26 @@ namespace MiddleWare.Communicate
         /// </summary>
         public static void DisconnectPipe(int CloseStatus)
         {
-            //CloseStatus:0  主动正常关闭；1：被动关闭：2：主动异常关闭
+            //CloseStatus:0  主动正常关闭；1：被动关闭；2：主动异常关闭
             //1和2状态下需要重新建立连接
-            DSCancel.Cancell();
             run_status = false;
+            DSCancel.Cancell();
             Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
             if (!pipeServer.IsConnected && pipe_read == 2)
             {
                 connectSelf(false);//重要
             }
+
             pipeServer.Close();
             pipeServer.Dispose();
             if (!pipeServer_write.IsConnected && pipe_write == 2) //pipeServer_write在后面创建的
             {
                 connectSelf(true);//重要
             }
+
             pipeServer_write.Close();
             pipeServer_write.Dispose();
-            if (CloseStatus == 0)
-            {
-                return;
-            }
-            else
+            if (CloseStatus != 0)
             {
                 GlobalVariable.DSNum = true;
                 Openpipe.BeginInvoke(GlobalVariable.DSDEVICEADDRESS, null, null);
