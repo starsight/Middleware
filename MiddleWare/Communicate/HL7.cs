@@ -221,8 +221,11 @@ namespace MiddleWare.Communicate
                     {
                         HL7Message = hl7Manager.GetHL7Message();
                         Connect.sendSocket(HL7Message);
+                        if (SendNum == 0) 
+                        {
+                            ++Statusbar.SBar.SendNum;
+                        }
                         ++SendNum;
-                        ++Statusbar.SBar.SendNum;
                     }
                     catch
                     {

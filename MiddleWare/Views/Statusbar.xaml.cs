@@ -31,6 +31,7 @@ namespace MiddleWare.Views
             SBar.SendNum = 0;
             SBar.ReceiveNum = 0;
             SBar.ReplyNum = 0;
+            SBar.IssueNum = 0;
             SBar.NoSendNum = 0;
             SBar.NoIssueNum = 0;
         }
@@ -72,6 +73,7 @@ namespace MiddleWare.Views
         private int _ReceiveNum;
         private int _SendNum;
         private int _ReplyNum;
+        private int _IssueNum;
         private int _NoSendNum;
         private int _NoIssueNum;
         private bool _IsOneWay;
@@ -123,6 +125,21 @@ namespace MiddleWare.Views
                 {
                     this._ReplyNum = value;
                     OnPropertyChanged("ReplyNum");
+                }
+            }
+        }
+        public int IssueNum
+        {
+            get
+            {
+                return this._IssueNum;
+            }
+            set
+            {
+                if (this._IssueNum != value) 
+                {
+                    this._IssueNum = value;
+                    OnPropertyChanged("IssueNum");
                 }
             }
         }

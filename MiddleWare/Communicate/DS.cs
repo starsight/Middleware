@@ -391,6 +391,7 @@ namespace MiddleWare.Communicate
             {
                 WriteAccessDS.UpdateDBIn(_ID, "DS400");
             }
+            ++Statusbar.SBar.IssueNum;
         }
     }
 
