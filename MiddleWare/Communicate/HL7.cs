@@ -372,8 +372,6 @@ namespace MiddleWare.Communicate
 
                                 Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
                                 Statusbar.SBar.SampleId = hl7info.SampleID;//mini mode
-
-                                Thread.Sleep(200);
                             }
                         }
                     }

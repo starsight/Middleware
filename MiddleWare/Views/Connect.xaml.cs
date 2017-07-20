@@ -286,7 +286,7 @@ namespace MiddleWare.Views
             try
             {
                 clientSocket.Connect(new IPEndPoint(ip, port));
-                clientSocket.ReceiveTimeout = 1000;//设置读取超时时间500ms
+                clientSocket.ReceiveTimeout = 500;//设置读取超时时间500ms
                 clientSocket.SendTimeout = 1000;//设置发送超时时间1s
                 AddItem(textbox_lisshow, "连接LIS服务器成功\r\n");
             }
@@ -342,17 +342,48 @@ namespace MiddleWare.Views
                 #endregion
             }
 
-            while (GlobalVariable.IsSocketRun)
+            while (GlobalVariable.IsSocketRun && (clientSocket != null)) 
             {
-                if (clientSocket.Poll(-1, SelectMode.SelectRead) && !IsSocketRead) //判断socket是否在连接状态
+                if (clientSocket.Poll(50, SelectMode.SelectRead) && (!IsSocketRead))  //判断socket是否在连接状态
+                //if (false) //判断socket是否在连接状态
                 {
+                    bool IsDisConnect = false;
+                    byte[] temp = new byte[1024];
+                    try
+                    {
+                        int nRead = clientSocket.Receive(temp);
+                        if (nRead == 0) 
+                        {
+                            IsDisConnect = true;
+                        }
+                    }
+                    catch
+                    {
+                        IsDisConnect = true;
+                    }
+                    try
+                    {
+                        if (!IsDisConnect) 
+                        {
+                            int nSend = clientSocket.Send(new byte[1]);
+                        }
+                    }
+                    catch
+                    {
+                        clientSocket.Dispose();
+                        IsDisConnect = true;
+                    }
+                    if (!IsDisConnect) 
+                    {
+                        continue;
+                    }
                     LisNum = false;
                     AddItem(textbox_lisshow, "LIS服务器断开连接\r\n正在重新连接\r\n");
                     LisMessage.Invoke("LIS服务器断开连接\r\n正在重新连接\r\n", "LIS");
 
                     GlobalVariable.IsSocketRun = false;
                     
-                    /*自动连接，如果都还不行的话，直接放弃*/
+                    /*自动连接，如果都还不行的话，直接放弃 by LZH*/
                     for (int i = 0; i < GlobalVariable.ReLisConnectNum; ++i) 
                     {
                         Thread.Sleep(1000);
@@ -360,7 +391,7 @@ namespace MiddleWare.Views
                         {
                             clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                             clientSocket.Connect(new IPEndPoint(ip, port));
-                            clientSocket.ReceiveTimeout = 1000;//设置读取超时时间500ms
+                            clientSocket.ReceiveTimeout = 500;//设置读取超时时间500ms
                             clientSocket.SendTimeout = 1000;//设置发送超时时间1s
                             if (clientSocket.Connected)
                             {
@@ -379,6 +410,7 @@ namespace MiddleWare.Views
                         AddItem(textbox_lisshow, "连接LIS服务器成功\r\n");
                         LisMessage.Invoke("连接LIS服务器成功\r\n", "LIS");
                         GlobalVariable.IsSocketRun = true;
+                        LisNum = true;
                         ph.Start();
                         continue;
                     }
@@ -403,6 +435,7 @@ namespace MiddleWare.Views
                         break;//退出去
                     }
                 }
+                Thread.Sleep(100);
             }
         }
         /// <summary>
@@ -492,7 +525,7 @@ namespace MiddleWare.Views
                     return Encoding.UTF8.GetString(recyBytes, 0, receiveNumber);
                 }
             }
-            catch(SocketException se)
+            catch
             {
                 return "ERROR";//接收超时
             }
@@ -1075,6 +1108,7 @@ namespace MiddleWare.Views
                 GlobalVariable.DSNum = false;
                 NamedPipe.DisconnectPipe(0);//关闭命名通道,里面包括了关闭所有相关线程
                 AddItem(textbox_deviceshow, "与生化仪器断开连接\r\n");
+                return;
             }
             else if (!IsDSshow && IsPLshow && GlobalVariable.PLNum)
             {
