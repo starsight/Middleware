@@ -43,7 +43,15 @@ namespace MiddleWare.Views
             combobox_language.ItemsSource = langSelect;
             if (AppConfig.GetAppConfig("Language") != null) 
             {
-                GlobalVariable.Language = Convert.ToInt16(AppConfig.GetAppConfig("Language"));
+                try
+                {
+                    GlobalVariable.Language = Convert.ToInt16(AppConfig.GetAppConfig("Language"));
+                }
+                catch
+                {
+                    GlobalVariable.Language = 0;
+                }
+                
             }
             else
             {
@@ -64,7 +72,40 @@ namespace MiddleWare.Views
                 dict.Source = new Uri(@"Resources\en.xaml", UriKind.Relative);
             }
 
-            Application.Current.Resources.MergedDictionaries.Add(dict);          
+            Application.Current.Resources.MergedDictionaries.Add(dict);
+
+            /*LIS重连次数和样本最大重复上传次数 读取样本设置*/
+            if (AppConfig.GetAppConfig("ReSendNum") != null)
+            {
+                try
+                {
+                    GlobalVariable.ReSendNum = Convert.ToInt16(AppConfig.GetAppConfig("ReSendNum"));
+                }
+                catch
+                {
+                    GlobalVariable.ReSendNum = 5;
+                }
+            }
+            else
+            {
+                GlobalVariable.ReSendNum = 5;
+            }
+            if (AppConfig.GetAppConfig("ReLisConnectNum") != null)
+            {
+                try
+                {
+                    GlobalVariable.ReLisConnectNum = Convert.ToInt16(AppConfig.GetAppConfig("ReLisConnectNum"));
+                }
+                catch
+                {
+                    GlobalVariable.ReLisConnectNum = 3;
+                }
+            }
+            else
+            {
+                GlobalVariable.ReLisConnectNum = 3;
+            }
+                
         }
 
         private async void button_languageOK_Click(object sender, RoutedEventArgs e)
@@ -116,6 +157,7 @@ namespace MiddleWare.Views
             {
                 GlobalVariable.ReSendNum = resendnum;
                 await mainwin.ShowMessageAsync("通知", "修改成功");
+                AppConfig.UpdateAppConfig("ReSendNum", resendnum.ToString());
             }
             else
             {
@@ -140,6 +182,7 @@ namespace MiddleWare.Views
             {
                 GlobalVariable.ReLisConnectNum = relisconnectnum;
                 await mainwin.ShowMessageAsync("通知", "修改成功");
+                AppConfig.UpdateAppConfig("ReLisConnectNum", relisconnectnum.ToString());
             }
             else
             {

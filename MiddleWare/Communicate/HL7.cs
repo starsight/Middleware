@@ -18,7 +18,6 @@ namespace MiddleWare.Communicate
     public class HL7Manager
     {
         private object HL7Locker = new object();//HL7队列锁
-        private object HL7RequestLocker = new object();//HL7Request队列锁
 
         public struct HL7Struct
         {
@@ -81,7 +80,11 @@ namespace MiddleWare.Communicate
             }
         }
 
+
+
+
         //HL7申请样本队列
+        private object HL7RequestLocker = new object();//HL7Request队列锁
         public struct HL7RequestStruct
         {
             public string HL7RequestMessage;
@@ -129,6 +132,32 @@ namespace MiddleWare.Communicate
             lock (HL7RequestLocker)
             {
                 HL7RequestSampleDataQueue.Dequeue();
+            }
+        }
+
+        //LIS主动下发样本队列
+        private object HL7ApplySample = new object();//LIS主动下发样本队列锁
+        private readonly Queue<string> HL7ApplySampleQueue = new Queue<string>();
+        public ManualResetEvent HL7ApplySampleSignal = new ManualResetEvent(false);
+        public void AddHL7ApplySample(string data)
+        {
+            lock(HL7ApplySample)
+            {
+                HL7ApplySampleQueue.Enqueue(data);
+            }
+        }
+        public string GetHL7ApplySample()//这个移除并得到队列开始处的数值
+        {
+            lock(HL7ApplySample)
+            {
+                return HL7ApplySampleQueue.Dequeue();
+            }
+        }
+        public bool IsHL7ApplySampleAvailable
+        {
+            get
+            {
+                return HL7ApplySampleQueue.Count > 0;
             }
         }
 
@@ -196,6 +225,7 @@ namespace MiddleWare.Communicate
         public void Start()
         {
             Task.Factory.StartNew(sendSocket, ProcessHL7Cancel.Token);
+            Task.Factory.StartNew(HL7ApplySampleProcess, ProcessHL7Cancel.Token);
         }
         private void sendSocket()
         {
@@ -353,32 +383,53 @@ namespace MiddleWare.Communicate
                     if (receiveString.Length > 10 && receiveString.Substring(0, 3) == "MSH")
                     {
                         //传回来为标准信息
-                        if (receiveString.IndexOf("DSR") != -1)
-                        {
-                            //判断传回来数据为DSR数据
-                            //解析DSR
-                            //解析完DSR数据就要回复ACKQ03消息，此时设备信息传出去
-                            PipeParser parserActiveDSR = new PipeParser();
-                            IMessage mActiveDSR = parserActiveDSR.Parse(receiveString);
-                            DSR_Q03 dsr = mActiveDSR as DSR_Q03;
-                            if (dsr.MSH.AcceptAcknowledgmentType.Value == "P" && dsr.QAK.QueryResponseStatus.Value == "OK")
-                            {
-                                Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;// mini mode
-
-                                //双重判断,既判断是否为LIS主动发送样本信息,也要判断是否OK
-                                HL7Manager.HL7SampleInfo hl7info = HL7_ParserSampleInfo(receiveString);
-                                RequestSampleData.Invoke(hl7info);//这个地方应该要判断一下是否为DS
-                                //接收成功后就要发送应答信号
-                                Connect.sendSocket(CreatACKQ03(dsr.MSH.ReceivingFacility.NamespaceID.Value));
-                                //ProcessHL7Message.Invoke(hl7Manager.GetHL7RequestSampleDataSample_ID() + "LIS服务器主动发送样本申请信息\r\n", "LIS");
-                                ProcessHL7Message.Invoke(hl7info.SampleID + "LIS服务器主动发送样本申请信息\r\n", "LIS");
-
-                                Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
-                                Statusbar.SBar.SampleId = hl7info.SampleID;//mini mode
-                            }
-                        }
+                        hl7Manager.AddHL7ApplySample(receiveString);//扔给队列交给线程处理
+                        hl7Manager.HL7ApplySampleSignal.Set();//唤醒线程
                     }
                     #endregion
+                }
+            }
+        }
+        private void HL7ApplySampleProcess()
+        {
+            string receiveString = string.Empty;
+            while ((!ProcessHL7Cancel.IsCancellationRequested && GlobalVariable.IsSocketRun) || hl7Manager.IsHL7ApplySampleAvailable)
+            {
+                //进行之前接收到的样本数据处理
+                hl7Manager.HL7ApplySampleSignal.WaitOne();
+                if (!hl7Manager.IsHL7ApplySampleAvailable)
+                {
+                    hl7Manager.HL7ApplySampleSignal.Reset();
+                    Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;
+                }
+                else
+                {
+                    //队列里存在数据
+                    receiveString = hl7Manager.GetHL7ApplySample();
+                    if (receiveString.IndexOf("DSR") != -1) 
+                    {
+                        //判断传回来数据为DSR数据
+                        //解析DSR
+                        //解析完DSR数据就要回复ACKQ03消息，此时设备信息传出去
+                        PipeParser parserActiveDSR = new PipeParser();
+                        IMessage mActiveDSR = parserActiveDSR.Parse(receiveString);
+                        DSR_Q03 dsr = mActiveDSR as DSR_Q03;
+                        if (dsr.MSH.AcceptAcknowledgmentType.Value == "P" && dsr.QAK.QueryResponseStatus.Value == "OK")
+                        {
+                            //双重判断,既判断是否为LIS主动发送样本信息,也要判断是否OK
+                            Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;// mini mode
+
+                            HL7Manager.HL7SampleInfo hl7info = HL7_ParserSampleInfo(receiveString);
+                            RequestSampleData.Invoke(hl7info);
+                            //接收成功后就要发送应答信号
+                            Connect.sendSocket(CreatACKQ03(dsr.MSH.ReceivingFacility.NamespaceID.Value));
+                            ProcessHL7Message.Invoke(hl7info.SampleID + "LIS服务器主动发送样本申请信息\r\n", "LIS");
+
+                            //Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
+                            Statusbar.SBar.SampleId = hl7info.SampleID;//mini mode
+                        }
+                    }
+                    Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;// mini mode
                 }
             }
         }

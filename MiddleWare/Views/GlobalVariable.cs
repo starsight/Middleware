@@ -96,12 +96,12 @@ namespace MiddleWare.Views
 
         public static DateTime DefalutTime = Convert.ToDateTime("1900-01-01 00:00:00");
 
-        public static HashSet<string> NoDisplaySampleID = new HashSet<string>();
+        public static HashSet<string> NoDisplaySampleID = new HashSet<string>();//生化仪监控界面不需要显示样本的ID
 
-        public static int ReSendNum = 5;
-        public static int ReLisConnectNum = 3;
+        public static int ReSendNum = 5;//样本最大重复上传次数
+        public static int ReLisConnectNum = 3;//LIS重连次数
 
-        public static bool IsSocketRun = false;
+        public static bool IsSocketRun = false;//Socket是否在连接状态
 
     }
 
