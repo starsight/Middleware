@@ -167,10 +167,12 @@ namespace MiddleWare.Views
                 if (flag)
                 {
                     DownloadList.Add(singleSample);
+                    Statusbar.SBar.NoIssueNum = DownloadList.Count();//检查更新一下
                 }
                 else
                 {
                     BackStageList.Add(singleSample);
+                    Statusbar.SBar.NoIssueNum = DownloadList.Count();//检查更新一下
                 }
             }
             conn.Close();

@@ -133,6 +133,7 @@ namespace MiddleWare.Views
             }
             AccessManagerDS.mutex.ReleaseMutex();
             conn.Close();
+            Statusbar.SBar.NoSendNum = UploadList.Count();
         }
         /// <summary>
         /// 一键上传所有未发送样本

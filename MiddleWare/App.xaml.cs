@@ -14,7 +14,6 @@ namespace MiddleWare
     public partial class App : Application
     {
     }
-
     public class AppConfig
     {
         /// <summary>
