@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -41,6 +42,7 @@ namespace MiddleWare.Views
 
             this.grid_personalset.DataContext = personalSet;
             combobox_language.ItemsSource = langSelect;
+            version.Text = GlobalVariable.Version;
             if (AppConfig.GetAppConfig("Language") != null) 
             {
                 try
@@ -188,6 +190,18 @@ namespace MiddleWare.Views
             {
                 await mainwin.ShowMessageAsync("通知", "请输入正常范围");
             }
+        }
+
+        private async void button_clearcache_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            foreach (string key in ConfigurationManager.AppSettings)
+            {
+                config.AppSettings.Settings.Remove(key);
+            }
+            await mainwin.ShowMessageAsync("通知", "已成功清除缓存");
+            return;
         }
     }
 

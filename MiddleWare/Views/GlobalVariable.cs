@@ -103,6 +103,7 @@ namespace MiddleWare.Views
 
         public static bool IsSocketRun = false;//Socket是否在连接状态
 
+        public static String Version = "1.0.0-alpha";
     }
 
 }
