@@ -11,16 +11,160 @@
     <system:String x:Key="Language">Language</system:String>
     <system:String x:Key="SoftLang">Software Language:</system:String>
     <system:String x:Key="OK">OK</system:String>
+    <system:String x:Key="UploadSettings">Uploda Settings</system:String>
+    <system:String x:Key="LisReConnectionNum">LISReconnectNum</system:String>
+    <system:String x:Key="RepeatedUploadNum">RepeatedUploadsNum</system:String>
     <system:String x:Key="Cancel">Cancel</system:String>
 
+    <!--mainwindow.xmal-->
+    <system:String x:Key="MainWindowConnection">Connection</system:String>
+    <system:String x:Key="MainWindowMonitor">Monitor</system:String>
+    <system:String x:Key="MainWindowQuery">Query</system:String>
+    <system:String x:Key="MainWindowSetting">Settings</system:String>
+    <system:String x:Key="MainWindowMiniMode">Mini Mode</system:String>
+    <system:String x:Key="MainWindowAboutUs">About Us</system:String>
+    <system:String x:Key="MainWindowQuit">Quit</system:String>
+    
     <!--connect.xmal-->
     <system:String x:Key="LisServerConnect">LIS Server Connect</system:String>
+    <system:String x:Key="DeviceConncet">Device Connect</system:String>
+    <system:String x:Key="LisConnectMode">Connect Mode</system:String>
+    <system:String x:Key="DeviceConnectSelect">Device Selection</system:String>
+    <system:String x:Key="ConnectOpen">OPEN</system:String>
+    <system:String x:Key="ConncetClose">CLOSE</system:String>
+    <system:String x:Key="LisServerConnectState">Lis Server Connect State</system:String>
+    <system:String x:Key="DeviceConnectState">Device Connect State</system:String>
+
+    <!--others-->
+    <system:String x:Key="ConnectionNetSettings">Network Settings</system:String>
+    <system:String x:Key="ConnectionNetIP">IP：</system:String>
+    <system:String x:Key="ConnectionNetPort">Port：</system:String>
+    <system:String x:Key="ConnectionSerialSettings">Serial Settings</system:String>
+    <system:String x:Key="ConnectionSerialSelection">Serial Selection：</system:String>
+    <system:String x:Key="ConnectionSerialBuad">Buad Rate：</system:String>
+    <system:String x:Key="ConnectionSerialDataBit">Word Size：</system:String>
+    <system:String x:Key="ConnectionSerialStopBit">Stop Bits：</system:String>
+    <system:String x:Key="ConnectionSerialParity">Parity Check：</system:String>
+    <system:String x:Key="ConnectionuploadMode">Upload Mode</system:String>
+    <system:String x:Key="ConnectionNetUpload">Network</system:String>
+    <system:String x:Key="ConnectionSerialUpload">Serial</system:String>
+    <system:String x:Key="ConnectionDatabasePath">Database Path：</system:String>
 
     <!--statusbar.xmal-->
-    <system:String x:Key="StatusBarReceiveSampleCount">Receive Count:</system:String>
+    <system:String x:Key="StatusBarReceiveSampleCount">Receive：</system:String>
+    <system:String x:Key="StatusBarUploadSampleCount">Upload：</system:String>
+    <system:String x:Key="StatusBarReplySampleCount">LisReply：</system:String>
+    <system:String x:Key="StatusBarNotUploadSampleCount">NotUpload：</system:String>
+    <system:String x:Key="StatusBarIssueSampleCount">Issue：</system:String>
+    <system:String x:Key="StatusBarNotIssueSampleCount">NotIssue：</system:String>
+    <system:String x:Key="StatusBarLisOneWay">LisOneWay</system:String>
 
     <!--FloatMini.xaml-->
     <system:String x:Key="FloatMiniLIS_Device">LIS/Device</system:String>
     <system:String x:Key="FloatMiniSend_Receive_SampleCount">Send/Rece</system:String>
-    
+
+    <!--monitor.xaml-->
+    <system:String x:Key="MonitorDeviceSelection">Device Selsection</system:String>
+    <system:String x:Key="MonitorDeviceMonitorStatus">Device Monitor Status：</system:String>
+    <system:String x:Key="MonitorLisMonitorStatus">Lis Monitor Status：</system:String>
+
+    <!--query.xaml-->
+    <system:String x:Key="QuerySelectQueryDate">Query Date</system:String>
+    <system:String x:Key="QuerySelectQueryDevice">Query Device</system:String>
+    <system:String x:Key="QuerySampleIDQuery">Sample ID</system:String>
+    <system:String x:Key="QueryInputID">Input ID</system:String>
+
+    <!--query_datagrid-->
+    <system:String x:Key="DatagridNumber">Number</system:String>
+    <system:String x:Key="DatagridSampleID">SampleID</system:String>
+    <system:String x:Key="DatagridPatienID">PatientID</system:String>
+    <system:String x:Key="DatagridPatientName">Name</system:String>
+    <system:String x:Key="DatagridSex">Sex</system:String>
+    <system:String x:Key="DatagridDevice">Device</system:String>
+    <system:String x:Key="DatagridTestKind">Kind</system:String>
+    <system:String x:Key="DatagridTestTime">Test Time</system:String>
+
+    <!--setoption.xaml-->
+    <system:String x:Key="SetOptionItemNumber">ItemNumber</system:String>
+    <system:String x:Key="SetOptionUpload">Upload</system:String>
+    <system:String x:Key="SetOptionIssue">Issue</system:String>
+    <system:String x:Key="SetOptionSettings">Settings</system:String>
+    <system:String x:Key="SetOptionAbout">About</system:String>
+
+    <!--number_item.xaml-->
+    <system:String x:Key="NumberItemSelectDevive">Select Device </system:String>
+    <system:String x:Key="NumberItemConfirmSelect">Confirm</system:String>
+    <system:String x:Key="NumberItemUpdataDSDB">Updata Biochemistry</system:String>
+    <system:String x:Key="NumberItemConfirmChange">Confirm</system:String>
+    <system:String x:Key="NumberItemCancel">Cancel</system:String>
+
+    <!--number_item_datagrid-->
+    <system:String x:Key="NumberItem">Item</system:String>
+    <system:String x:Key="NumberItemFullName">Full Name</system:String>
+    <system:String x:Key="NumberItemKind">Kind</system:String>
+    <system:String x:Key="NumberItemNumber">Number</system:String>
+
+    <!--onekeyupload.xmal-->
+    <system:String x:Key="UploadNoNum">Not Upload：</system:String>
+    <system:String x:Key="UploadOneKeyUpload">Up All</system:String>
+    <system:String x:Key="UploadCheckNoUpload">Updata</system:String>
+    <system:String x:Key="UploadAllSelect">Select</system:String>
+    <system:String x:Key="UploadConfirmUpload">Confirm</system:String>
+
+    <!--onekeydownload.xmal-->
+    <system:String x:Key="DownloadNoNum">Not Issue：</system:String>
+    <system:String x:Key="DownloadOneKeyDownload">Down All</system:String>
+    <system:String x:Key="DownloadCheckNoDownload">Update</system:String>
+    <system:String x:Key="DownloadAllSelect">Select</system:String>
+    <system:String x:Key="DownloadConfirmDownload">Confirm</system:String>
+
+    <!--about.xaml-->
+    <system:String x:Key="AboutCoName">SINNOWA Medical Science Co., Ltd.</system:String>
+    <system:String x:Key="AboutAddress">Address:</system:String>
+    <system:String x:Key="AboutPostcode">Postcode:</system:String>
+    <system:String x:Key="AboutTel">Tel:</system:String>
+    <system:String x:Key="AboutFax">Fax:</system:String>
+    <system:String x:Key="AboutEmail">E-mail:</system:String>
+    <system:String x:Key="AboutWebsite">Website:</system:String>
+    <system:String x:Key="AboutCoAddress">No.7, Baoshan Road Qilin, Nanjing, China</system:String>
+    <system:String x:Key="AboutCoPostcode">211135</system:String>
+    <system:String x:Key="AboutCoTel">+86-25-84127928/84127188-8303/8304/8305/8306/8310</system:String>
+    <system:String x:Key="AboutCoFax">+86-25-84127199</system:String>
+    <system:String x:Key="AboutCoEmail">sales@sinnowa.com</system:String>
+    <system:String x:Key="AboutCoWebsite">http://www.sinnnowa.com/en</system:String>
+
+    <!--sampleinfo-->
+    <system:String x:Key="SampleInfoItem">Item:</system:String>
+    <system:String x:Key="SampleInfoSampleID">SampleID:</system:String>
+    <system:String x:Key="SampleInfoDoctor">Doctor:</system:String>
+    <system:String x:Key="SampleInfoPatienID">PatientID:</system:String>
+    <system:String x:Key="SampleInfoTestTime">Time:</system:String>
+    <system:String x:Key="SampleInfoDepartment">Department:</system:String>
+    <system:String x:Key="SampleInfoPatientName">Name:</system:String>
+    <system:String x:Key="SampleInfoKind">Kind:</system:String>
+    <system:String x:Key="SampleInfoArea">Area:</system:String>
+    <system:String x:Key="SampleInfoSex">Sex:</system:String>
+    <system:String x:Key="SampleInfoDevice">Device:</system:String>
+    <system:String x:Key="SampleInfoBed">Bed:</system:String>
+    <system:String x:Key="SampleInfoBarCode">Barcode:</system:String>
+    <system:String x:Key="SampleInfoAAP">AAP:</system:String>
+
+    <!--plchart-->
+    <system:String x:Key="PLPAC">PAC Plots</system:String>
+    <system:String x:Key="PLRBC">RBC Histogram</system:String>
+    <system:String x:Key="PLPLT">PLT Histogram</system:String>
+
+    <!--printpreview-->
+    <system:String x:Key="PrintPreviewTitle">打印预览</system:String>
+    <system:String x:Key="PrintDetails">Details</system:String>
+
+    <!--detail_datagrid-->
+    <system:String x:Key="DetailItem">Item</system:String>
+    <system:String x:Key="DetailItemFullName">FullName</system:String>
+    <system:String x:Key="DetailResult">Result</system:String>
+    <system:String x:Key="DetailResultUnit">Unit</system:String>
+    <system:String x:Key="DetailNormalLow">NormalLow</system:String>
+    <system:String x:Key="DetailNormalHigh">NormalHigh</system:String>
+    <system:String x:Key="DetailIndicate">Indicate</system:String>
+
 </ResourceDictionary>

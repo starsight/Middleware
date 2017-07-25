@@ -274,7 +274,7 @@ namespace MiddleWare.Communicate
 
     public class ProcessPipes
     {
-        public delegate void PipeTransmit(string ID, int TestType, int Device, AccessManagerDS am);
+        public delegate void PipeTransmit(string ID,int Device, int TestType, AccessManagerDS am,ref int Exist);
         public event PipeTransmit PipeMessage;
 
         public delegate void PipeApplyTransmit(string sample_id, int Device);
@@ -349,8 +349,7 @@ namespace MiddleWare.Communicate
                         Statusbar.SBar.SoftStatus = GlobalVariable.miniBusy;//mini mode
                         Statusbar.SBar.SampleId = receiveData.ID;
                         //新数据结果
-                        PipeMessage.BeginInvoke(receiveData.ID, receiveData.Device, receiveData.GetTestType, accessmanager, null, null);//把这三个数据委托出去，三个数据分别为样本ID ,样本测试仪器,和样本类型
-                        receiveData.UploadEnd = 1;
+                        PipeMessage.Invoke(receiveData.ID, receiveData.Device, receiveData.GetTestType, accessmanager, ref receiveData.UploadEnd);//把这三个数据委托出去，三个数据分别为样本ID ,样本测试仪器,和样本类型
                         namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);//回写函数
                         Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;
                     }
@@ -446,8 +445,9 @@ namespace MiddleWare.Communicate
             strConnection += DBaddress;
             conn = new OleDbConnection(strConnection);
         }
-        public static void ReadData(string testID, int Device, int type, AccessManagerDS am)//读取生化仪数据库
+        public static void ReadData(string testID, int Device, int type, AccessManagerDS am,ref int Exist)//读取生化仪数据库
         {
+            Exist = 0;
             AccessManagerDS.EquipMutex.WaitOne();//上锁
             if (conn.State == System.Data.ConnectionState.Closed)
             {
@@ -528,14 +528,7 @@ namespace MiddleWare.Communicate
                 {
                     case 0://生化
                         {
-                            /* 17-07-13 之前
-                             a -> SAMPLE_ITEM_TEST_RESULT -> sample_id √  item √ time √ result √ unit √ normal_low √ normal_high √ OD1 ×
-                             b -> SAMPLE_MAIN  -> sample_id  √ sample_kind  √ SEND_TIME √  多emergency patientid
-                             c -> ITEM_PARA_MAIN ->  full_name  √
-                             d -> SAMPLE_PATIENT_INFO -> first_name √  sex √  age √
-                             e -> SAMPLE_REGISTER_INFO -> department √  treat_area √ silkbed_no √  doctor √
-                             */
-                            //wenjie 新增 OD1 17-07-13
+                            
                             strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
                             "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
                             "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
@@ -904,6 +897,7 @@ namespace MiddleWare.Communicate
             am.AddDI800Access(di800);
             am.DI800SignalAccess.Set();
             ReadEquipAccessMessage.Invoke(di800.SAMPLE_ID + "读取设备数据库成功\r\n", "DEVICE");
+            Exist = 1;
             ds.Clear();//清除DataSet所有数据
             conn.Close();//关闭
             AccessManagerDS.EquipMutex.ReleaseMutex();

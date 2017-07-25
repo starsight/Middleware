@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MiddleWare.Views"
         mc:Ignorable="d" Icon="/Resources/printer.ico"
-        Title="打印预览" Height="600" Width="882" >
+        Title="{DynamicResource PrintPreviewTitle}" Height="600" Width="882" >
     <Grid>
         <DocumentViewer Name="docViewer"/>
     </Grid>

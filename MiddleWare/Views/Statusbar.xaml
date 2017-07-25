@@ -26,21 +26,21 @@
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="接收样本：" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0"/>
+            <TextBlock Text="{DynamicResource StatusBarReceiveSampleCount}" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0"/>
             <TextBlock Text="{Binding Path=ReceiveNum}" FontSize="15" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="0" />
-            <TextBlock Text="上传样本: " FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="2" Grid.Row="0"/>
+            <TextBlock Text="{DynamicResource StatusBarUploadSampleCount}" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="2" Grid.Row="0"/>
             <TextBlock Text="{Binding Path=SendNum}" FontSize="15" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="3" Grid.Row="0"/>
-            <TextBlock Text="Lis回复样本: " FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="4" Grid.Row="0"/>
+            <TextBlock Text="{DynamicResource StatusBarReplySampleCount}" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="4" Grid.Row="0"/>
             <TextBlock Text="{Binding Path=ReplyNum}" FontSize="15" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="5" Grid.Row="0"/>
-            <TextBlock Text="未上传样本: " FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="6"/>
+            <TextBlock Text="{DynamicResource StatusBarNotUploadSampleCount}" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="6"/>
             <TextBlock Text="{Binding Path=NoSendNum}" FontSize="15" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="7" Grid.Row="0"/>
-            <TextBlock Text="未下发样本: " FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="10"/>
+            <TextBlock Text="{DynamicResource StatusBarNotIssueSampleCount}" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="10"/>
             <TextBlock Text="{Binding Path=NoIssueNum}" FontSize="15" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="11" Grid.Row="0"/>
-            <Button x:Name="button_nosendnum" Click="button_nosendnum_Click" Background="SkyBlue" BorderThickness="0" Opacity="0" Content="未上传样本数：" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="8"/>
-            <Button x:Name="button_noissuenum" Click="button_noissuenum_Click" Background="SkyBlue" BorderThickness="0" Opacity="0" Content="未下发样本数：" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="10"/>
-            <TextBlock Text="下发样本：" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="8"/>
+            <Button x:Name="button_nosendnum" Click="button_nosendnum_Click" Background="SkyBlue" BorderThickness="0" Opacity="0" Content="{DynamicResource StatusBarNotUploadSampleCount}" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="6"/>
+            <Button x:Name="button_noissuenum" Click="button_noissuenum_Click" Background="SkyBlue" BorderThickness="0" Opacity="0" Content="{DynamicResource StatusBarNotIssueSampleCount}" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="10"/>
+            <TextBlock Text="{DynamicResource StatusBarIssueSampleCount}" FontSize="15" FontFamily="Microsoft YaHei UI Light" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="8"/>
             <TextBlock Text="{Binding Path=IssueNum}" FontSize="15" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="9" Grid.Row="0" />
         </Grid>
-        <CheckBox Content="Lis单向传输"  IsChecked="{Binding Path=IsOneWay, Mode=TwoWay}" FontSize="15" FontFamily="Microsoft YaHei UI Light" Grid.Column="1" Grid.Row="0"/>
+        <CheckBox Content="{DynamicResource StatusBarLisOneWay}"  IsChecked="{Binding Path=IsOneWay, Mode=TwoWay}" FontSize="15" FontFamily="Microsoft YaHei UI Light" Grid.Column="1" Grid.Row="0"/>
     </Grid>
 </UserControl>

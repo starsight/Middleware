@@ -18,9 +18,9 @@
             <RowDefinition Height="35*"/>
             <RowDefinition Height="255*"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="网口设置:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-        <TextBlock Text="IP地址:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Width="100" HorizontalAlignment="Right"/>
-        <TextBlock Text="端口:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" Width="100" HorizontalAlignment="Right"/>
+        <TextBlock Text="{DynamicResource ConnectionNetSettings}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBlock Text="{DynamicResource ConnectionNetIP}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Width="100" HorizontalAlignment="Right"/>
+        <TextBlock Text="{DynamicResource ConnectionNetPort}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" Width="100" HorizontalAlignment="Right"/>
         <TextBox x:Name="textbox_hl7ip" FontSize="18" FontFamily="Consolas" Grid.Column="1" Grid.Row="2" Height="25" Width="160" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" />
         <TextBox x:Name="textbox_hl7port" FontSize="18" FontFamily="Consolas" Grid.Column="1" Grid.Row="3" Height="25" Width="160" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
     </Grid>

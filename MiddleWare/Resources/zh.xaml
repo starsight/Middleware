@@ -11,13 +11,53 @@
     <system:String x:Key="Language">语言</system:String>
     <system:String x:Key="SoftLang">软件语言环境:</system:String>
     <system:String x:Key="OK">确认</system:String>
+    <system:String x:Key="UploadSettings">上传设置</system:String>
+    <system:String x:Key="LisReConnectionNum">LIS重连次数</system:String>
+    <system:String x:Key="RepeatedUploadNum">样本最大上传次数</system:String>
     <system:String x:Key="Cancel">取消</system:String>
 
+    <!--mainwindow.xmal-->
+    <system:String x:Key="MainWindowConnection">连接状态</system:String>
+    <system:String x:Key="MainWindowMonitor">实时监控</system:String>
+    <system:String x:Key="MainWindowQuery">数据查询</system:String>
+    <system:String x:Key="MainWindowSetting">设置</system:String>
+    <system:String x:Key="MainWindowMiniMode">悬浮窗</system:String>
+    <system:String x:Key="MainWindowAboutUs">关于我们</system:String>
+    <system:String x:Key="MainWindowQuit">退出软件</system:String>
+    
     <!--connect.xmal-->
     <system:String x:Key="LisServerConnect">LIS服务器连接</system:String>
+    <system:String x:Key="DeviceConncet">仪器连接</system:String>
+    <system:String x:Key="LisConnectMode">连接方式</system:String>
+    <system:String x:Key="DeviceConnectSelect">仪器选择</system:String>
+    <system:String x:Key="ConnectOpen">打开</system:String>
+    <system:String x:Key="ConncetClose">关闭</system:String>
+    <system:String x:Key="LisServerConnectState">Lis服务器连接状态</system:String>
+    <system:String x:Key="DeviceConnectState">仪器连接状态</system:String>
+    
+    <!--others-->
+    <system:String x:Key="ConnectionNetSettings">网口设置</system:String>
+    <system:String x:Key="ConnectionNetIP">IP地址：</system:String>
+    <system:String x:Key="ConnectionNetPort">端口：</system:String>
+    <system:String x:Key="ConnectionSerialSettings">串口设置</system:String>
+    <system:String x:Key="ConnectionSerialSelection">串口选择：</system:String>
+    <system:String x:Key="ConnectionSerialBuad">波特率：</system:String>
+    <system:String x:Key="ConnectionSerialDataBit">数据位：</system:String>
+    <system:String x:Key="ConnectionSerialStopBit">停止位：</system:String>
+    <system:String x:Key="ConnectionSerialParity">奇偶校验：</system:String>
+    <system:String x:Key="ConnectionuploadMode">上传方式</system:String>
+    <system:String x:Key="ConnectionNetUpload">网口上传</system:String>
+    <system:String x:Key="ConnectionSerialUpload">串口上传</system:String>
+    <system:String x:Key="ConnectionDatabasePath">数据库路径：</system:String>
 
     <!--statusbar.xmal-->
-    <system:String x:Key="StatusBarReceiveSampleCount">接收样本数:</system:String>
+    <system:String x:Key="StatusBarReceiveSampleCount">接收样本：</system:String>
+    <system:String x:Key="StatusBarUploadSampleCount">上传样本：</system:String>
+    <system:String x:Key="StatusBarReplySampleCount">Lis回复样本：</system:String>
+    <system:String x:Key="StatusBarNotUploadSampleCount">未上传样本：</system:String>
+    <system:String x:Key="StatusBarIssueSampleCount">下发样本：</system:String>
+    <system:String x:Key="StatusBarNotIssueSampleCount">未下发样本：</system:String>
+    <system:String x:Key="StatusBarLisOneWay">Lis单向传输</system:String>
 
     <!--MainWindow.xmal-->
     <system:String x:Key="AbouUs">关于我们</system:String>
@@ -26,5 +66,109 @@
     <system:String x:Key="FloatMiniLIS_Device">LIS/设备</system:String>
     <system:String x:Key="FloatMiniSend_Receive_SampleCount">发送/接收</system:String>
 
+    <!--monitor.xaml-->
+    <system:String x:Key="MonitorDeviceSelection">选择仪器</system:String>
+    <system:String x:Key="MonitorDeviceMonitorStatus">仪器监控状态：</system:String>
+    <system:String x:Key="MonitorLisMonitorStatus">Lis监控状态：</system:String>
+    
+    <!--query.xaml-->
+    <system:String x:Key="QuerySelectQueryDate">选择查询日期</system:String>
+    <system:String x:Key="QuerySelectQueryDevice">选择查询仪器</system:String>
+    <system:String x:Key="QuerySampleIDQuery">样本ID查询</system:String>
+    <system:String x:Key="QueryInputID">输入ID</system:String>
+
+    <!--query_datagrid-->
+    <system:String x:Key="DatagridNumber">编  号</system:String>
+    <system:String x:Key="DatagridSampleID">样本ID</system:String>
+    <system:String x:Key="DatagridPatienID">病人ID</system:String>
+    <system:String x:Key="DatagridPatientName">病人姓名</system:String>
+    <system:String x:Key="DatagridSex">性别</system:String>
+    <system:String x:Key="DatagridDevice">测试仪器</system:String>
+    <system:String x:Key="DatagridTestKind">测试类型</system:String>
+    <system:String x:Key="DatagridTestTime">测试时间</system:String>
+    
+    <!--setoption.xaml-->
+    <system:String x:Key="SetOptionItemNumber">项目编号</system:String>
+    <system:String x:Key="SetOptionUpload">上传情况</system:String>
+    <system:String x:Key="SetOptionIssue">下发情况</system:String>
+    <system:String x:Key="SetOptionSettings">软件设置</system:String>
+    <system:String x:Key="SetOptionAbout">帮助与关于</system:String>
+    
+    <!--number_item.xaml-->
+    <system:String x:Key="NumberItemSelectDevive">选择设备类型</system:String>
+    <system:String x:Key="NumberItemConfirmSelect">确认选择</system:String>
+    <system:String x:Key="NumberItemUpdataDSDB">更新生化仪数据库</system:String>
+    <system:String x:Key="NumberItemConfirmChange">确认修改</system:String>
+    <system:String x:Key="NumberItemCancel">取消</system:String>
+    
+    <!--number_item_datagrid-->
+    <system:String x:Key="NumberItem">项目</system:String>
+    <system:String x:Key="NumberItemFullName">全称</system:String>
+    <system:String x:Key="NumberItemKind">类型</system:String>
+    <system:String x:Key="NumberItemNumber">编号</system:String>
+    
+    <!--onekeyupload.xmal-->
+    <system:String x:Key="UploadNoNum">未上传样本数目</system:String>
+    <system:String x:Key="UploadOneKeyUpload">一键上传</system:String>
+    <system:String x:Key="UploadCheckNoUpload">选择未上传样本</system:String>
+    <system:String x:Key="UploadAllSelect">全选</system:String>
+    <system:String x:Key="UploadConfirmUpload">确认上传</system:String>
+
+    <!--onekeydownload.xmal-->
+    <system:String x:Key="DownloadNoNum">未下发样本数目</system:String>
+    <system:String x:Key="DownloadOneKeyDownload">一键下发</system:String>
+    <system:String x:Key="DownloadCheckNoDownload">选择未下发样本</system:String>
+    <system:String x:Key="DownloadAllSelect">全选</system:String>
+    <system:String x:Key="DownloadConfirmDownload">确认下发</system:String>
+    
+    <!--about.xaml-->
+    <system:String x:Key="AboutCoName">江苏英诺华医疗技术有限公司</system:String>
+    <system:String x:Key="AboutAddress">公司地址:</system:String>
+    <system:String x:Key="AboutPostcode">邮    编:</system:String>
+    <system:String x:Key="AboutTel">联系电话:</system:String>
+    <system:String x:Key="AboutFax">传    真:</system:String>
+    <system:String x:Key="AboutEmail">电子邮箱:</system:String>
+    <system:String x:Key="AboutWebsite">网    址:</system:String>
+    <system:String x:Key="AboutCoAddress">南京市江宁区麒麟街道宝山路7号</system:String>
+    <system:String x:Key="AboutCoPostcode">211135</system:String>
+    <system:String x:Key="AboutCoTel">025-84127188 总机</system:String>
+    <system:String x:Key="AboutCoFax">025-84127199</system:String>
+    <system:String x:Key="AboutCoEmail">sales@sinnowa.com</system:String>
+    <system:String x:Key="AboutCoWebsite">http://www.sinnowa.com</system:String>
+    
+    <!--sampleinfo-->
+    <system:String x:Key="SampleInfoItem">检测项目:</system:String>
+    <system:String x:Key="SampleInfoSampleID">样本编号:</system:String>
+    <system:String x:Key="SampleInfoDoctor">申请医生:</system:String>
+    <system:String x:Key="SampleInfoPatienID">病人编号:</system:String>
+    <system:String x:Key="SampleInfoTestTime">检测时间:</system:String>
+    <system:String x:Key="SampleInfoDepartment">科室:</system:String>
+    <system:String x:Key="SampleInfoPatientName">病人姓名:</system:String>
+    <system:String x:Key="SampleInfoKind">样本类型:</system:String>
+    <system:String x:Key="SampleInfoArea">病区:</system:String>
+    <system:String x:Key="SampleInfoSex">病人性别:</system:String>
+    <system:String x:Key="SampleInfoDevice">检测仪器:</system:String>
+    <system:String x:Key="SampleInfoBed">病床:</system:String>
+    <system:String x:Key="SampleInfoBarCode">条形码:</system:String>
+    <system:String x:Key="SampleInfoAAP">诱聚剂项目:</system:String>
+    
+    <!--plchart-->
+    <system:String x:Key="PLPAC">PAC点图</system:String>
+    <system:String x:Key="PLRBC">RBC直方图</system:String>
+    <system:String x:Key="PLPLT">PLT直方图</system:String>
+    
+    <!--printpreview-->
+    <system:String x:Key="PrintPreviewTitle">打印预览</system:String>
+    <system:String x:Key="PrintDetails">数据详情</system:String>
+    
+    <!--detail_datagrid-->
+    <system:String x:Key="DetailItem">项目名</system:String>
+    <system:String x:Key="DetailItemFullName">项目全称</system:String>
+    <system:String x:Key="DetailResult">结果</system:String>
+    <system:String x:Key="DetailResultUnit">结果单位</system:String>
+    <system:String x:Key="DetailNormalLow">正常最低值</system:String>
+    <system:String x:Key="DetailNormalHigh">正常最高值</system:String>
+    <system:String x:Key="DetailIndicate">提示</system:String>
+    
     
 </ResourceDictionary>

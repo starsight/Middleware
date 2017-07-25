@@ -6,6 +6,21 @@
              xmlns:local="clr-namespace:MiddleWare.Views"
              mc:Ignorable="d" 
              d:DesignHeight="550" d:DesignWidth="780">
+    <UserControl.Resources>
+        <Style x:Key="item" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Content" Value="{DynamicResource NumberItem}" />
+        </Style>
+        <Style x:Key="fullname" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Content" Value="{DynamicResource NumberItemFullName}" />
+        </Style>
+        <Style x:Key="kind" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Content" Value="{DynamicResource NumberItemKind}" />
+        </Style>
+        <Style x:Key="number" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Content" Value="{DynamicResource NumberItemNumber}" />
+        </Style>
+        
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="60*"/>
@@ -20,12 +35,12 @@
             <ColumnDefinition Width="180*"/>
             <ColumnDefinition Width="30*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Text="选择设备类型:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        <TextBlock Text="{DynamicResource NumberItemSelectDevive}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center"/>
         <ComboBox x:Name="NcomboBox" DropDownOpened="NcomboBox_DropDownOpened" FontSize="18" FontFamily="Consolas" Grid.Column="2" Grid.Row="0" Height="30" Width="120" SelectedValuePath="NAME" DisplayMemberPath="NAME" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <Button x:Name="Number_OK" Content="确认选择" FontFamily="宋体" FontSize="18" Grid.Column="3" Grid.Row="0" Width="100" Height="35" FontWeight="Normal" Click="Number_OK_Click"/>
-        <Button x:Name="Modefy_OK" Content="确认修改" FontSize="18" FontFamily="宋体" FontWeight="Normal" Grid.Column="3" Grid.Row="2" Height="35" Width="100" Click="Modefy_OK_Click"/>
-        <Button x:Name="Modefy_ESC" Content="取消" FontSize="18" FontFamily="宋体" FontWeight="Normal" Grid.Column="4" Grid.Row="2" Height="35" Width="100" Click="Modefy_ESC_Click"/>
-        <Button x:Name="Updata_DS" Content="更新生化仪数据" FontSize="18" FontFamily="宋体" FontWeight="Normal" Grid.Column="4"  Grid.ColumnSpan="3" Grid.Row="0" Height="35" Width="140" Click="Updata_DS_Click"/>
+        <Button x:Name="Number_OK" Content="{DynamicResource NumberItemConfirmSelect}" FontFamily="宋体" FontSize="18" Grid.Column="3" Grid.Row="0" Width="100" Height="35" FontWeight="Normal" Click="Number_OK_Click"/>
+        <Button x:Name="Modefy_OK" Content="{DynamicResource NumberItemConfirmChange}" FontSize="18" FontFamily="宋体" FontWeight="Normal" Grid.Column="3" Grid.Row="2" Height="35" Width="100" Click="Modefy_OK_Click"/>
+        <Button x:Name="Modefy_ESC" Content="{DynamicResource NumberItemCancel}" FontSize="18" FontFamily="宋体" FontWeight="Normal" Grid.Column="4" Grid.Row="2" Height="35" Width="100" Click="Modefy_ESC_Click"/>
+        <Button x:Name="Updata_DS" Content="{DynamicResource NumberItemUpdataDSDB}" FontSize="18" FontFamily="宋体" FontWeight="Normal" Grid.Column="4"  Grid.ColumnSpan="3" Grid.Row="0" Height="35" Width="140" Click="Updata_DS_Click"/>
         <DataGrid x:Name="Number_dataGrid" Grid.Column="1" Grid.ColumnSpan="5" Grid.Row="1" AlternatingRowBackground="BlanchedAlmond" Background="WhiteSmoke" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False">
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
@@ -42,10 +57,10 @@
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="项目" FontSize="18" FontFamily="Consolas" FontWeight="Medium" Width="150*" IsReadOnly="True" Binding="{Binding Item}" />
-                <DataGridTextColumn Header="全称" FontSize="15" FontFamily="宋体" FontWeight="Medium" Width="300*" IsReadOnly="True" Binding="{Binding FullName}" />
-                <DataGridTextColumn Header="类型" FontSize="18" FontFamily="Consolas" FontWeight="Medium" Width="80*" IsReadOnly="True" Binding="{Binding Type}"/>
-                <DataGridTextColumn Header="编号" FontSize="18" FontFamily="宋体" FontWeight="Medium" Width="170*"  Binding="{Binding Index}"/>
+                <DataGridTextColumn HeaderStyle="{StaticResource item}" FontSize="18" FontFamily="Consolas" FontWeight="Medium" Width="150*" IsReadOnly="True" Binding="{Binding Item}" />
+                <DataGridTextColumn HeaderStyle="{StaticResource fullname}" FontSize="15" FontFamily="宋体" FontWeight="Medium" Width="300*" IsReadOnly="True" Binding="{Binding FullName}" />
+                <DataGridTextColumn HeaderStyle="{StaticResource kind}" FontSize="18" FontFamily="Consolas" FontWeight="Medium" Width="80*" IsReadOnly="True" Binding="{Binding Type}"/>
+                <DataGridTextColumn HeaderStyle="{StaticResource number}" FontSize="18" FontFamily="宋体" FontWeight="Medium" Width="170*"  Binding="{Binding Index}"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

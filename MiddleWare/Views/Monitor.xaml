@@ -6,6 +6,29 @@
              xmlns:local="clr-namespace:MiddleWare.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="900">
+    <UserControl.Resources>
+        <Style x:Key="item" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Content" Value="{DynamicResource DetailItem}" />
+        </Style>
+        <Style x:Key="fullname" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Content" Value="{DynamicResource DetailItemFullName}" />
+        </Style>
+        <Style x:Key="result" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Content" Value="{DynamicResource DetailResult}" />
+        </Style>
+        <Style x:Key="unit" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Content" Value="{DynamicResource DetailResultUnit}" />
+        </Style>
+        <Style x:Key="low" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Content" Value="{DynamicResource DetailNormalLow}" />
+        </Style>
+        <Style x:Key="high" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Content" Value="{DynamicResource DetailNormalHigh}" />
+        </Style>
+        <Style x:Key="indicate" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="Content" Value="{DynamicResource DetailIndicate}" />
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30*"/>
@@ -29,22 +52,22 @@
             <RowDefinition Height="10*"/>
             <RowDefinition Height="50*"/>
         </Grid.RowDefinitions>
-        <Label x:Name="label_selectdevice" Content="选择仪器:" FontSize="20" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+        <Label x:Name="label_selectdevice" Content="{DynamicResource MonitorDeviceSelection}" FontSize="20" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
         <ComboBox x:Name="combobox_selectdevice" SelectionChanged="combobox_selectdevice_SelectionChanged" FontSize="20" DisplayMemberPath="NAME" SelectedValuePath="NAME" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2"/>
-        <Label x:Name="label_deveicestate" Content="仪器监控状态:" FontSize="20" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
-        <Label x:Name="label_lisstate" Content="Lis监控状态:" FontSize="20" Grid.Column="1" Grid.Row="8" Grid.ColumnSpan="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+        <Label x:Name="label_deveicestate" Content="{DynamicResource MonitorDeviceMonitorStatus}" FontSize="20" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
+        <Label x:Name="label_lisstate" Content="{DynamicResource MonitorLisMonitorStatus}" FontSize="20" Grid.Column="1" Grid.Row="8" Grid.ColumnSpan="3" HorizontalContentAlignment="Left" VerticalContentAlignment="Center"/>
         <TextBox x:Name="textbox_deveicestate" FontFamily="宋体" FontSize="15" Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="3" Grid.RowSpan="2" IsReadOnly="True" BorderBrush="White" VerticalScrollBarVisibility="Auto"/>
         <TextBox x:Name="textbox_lisstate" FontFamily="宋体" FontSize="15" Grid.Column="1" Grid.Row="9" Grid.ColumnSpan="3" Grid.RowSpan="1" IsReadOnly="True" BorderBrush="White" VerticalScrollBarVisibility="Auto"/>
         <Grid Grid.Column="4" Grid.Row="1" Grid.RowSpan="6" Grid.ColumnSpan="1" >
             <DataGrid x:Name="datagrid_monitor" AutoGenerateColumns="False" AlternatingRowBackground="BlanchedAlmond" Visibility="Collapsed">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="项目名" Binding="{Binding ITEM}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="项目全称" Binding="{Binding FULL_NAME}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="结果" Binding="{Binding RESULT}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="结果单位" Binding="{Binding UNIT}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="正常最低值" Binding="{Binding NORMAL_LOW}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="正常最高值" Binding="{Binding NORMAL_HIGH}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="提示" Binding="{Binding INDICATE}" IsReadOnly="True"/>
+                    <DataGridTextColumn HeaderStyle="{StaticResource item}" Binding="{Binding ITEM}" IsReadOnly="True"/>
+                    <DataGridTextColumn HeaderStyle="{StaticResource fullname}" Binding="{Binding FULL_NAME}" IsReadOnly="True"/>
+                    <DataGridTextColumn HeaderStyle="{StaticResource result}" Binding="{Binding RESULT}" IsReadOnly="True"/>
+                    <DataGridTextColumn HeaderStyle="{StaticResource unit}" Binding="{Binding UNIT}" IsReadOnly="True"/>
+                    <DataGridTextColumn HeaderStyle="{StaticResource low}" Binding="{Binding NORMAL_LOW}" IsReadOnly="True"/>
+                    <DataGridTextColumn HeaderStyle="{StaticResource high}" Binding="{Binding NORMAL_HIGH}" IsReadOnly="True"/>
+                    <DataGridTextColumn HeaderStyle="{StaticResource indicate}" Binding="{Binding INDICATE}" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

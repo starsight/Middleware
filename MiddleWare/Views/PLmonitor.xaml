@@ -20,19 +20,19 @@
             <RowDefinition />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <TextBlock x:Name="PLTYPE" Text="检测项目:" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock x:Name="PLTYPE" Text="{DynamicResource SampleInfoItem}" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         <TextBlock x:Name="PLtype" Text="{Binding Path=PLTYPE}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock x:Name="PLSAMPLE_ID" Text="样本编号:" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock x:Name="PLSAMPLE_ID" Text="{DynamicResource SampleInfoSampleID}" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         <TextBlock x:Name="PLsample_id" Text="{Binding Path=PLSAMPLE_ID}" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock x:Name="PLAAP" Text="诱聚剂项目:" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock x:Name="PLAAP" Text="{DynamicResource SampleInfoAAP}" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         <TextBlock x:Name="PLaap" Text="{Binding Path=PLAAP}" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock x:Name="PLTEST_TIME" Text="检测时间:" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock x:Name="PLTEST_TIME" Text="{DynamicResource SampleInfoTestTime}" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         <TextBlock x:Name="PLtest_time" Text="{Binding Path=PLTEST_TIME}" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock x:Name="PLSAMPLE_KIND" Text="样本类型:" Grid.Column="4" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock x:Name="PLSAMPLE_KIND" Text="{DynamicResource SampleInfoKind}" Grid.Column="4" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         <TextBlock x:Name="PLsample_kind" Text="{Binding Path=PLSAMPLE_KIND}" Grid.Column="5" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock x:Name="PLDEVICE" Text="检测仪器:" Grid.Column="4" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock x:Name="PLDEVICE" Text="{DynamicResource SampleInfoDevice}" Grid.Column="4" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         <TextBlock x:Name="PLdevice" Text="{Binding Path=PLDEVICE}" Grid.Column="5" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock x:Name="PLBARCODE" Text="条形码:" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock x:Name="PLBARCODE" Text="{DynamicResource SampleInfoBarCode}" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         <TextBlock x:Name="PLbarcode" Text="{Binding Path=PLBARCODE}" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
     </Grid> 
 </UserControl>

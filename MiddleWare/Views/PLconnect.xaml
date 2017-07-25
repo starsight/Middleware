@@ -26,12 +26,12 @@
             <RowDefinition Height="35*"/>
             <RowDefinition Height="125*"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="串口设置:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-        <TextBlock Text="串口选择:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="3" Width="100" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-        <TextBlock Text="波特率:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="5" Width="100" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-        <TextBlock Text="数据位:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="7" Width="100" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-        <TextBlock Text="停止位:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="9" Width="100" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-        <TextBlock Text="奇偶校验:" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="11" Width="100" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBlock Text="{DynamicResource ConnectionSerialSettings}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBlock Text="{DynamicResource ConnectionSerialSelection}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="3" Width="100" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBlock Text="{DynamicResource ConnectionSerialBuad}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="5" Width="100" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBlock Text="{DynamicResource ConnectionSerialDataBit}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="7" Width="100" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBlock Text="{DynamicResource ConnectionSerialStopBit}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="9" Width="100" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBlock Text="{DynamicResource ConnectionSerialParity}" FontSize="20" FontFamily="宋体" Grid.Column="0" Grid.Row="11" Width="100" VerticalAlignment="Center" HorizontalAlignment="Right"/>
         <ComboBox x:Name="combobox_plcom" DisplayMemberPath="NAME" SelectedValuePath="NAME"  FontSize="20" FontFamily="Consolas" Grid.Column="1" Grid.Row="3" Width="120" Height="25" VerticalAlignment="Center" HorizontalAlignment="Left"/>
         <ComboBox x:Name="combobox_plbuad" DisplayMemberPath="NUM" SelectedValuePath="NUM" FontSize="20" FontFamily="Consolas" Grid.Column="1" Grid.Row="5" Width="120" Height="25" VerticalAlignment="Center" HorizontalAlignment="Left"/>
         <ComboBox x:Name="combobox_pldatabit" DisplayMemberPath="NUM" SelectedValuePath="NUM" FontSize="20" FontFamily="Consolas" Grid.Column="1" Grid.Row="7" Width="120" Height="25" VerticalAlignment="Center" HorizontalAlignment="Left"/>

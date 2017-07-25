@@ -11,16 +11,16 @@
                       Closing="MetroWindow_Closing">
     <Grid>
         <Controls:MetroAnimatedSingleRowTabControl x:Name="MainTabControl" Grid.Row="1">
-            <TabItem Header="连接状态">
+            <TabItem Header="{DynamicResource MainWindowConnection}">
                 <Views:Connect DataContext="{Binding}"/>
             </TabItem>
-            <TabItem Header="实时监控">
+            <TabItem Header="{DynamicResource MainWindowMonitor}">
                 <Views:Monitor DataContext="{Binding}"/>
             </TabItem>
-            <TabItem Header="数据查询">
+            <TabItem Header="{DynamicResource MainWindowQuery}">
                 <Views:Query DataContext="{Binding}"/>
             </TabItem>
-            <TabItem Header="设置">
+            <TabItem Header="{DynamicResource MainWindowSetting}">
                 <Views:SetOption x:Name="SetOption" DataContext="{Binding}"/>
             </TabItem>
         </Controls:MetroAnimatedSingleRowTabControl>
@@ -29,9 +29,9 @@
         </Grid>
         <Views:NotificationAreaIcon x:Name="notificationIcon" Text="MiddleWare" Icon="/Resources/ICON.ico"  MouseDoubleClick="NotificationAreaIcon_MouseDoubleClick">
             <Views:NotificationAreaIcon.MenuItems>
-                <forms:MenuItem Name="miniMode" Text="mini模式" Click="MenuItem_Click_Mini"/>
-                <forms:MenuItem Text="关于我们" Click="MenuItem_Click_AboutUs"/>
-                <forms:MenuItem Text="退出软件" Click="MenuItem_Click_Close"/>
+                <forms:MenuItem Name="miniMode" Text="Mini Mode" Click="MenuItem_Click_Mini"/>
+                <forms:MenuItem Text="About Us" Click="MenuItem_Click_AboutUs"/>
+                <forms:MenuItem Text="Quit" Click="MenuItem_Click_Close"/>
             </Views:NotificationAreaIcon.MenuItems>
         </Views:NotificationAreaIcon>
     </Grid>

@@ -21,9 +21,9 @@
             <RowDefinition Height="160*"/>
             <RowDefinition Height="30*"/>
         </Grid.RowDefinitions>
-        <Label x:Name="label_PAC" Content="PAC点图" Grid.Column="1" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <Label x:Name="label_RBC" Content="RBC直方图" Grid.Column="3" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <Label x:Name="label_PLT" Content="PLT直方图" Grid.Column="5" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Label x:Name="label_PAC" Content="{DynamicResource PLPAC}" Grid.Column="1" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Label x:Name="label_RBC" Content="{DynamicResource PLRBC}" Grid.Column="3" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Label x:Name="label_PLT" Content="{DynamicResource PLPLT}" Grid.Column="5" Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <chartingToolikt:Chart Grid.Column="1" Grid.Row="0" BorderBrush="White">
             <chartingToolikt:Chart.LegendStyle>
                 <Style TargetType="Control">

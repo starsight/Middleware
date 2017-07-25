@@ -22,18 +22,18 @@
             <RowDefinition Height="50*"/>
             <RowDefinition Height="150*"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="江苏英诺华医疗技术有限公司" FontSize="30" FontFamily="宋体" Foreground="Green" FontWeight="Medium" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-        <TextBlock Text="公司地址:" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock Text="邮    编:" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock Text="联系电话:" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock Text="传    真:" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock Text="电子邮箱:" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock Text="网    址:" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock Text="南京市江宁区麒麟街道宝山路7号" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock Text="211135" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock Text="025-84127188 总机" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock Text="025-84127199" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <TextBlock Text="sales@sinnowa.com" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="{DynamicResource AboutCoName}" FontSize="30" FontFamily="宋体" Foreground="Green" FontWeight="Medium" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBlock Text="{DynamicResource AboutAddress}" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="{DynamicResource AboutPostcode}" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="{DynamicResource AboutTel}" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="{DynamicResource AboutFax}" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="{DynamicResource AboutEmail}" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="{DynamicResource AboutWebsite}" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="1" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="{DynamicResource AboutCoAddress}" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="{DynamicResource AboutCoPostcode}" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="{DynamicResource AboutCoTel}" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="{DynamicResource AboutCoFax}" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+        <TextBlock Text="{DynamicResource AboutCoEmail}" FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center"/>
         <TextBlock FontSize="20" FontFamily="宋体" FontWeight="Medium" Grid.Column="2" Grid.Row="6" HorizontalAlignment="Left" VerticalAlignment="Center">
             <Hyperlink NavigateUri="http://www.sinnowa.com" Click="Hyperlink_Click">http://www.sinnowa.com</Hyperlink>
         </TextBlock>

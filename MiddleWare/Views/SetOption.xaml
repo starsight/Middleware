@@ -19,15 +19,15 @@
         </Grid.RowDefinitions>
         <TreeView  Name="Tree" Grid.Column="0" Background="AliceBlue" >
 
-            <TreeViewItem x:Name="number_item" Header='项目编号' FontFamily="宋体" FontSize="18" Height="45" Background="Beige" IsSelected="True" MouseLeftButtonUp="number_item_MouseLeftButtonUp"/>
+            <TreeViewItem x:Name="number_item" Header="{DynamicResource SetOptionItemNumber}" FontFamily="宋体" FontSize="18" Height="45" Background="Beige" IsSelected="True" MouseLeftButtonUp="number_item_MouseLeftButtonUp"/>
 
-            <TreeViewItem x:Name="onekeyupload" Header="一键上传" FontFamily="宋体" FontSize="18" Height="45" Background="Beige" IsSelected="False" MouseLeftButtonUp="onekeyupload_MouseLeftButtonUp"/>
+            <TreeViewItem x:Name="onekeyupload" Header="{DynamicResource SetOptionUpload}" FontFamily="宋体" FontSize="18" Height="45" Background="Beige" IsSelected="False" MouseLeftButtonUp="onekeyupload_MouseLeftButtonUp"/>
 
-            <TreeViewItem x:Name="onekeydownload" Header="一键下发" FontFamily="宋体" FontSize="18" Height="45" Background="Beige" IsSelected="False" MouseLeftButtonUp="onekeydownload_MouseLeftButtonUp"/>
+            <TreeViewItem x:Name="onekeydownload" Header="{DynamicResource SetOptionIssue}" FontFamily="宋体" FontSize="18" Height="45" Background="Beige" IsSelected="False" MouseLeftButtonUp="onekeydownload_MouseLeftButtonUp"/>
 
-            <TreeViewItem x:Name="personal" Header="软件设置" FontFamily="宋体" FontSize="18" Height="45" IsSelected="False" Background="Beige" MouseLeftButtonUp="personal_MouseLeftButtonUp"/>
+            <TreeViewItem x:Name="personal" Header="{DynamicResource SetOptionSettings}" FontFamily="宋体" FontSize="18" Height="45" IsSelected="False" Background="Beige" MouseLeftButtonUp="personal_MouseLeftButtonUp"/>
             
-            <TreeViewItem x:Name="about" Header="帮助与关于" FontFamily="宋体" FontSize="18" Height="45" IsSelected="False" Background="Beige" MouseLeftButtonUp="about_MouseLeftButtonUp"/>
+            <TreeViewItem x:Name="about" Header="{DynamicResource SetOptionAbout}" FontFamily="宋体" FontSize="18" Height="45" IsSelected="False" Background="Beige" MouseLeftButtonUp="about_MouseLeftButtonUp"/>
             
         </TreeView>
         <Grid x:Name="Detail" Grid.Column="1" Grid.Row="0">
