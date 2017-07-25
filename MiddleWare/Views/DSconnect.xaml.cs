@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms;
+using System.IO;
 
 namespace MiddleWare.Views
 {
@@ -23,12 +24,23 @@ namespace MiddleWare.Views
         public DSconnect()
         {
             InitializeComponent();
-            
-            if (AppConfig.GetAppConfig("DSAddress") != null)
+            string abadFile = GlobalVariable.topDir + "\\ABAD.mdb";//上一级目录
+            if (File.Exists(abadFile))//检测DSDB数据库是否存在
             {
-                this.textbox_dsdb.Text = AppConfig.GetAppConfig("DSAddress");
+                //存在
+                //GlobalVariable.DSDEVICEADDRESS = abadFile;
+                this.textbox_dsdb.Text = abadFile;
             }
-            
+            else
+            {
+                //上一级目录没有数据情况下
+                if (AppConfig.GetAppConfig("DSAddress") != null)
+                {
+                    this.textbox_dsdb.Text = AppConfig.GetAppConfig("DSAddress");
+                }
+            }
+
+           
         }
 
         private void button_openfile_Click(object sender, RoutedEventArgs e)
