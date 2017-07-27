@@ -66,7 +66,7 @@ namespace MiddleWare.Views
             num = 0;
             ds = new DataSet();
             UploadList.Clear();
-            string strSelect = "select * from lisoutput where [ISSEND]= false";
+            string strSelect = "select * from lisoutput where [ISSEND]= 0";
             using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
             {
                 if (oa.Fill(ds, "Up") == 0)
@@ -109,7 +109,7 @@ namespace MiddleWare.Views
                         singleSample.IsSelected = false;
                         singleSample.Sample_ID = (string)tempSampleID;
                         singleSample.Item = (string)htID[tempSampleID];
-                        strSelect = "select * from lisoutput where [ISSEND]= false and [SAMPLE_ID]='" + (string)tempSampleID + "'";
+                        strSelect = "select * from lisoutput where [ISSEND]= 0 and [SAMPLE_ID]='" + (string)tempSampleID + "'";
                         using (OleDbDataAdapter tempOa = new OleDbDataAdapter(strSelect, conn))
                         {
                             tempDs = new DataSet();
@@ -175,35 +175,34 @@ namespace MiddleWare.Views
                     //先往哈希表里写入样本号
                     foreach (DataRow dr in ds.Tables["Up"].Rows)
                     {
-                        hID.Add(dr["SAMPLE_ID"].ToString());
+                        //只能上传当前连接仪器的信息
+                        if (dr["Device"].ToString() == GlobalVariable.DSDeviceID)
+                        {
+                            hID.Add(dr["SAMPLE_ID"].ToString());
+                        }
                     }
                 }
             }
             AccessManagerDS.mutex.ReleaseMutex();
             conn.Close();
+            Thread.Sleep(500);
             if (hID.Count == 0) 
             {
                 await mainwin.ShowMessageAsync("提醒", "无样本数据可处理");
                 return;
             }
+            ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
             foreach (string singleID in hID)
             {
                 ReadAccessDS.ReadData("SAMPLE_ID", singleID);
                 GlobalVariable.NoDisplaySampleID.Add(singleID);
-            }
-
-            ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
-
-            for (int i = 0; i < (hID.Count * 5); i++)
-            {
                 System.Windows.Forms.Application.DoEvents();
-                Thread.Sleep(100);
+                Thread.Sleep(1000);
             }
 
-            Thread.Sleep(500);
-            UploadList.Clear();
+            Thread.Sleep(1000);
+            GetNoSendData();//重新获取数据
             ReadAccessDS.CheckUnDoneSampleNum(false);//重新获取未发送样本
-
             await controller.CloseAsync();
             
         }
@@ -247,8 +246,13 @@ namespace MiddleWare.Views
             }
             foreach(var single in chooseList)
             {
-                ReadAccessDS.ReadData("SAMPLE_ID", single.Sample_ID);
-                GlobalVariable.NoDisplaySampleID.Add(single.Sample_ID);
+                if (single.Device == GlobalVariable.DSDeviceID)
+                {
+                    //只有当前连接生化仪的项目才能上传
+                    ReadAccessDS.ReadData("SAMPLE_ID", single.Sample_ID);
+                    GlobalVariable.NoDisplaySampleID.Add(single.Sample_ID);
+                }
+                
             }
             ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
 
@@ -261,7 +265,6 @@ namespace MiddleWare.Views
             Thread.Sleep(500);
             GetNoSendData();//重新获取数据
             ReadAccessDS.CheckUnDoneSampleNum(false);//重新获取未发送样本
-
             await controller.CloseAsync();
 
         }
@@ -308,11 +311,12 @@ namespace MiddleWare.Views
         private string _Item;
         private string _Kind;
         private string _Device;
-        private string _Test_Time;
+        private string _Test_Time;//字符串类型，主要用于绑定显示
         private bool _IsSelected;
         //后续数据未在表格中显示用到,也没有数据绑定
+        public DateTime Send_Time;//时间类型,主要用于传递写入数据库
         public string Patient_Name;
-        public string Emergency;
+        public bool Emergency;
         public int Patient_Age;
         public string Patient_Sex;
 

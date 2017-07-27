@@ -445,7 +445,7 @@ namespace MiddleWare.Communicate
             //MSH段,位于消息最前面
             oruR01.MSH.FieldSeparator.Value = "|";
             oruR01.MSH.EncodingCharacters.Value = @"^~\&";
-            oruR01.MSH.SendingApplication.NamespaceID.Value = "Mindray";//仪器供应商
+            oruR01.MSH.SendingApplication.NamespaceID.Value = GlobalVariable.Manufacturer;//仪器供应商
             oruR01.MSH.SendingFacility.NamespaceID.Value = data.Device;
             oruR01.MSH.DateTimeOfMessage.TimeOfAnEvent.SetLongDate(DateTime.Now);//当前时间
             oruR01.MSH.MessageType.MessageType.Value = "ORU";
@@ -518,7 +518,7 @@ namespace MiddleWare.Communicate
             //MSH段,位于消息最前面
             oruR01.MSH.FieldSeparator.Value = "|";
             oruR01.MSH.EncodingCharacters.Value = @"^~\&";
-            oruR01.MSH.SendingApplication.NamespaceID.Value = "Mindray";//仪器供应商
+            oruR01.MSH.SendingApplication.NamespaceID.Value = GlobalVariable.Manufacturer;//仪器供应商
             oruR01.MSH.SendingFacility.NamespaceID.Value = data.DEVEICE;
             oruR01.MSH.DateTimeOfMessage.TimeOfAnEvent.SetLongDate(DateTime.Now);//当前时间
             oruR01.MSH.MessageType.MessageType.Value = "ORU";
@@ -585,6 +585,7 @@ namespace MiddleWare.Communicate
         }
         public static void DSRequestSampleData(string sample_id, int device)//处理生化仪申请消息  QRY_Q02
         {
+            //device目前用不到
             HL7Manager.HL7RequestStruct hl7request = new HL7Manager.HL7RequestStruct();
 
             PipeParser Parser = new PipeParser();
@@ -593,8 +594,8 @@ namespace MiddleWare.Communicate
             #region QRY_Q02样本申请封装
             qryQ02.MSH.FieldSeparator.Value = "|";
             qryQ02.MSH.EncodingCharacters.Value = @"^~\&";
-            qryQ02.MSH.SendingApplication.NamespaceID.Value = "Mindray";
-            qryQ02.MSH.SendingFacility.NamespaceID.Value = device == 0 ? "DS800" : (device == 1 ? "DS400" : string.Empty);
+            qryQ02.MSH.SendingApplication.NamespaceID.Value = GlobalVariable.Manufacturer;
+            qryQ02.MSH.SendingFacility.NamespaceID.Value = GlobalVariable.DSDeviceID;
             qryQ02.MSH.DateTimeOfMessage.TimeOfAnEvent.SetLongDate(DateTime.Now);
             qryQ02.MSH.MessageType.MessageType.Value = "QRY";
             qryQ02.MSH.MessageType.TriggerEvent.Value = "Q02";
@@ -632,7 +633,7 @@ namespace MiddleWare.Communicate
 
             ack.MSH.FieldSeparator.Value = "|";
             ack.MSH.EncodingCharacters.Value = @"^~\&";
-            ack.MSH.SendingApplication.NamespaceID.Value = "Mindray";//仪器供应商
+            ack.MSH.SendingApplication.NamespaceID.Value = GlobalVariable.Manufacturer;//仪器供应商
             ack.MSH.SendingFacility.NamespaceID.Value = device;
             ack.MSH.DateTimeOfMessage.TimeOfAnEvent.SetLongDate(DateTime.Now);//当前时间
             ack.MSH.MessageType.MessageType.Value = "ACK";

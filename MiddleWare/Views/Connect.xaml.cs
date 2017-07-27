@@ -1023,6 +1023,11 @@ namespace MiddleWare.Views
             {
                 AppConfig.UpdateAppConfig("DeviceConnectType", "DS400");
             }
+
+            //自动更新数据库
+            MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+            Number_Item number_item = mainwin.SetOption.Number_Item;
+            number_item.Updata_DS_Click(true, null);//这个ture来表明不是由按钮发出的
         }
         private void OpenPl(string com, int baud)
         {

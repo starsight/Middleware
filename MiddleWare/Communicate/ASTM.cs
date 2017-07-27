@@ -792,7 +792,7 @@ namespace MiddleWare.Communicate
 
             ASTM_HeaderRecordPack h = new ASTM_HeaderRecordPack();
             h.DelimiterDefinition = "\\^&";
-            h.SenderNameorID = device == 0 ? "DS800" : (device == 1 ? "DS400" : string.Empty);
+            h.SenderNameorID = GlobalVariable.DSDeviceID;
             h.ProcessingID = "PR";
             h.VersionNumber = "1394-97";
             h.DateandTime = DateTime.Now.ToString("yyyyMMddhhmmss");
@@ -805,7 +805,7 @@ namespace MiddleWare.Communicate
             ASTM_Encode message = new ASTM_Encode(h, q);
             astmrequest.ASTMRequestMessage = message.Encode();
             astmrequest.RequestSample_ID = sample_id;
-            astmrequest.RequestDevice = device == 0 ? "DS800" : (device == 1 ? "DS400" : string.Empty);
+            astmrequest.RequestDevice = GlobalVariable.DSDeviceID;
             astmManager.AddASTMRequestSampleData(astmrequest);//压入队列
         }
         private ASTMManager.ASTMPatientInfo ASTM_ParesrPatientInfo(string astmdata)

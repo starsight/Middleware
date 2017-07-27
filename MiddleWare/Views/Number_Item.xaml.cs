@@ -400,8 +400,17 @@ namespace MiddleWare.Views
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void Updata_DS_Click(object sender, RoutedEventArgs e)
+        public async void Updata_DS_Click(object sender, RoutedEventArgs e)
         {
+            bool IsShowMessage = false;
+            try
+            {
+                IsShowMessage = (bool)sender;//从非按钮过来的，不进行显示通知
+            }
+            catch
+            {
+                IsShowMessage = false;//从按钮过来的，显示通知
+            }
             int num = 0;
             string strConnection;
             string strSelect;
@@ -604,7 +613,10 @@ namespace MiddleWare.Views
                 //DS400
                 GetDS400DB();
             }
-            await mainwin.ShowMessageAsync("通知", "更新生化仪数据成功\r\n\r\n共更新" + num.ToString() + "条数据");
+            if(!IsShowMessage)
+            {
+                await mainwin.ShowMessageAsync("通知", "更新生化仪数据成功\r\n\r\n共更新" + num.ToString() + "条数据");
+            }
         }
         /// <summary>
         /// 点击仪器选择下拉框时

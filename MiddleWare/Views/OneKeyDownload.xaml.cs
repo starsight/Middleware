@@ -39,6 +39,8 @@ namespace MiddleWare.Views
         public ObservableCollection<UpOrDownload_Show> DownloadList;
         private List<UpOrDownload_Show> BackStageList;
 
+        private static Hashtable taskType = new Hashtable();//用来保存需要测试的任务及类型（不重复，只为了获取对应任务的类型）
+
         public OneKeyDownload()
         {
             InitializeComponent();
@@ -77,6 +79,7 @@ namespace MiddleWare.Views
             string strSelect = "select * from lisinput where [IsSend]= false";
             HashSet<string> hsID = new HashSet<string>();//哈希表用来保存各个样本号(非重复)
             Hashtable htID = new Hashtable();
+            taskType.Clear();
             using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
             {
                 if(oa.Fill(ds,"Down")==0)
@@ -112,6 +115,10 @@ namespace MiddleWare.Views
                         foreach (DataRow dr in singleds.Tables["single"].Rows)
                         {
                             tempItem = dr["ITEM"].ToString();
+                            if (!taskType.ContainsKey(tempItem))
+                            {
+                                taskType.Add(tempItem, dr["Type"].ToString());//将用到的测试项目和类型都加到哈希表里
+                            }
                             if (!htID.Contains(singleID))
                             {
                                 //如果之前不存在
@@ -144,21 +151,15 @@ namespace MiddleWare.Views
                     {
                         foreach(DataRow dr in tempds.Tables["temp"].Rows)
                         {
-                            singleSample.Test_Time = dr["SEND_TIME"] == DBNull.Value ? DateTime.Now.ToString() : dr["SEND_TIME"].ToString();
+                            singleSample.Send_Time = dr["SEND_TIME"] == DBNull.Value ? DateTime.Now : (DateTime)dr["SEND_TIME"];
+                            singleSample.Test_Time = singleSample.Send_Time.ToString();
                             singleSample.Patient_ID = dr["PATIENT_ID"] == DBNull.Value ? blank : (string)dr["PATIENT_ID"];
                             singleSample.Device = dr["Device"] == DBNull.Value ? blank : (string)dr["Device"];
                             singleSample.Kind = dr["SAMPLE_KIND"] == DBNull.Value ? blank : (string)dr["SAMPLE_KIND"];
                             singleSample.Patient_Age = dr["AGE"] == DBNull.Value ? 0 : Convert.ToInt32((string)dr["AGE"]);
                             singleSample.Patient_Name = dr["FIRST_NAME"] == DBNull.Value ? blank : (string)dr["FIRST_NAME"];
                             singleSample.Patient_Sex = dr["SEX"] == DBNull.Value ? blank : (string)dr["SEX"];
-                            if((bool)dr["EMERGENCY"]==true)
-                            {
-                                singleSample.Emergency = "Y";
-                            }
-                            else
-                            {
-                                singleSample.Emergency = "N";
-                            }
+                            singleSample.Emergency = (bool)dr["EMERGENCY"];
                             break;
                         }
                     }
@@ -202,14 +203,37 @@ namespace MiddleWare.Views
             ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
             foreach (var single in BackStageList)
             {
-                WriteEquipAccess.WriteApplySampleDS(single.Sample_ID, single.Patient_ID, single.Patient_Name, single.Patient_Age,
-                    single.Patient_Sex, single.Item, Convert.ToDateTime(single.Test_Time), single.Emergency);//去写入到设备数据库
+                DI800Manager.DsInput sampleInput = new DI800Manager.DsInput();
+                List<DI800Manager.DsTask> taskList = new List<DI800Manager.DsTask>();
+                sampleInput.SAMPLE_ID = single.Sample_ID;
+                sampleInput.PATIENT_ID = single.Patient_ID;
+                sampleInput.FIRST_NAME = single.Patient_Name;
+                sampleInput.SEX = single.Patient_Sex;
+                sampleInput.AGE = single.Patient_Age.ToString();
+                sampleInput.SEND_TIME = single.Send_Time;
+                sampleInput.EMERGENCY = single.Emergency;
+                sampleInput.SAMPLE_KIND = single.Kind;
+                sampleInput.Device = single.Device;
+                sampleInput.IsSend = false;
+
+                string[] item = single.Item.Split(',');
+                foreach(string singleItem in item)
+                {
+                    DI800Manager.DsTask singleTask = new DI800Manager.DsTask();
+                    singleTask.Device = single.Device;
+                    singleTask.ITEM = singleItem;
+                    singleTask.SAMPLE_ID = single.Sample_ID;
+                    singleTask.SEND_TIME = single.Send_Time;
+                    singleTask.Type = taskType[singleItem].ToString();//从哈希表里获取相应类型
+                    taskList.Add(singleTask);
+                }
+                WriteEquipAccess.WriteApplySampleDS(sampleInput, taskList);//去写入到设备数据库
                 System.Windows.Forms.Application.DoEvents();
                 Thread.Sleep(500);
             }
 
             Thread.Sleep(500);
-            DownloadList.Clear();
+            GetNoIssueData(true);//重新获取数据
             ReadAccessDS.CheckUnDoneSampleNum(true);//重新获取未发送样本
 
             await controller.CloseAsync();
@@ -263,15 +287,39 @@ namespace MiddleWare.Views
             ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
             foreach (var single in chooseList)
             {
-                WriteEquipAccess.WriteApplySampleDS(single.Sample_ID, single.Patient_ID, single.Patient_Name, single.Patient_Age, 
-                    single.Patient_Sex, single.Item, Convert.ToDateTime(single.Test_Time), single.Emergency);//去写入到设备数据库
+                DI800Manager.DsInput sampleInput = new DI800Manager.DsInput();
+                List<DI800Manager.DsTask> taskList = new List<DI800Manager.DsTask>();
+                sampleInput.SAMPLE_ID = single.Sample_ID;
+                sampleInput.PATIENT_ID = single.Patient_ID;
+                sampleInput.FIRST_NAME = single.Patient_Name;
+                sampleInput.SEX = single.Patient_Sex;
+                sampleInput.AGE = single.Patient_Age.ToString();
+                sampleInput.SEND_TIME = single.Send_Time;
+                sampleInput.EMERGENCY = single.Emergency;
+                sampleInput.SAMPLE_KIND = single.Kind;
+                sampleInput.Device = single.Device;
+                sampleInput.IsSend = false;
+
+                string[] item = single.Item.Split(',');
+                foreach (string singleItem in item)
+                {
+                    DI800Manager.DsTask singleTask = new DI800Manager.DsTask();
+                    singleTask.Device = single.Device;
+                    singleTask.ITEM = singleItem;
+                    singleTask.SAMPLE_ID = single.Sample_ID;
+                    singleTask.SEND_TIME = single.Send_Time;
+                    singleTask.Type = taskType[singleItem].ToString();//从哈希表里获取相应类型
+                    taskList.Add(singleTask);
+                }
+                WriteEquipAccess.WriteApplySampleDS(sampleInput, taskList);//去写入到设备数据库
                 System.Windows.Forms.Application.DoEvents();
                 Thread.Sleep(500);
             }
-
             Thread.Sleep(500);
             GetNoIssueData(true);//重新获取数据
             ReadAccessDS.CheckUnDoneSampleNum(true);//重新获取未发送样本
+            Thread.Sleep(500);
+            chooseList.Clear();
 
             await controller.CloseAsync();
         }
