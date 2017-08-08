@@ -374,7 +374,7 @@ namespace MiddleWare.Communicate
                         Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;
                     }
                 }
-                else if (receiveData.CheckBit == 3 && GlobalVariable.DSDeviceID != string.Empty)
+                else if (receiveData.CheckBit == 3)// && GlobalVariable.DSDeviceID != string.Empty    modified by xubinbin
                 {
                     //生化仪发过来仪器标识ID
                     GlobalVariable.DSDeviceID = receiveData.BarCode;
