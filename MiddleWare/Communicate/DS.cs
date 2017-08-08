@@ -706,7 +706,7 @@ namespace MiddleWare.Communicate
                     case 0:
                         {
                             #region SAMPLE_ITEM_CAL_RESULT
-                            strSelect = "select a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_CAL_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "'";
+                            strSelect = "select a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_CAL_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "' and a.IsVaile = true";
                             using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                             {
                                 ds = new DataSet();
@@ -751,7 +751,7 @@ namespace MiddleWare.Communicate
                             #endregion
 
                             #region SAMPLE_ITEM_INPUT_RESULT
-                            strSelect = "select a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_INPUT_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "'";
+                            strSelect = "select a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_INPUT_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "' and a.IsVaile = true";
                             using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                             {
                                 ds = new DataSet();
@@ -797,7 +797,7 @@ namespace MiddleWare.Communicate
 
                             #region SAMPLE_ITEM_PRINT_RESULT
                             //RESULT_D -> RESULT    RESULT_S -> INDICATE
-                            strSelect = "select a.ITEM,a.RESULT_D as RESULT,a.RESULT_S as INDICATE ,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_PRINT_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "'";
+                            strSelect = "select a.ITEM,a.RESULT_D as RESULT,a.RESULT_S as INDICATE ,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_PRINT_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "' and a.IsVaile = true";
                             using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                             {
                                 ds = new DataSet();
