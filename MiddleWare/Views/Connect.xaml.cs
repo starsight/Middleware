@@ -1026,8 +1026,16 @@ namespace MiddleWare.Views
 
             //自动更新数据库
             MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
-            Number_Item number_item = mainwin.SetOption.Number_Item;
-            number_item.Updata_DS_Click(true, null);//这个ture来表明不是由按钮发出的
+            if(mainwin!=null)
+            {
+                //打开软件时，若是自动打开DS设备，由于窗口还未加载完，引用为null，需要在MainWindow初始化中再更新数据库
+                if (mainwin.SetOption!=null)
+                {
+                    Number_Item number_item = mainwin.SetOption.Number_Item;
+                    number_item.Updata_DS_Click(true, null);//这个ture来表明不是由按钮发出的
+                }
+            }
+           
         }
         private void OpenPl(string com, int baud)
         {
