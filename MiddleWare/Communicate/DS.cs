@@ -380,6 +380,10 @@ namespace MiddleWare.Communicate
                     GlobalVariable.DSDeviceID = receiveData.BarCode;
                     namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);
                 }
+                else if (receiveData.CheckBit == 4)//关闭管道，但是不关闭客户端 by wenjie 17-08-09
+                {
+                    namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);//回写函数
+                }
                 Thread.Sleep(200);
             }
         }
@@ -533,6 +537,114 @@ namespace MiddleWare.Communicate
                                  "'and a.IsSended = false and a.IsValid = true";
                         }
                         break;
+                    case 4://InputResult 未测试
+                        {
+                            strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
+                                 "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
+                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
+                                 "e.StartTime,e.Kind " +
+                                 "FROM ((((InputResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) " +
+                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
+                                 "'and a.IsSended = false and a.IsValid = true";
+
+                            /*strSelect = "SELECT t.Item,t.Result,t.AddTime,t.StartTime,t.Kind," +
+                                        "t.BioID,t.PatientID,t.FirstName,t.Sex,t.Age,t.Department," +
+                                        "t.Aera,t.BedNum,t.Doctor,t.FullName,t.Unit," +
+                                        "iif(f.Sex is NULL,t.NormalLow,f.NormalLow) AS NormalLow," +
+                                        "iif(f.Sex is NULL,t.NormalHigh,f.NormalHigh) AS NormalHigh " +
+                                        "FROM (" +
+                                        "SELECT a.Item,a.Result,a.AddTime," +
+                                        "b.BioID,b.StartTime,b.Kind," +
+                                        "c.PatientID,c.FirstName,c.Sex,c.Age," +
+                                        "d.Department,d.Aera,d.BedNum,d.Doctor," +
+                                        "e.FullName,e.Unit,e.NormalLow,e.NormalHigh " +
+                                        "FROM " +
+                                        "(((InputResult a " +
+                                        "INNER JOIN BioMain b ON b.BioID=a.BioID) " +
+                                        "INNER JOIN Patient c ON c.BioID=a.BioID) " +
+                                        "INNER JOIN BioItem e ON e.Item=a.Item) " +
+                                        "LEFT JOIN Register d ON d.BioID=a.BioID " +
+                                        "WHERE  datediff('d','%s',b.StartTime)=0" +//COleDateTime::GetCurrentTime().Format(_T("%Y-%m-%d"))
+                                        "and a.IsSended = false " +
+                                        "and b.ItemCount <= b.AddedItemCount " +
+                                        "and b.Auditing = %s " +
+                                        ") t " +
+                                        "LEFT JOIN ItemRange f ON f.Item=t.Item AND f.Sex=t.Sex " +
+                                        "and CInt(t.Age) >= f.AgeLow and CInt(t.Age) <= f.AgeHigh " +
+                                        "Order by PatientID ";*/
+                        }
+                        break;
+                    case 5://PrintResult 未测试
+                        {
+                            //print比较特殊 可参见DS400 特别读取信息 - SAMPLE_ITEM_PRINT_RESULT （940行附近） RESULT_D -> RESULT    RESULT_S -> INDICATE
+                            strSelect = "SELECT a.ITEM,a.RESULT_D as RESULT,a.RESULT_S as INDICATE,a.AddTime as TEST_TIME," +
+                                 "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
+                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
+                                 "e.StartTime,e.Kind " +
+                                 "FROM ((((PrintResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) " +
+                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
+                                 "'and a.IsSended = false and a.IsValid = true";
+                            
+                                /*strSQL.Format(_T("SELECT \
+                                                    a.Item,a.FullName,a.ResultD,a.ResultS,a.DataType,\
+                                                    a.Unit,a.NormalLow,a.NormalHigh,a.AddTime,\
+                                                    b.BioID,b.StartTime,b.Kind,\
+                                                    c.PatientID,c.FirstName,c.Sex,c.Age,\
+                                                    d.Department,d.Aera,d.BedNum,d.Doctor \
+                                                    FROM \
+                                                    (((PrintResult a \
+                                                    INNER JOIN BioMain b ON b.BioID=a.BioID) \
+                                                    INNER JOIN Patient c ON c.BioID=a.BioID) \
+                                                    LEFT JOIN Register d ON d.BioID=a.BioID) \
+                                                    WHERE  datediff('d','%s',b.StartTime)=0 \
+                                                    and a.IsSended = false \
+		                                			 and b.ItemCount <= b.AddedItemCount \
+                                                    and b.Auditing = %s \
+                                                    Order by PatientID")
+                                                    ,COleDateTime::GetCurrentTime().Format(_T("%Y-%m-%d"))
+		                                			 ,isSelected?_T("false"):_T("true")
+                                                    );*/
+
+                        }
+                        break;
+                    case 6://CalResult 未测试
+                        {
+                            strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
+                                 "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
+                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
+                                 "e.StartTime,e.Kind " +
+                                 "FROM ((((CalResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) " +
+                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
+                                 "'and a.IsSended = false and a.IsValid = true";
+                            /*
+                               strSQL.Format(_T("SELECT \
+                                a.Item,a.Result,a.AddTime,\
+                                b.BioID,b.StartTime,b.Kind,\
+                                c.PatientID,c.FirstName,c.Sex,c.Age,\
+                                d.Department,d.Aera,d.BedNum,d.Doctor,\
+                                e.FullName,e.Unit,e.NormalLow,e.NormalHigh \
+                                FROM \
+                                (((CalResult a \
+                                INNER JOIN BioMain b ON b.BioID=a.BioID) \
+                                INNER JOIN Patient c ON c.BioID=a.BioID) \
+                                INNER JOIN CalItem e ON e.Item=a.Item) \
+                                LEFT JOIN Register d ON d.BioID=a.BioID \
+                                WHERE  datediff('d','%s',b.StartTime)=0 \
+                                and a.IsSended = false  \
+		              			 and b.ItemCount <= b.AddedItemCount \
+                                and b.Auditing = %s \
+                                Order by PatientID")
+                                ,COleDateTime::GetCurrentTime().Format(_T("%Y-%m-%d"))
+                                ,isSelected?_T("false"):_T("true")
+                                );*/
+                        }
+                        break;
                     default: break;
                 }
 
@@ -585,7 +697,7 @@ namespace MiddleWare.Communicate
                             "INNER JOIN ITEM_CAL_PARA c ON a.ITEM=c.ITEM)" +
                             "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
                             " WHERE a.SAMPLE_ID ='" + testID +
-                            "' and a.IsVaile = true";
+                            "' and a.IsVaild = true";
                         }
                         break;
                     default: break;
@@ -610,6 +722,7 @@ namespace MiddleWare.Communicate
                 }
                 catch (Exception e)
                 {
+                    string str = e.ToString();
                     ReadEquipAccessMessage.Invoke("设备数据库选择错误\r\n请检查后重新建立连接\r\n", "DEVICE");
                     ds.Clear();
                     conn.Close();
@@ -668,6 +781,23 @@ namespace MiddleWare.Communicate
                         case 3:
                             {
                                 di800.Type = "定标";
+                            }
+                            break;
+                        case 4:
+                            {
+                                di800.Type = "输入";
+                            }
+                            break;
+                        case 5:
+                            {
+                                di800.Type = "打印";
+                                //RESULT_D -> RESULT    RESULT_S -> INDICATE
+                                result.INDICATE = dr["INDICATE"] == DBNull.Value ? blank : (string)dr["INDICATE"];
+                            }
+                            break;
+                        case 6:
+                            {
+                                di800.Type = "计算";
                             }
                             break;
                         default: break;
