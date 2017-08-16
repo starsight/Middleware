@@ -295,7 +295,7 @@ namespace MiddleWare.Communicate
         {
             Task.Factory.StartNew(Run, ProcessPipesCancel.Token);
         }
-        public async void Run()
+        public void Run()
         {
             namedpipe.NamedPipeCreat(NamedPipe.Pipename, NamedPipe.Pipename_write);//读 写
             while ((!ProcessPipesCancel.IsCancellationRequested) && NamedPipe.run_status)
@@ -306,8 +306,7 @@ namespace MiddleWare.Communicate
                 if(receiveData.Device!=GlobalVariable.DSDEVICE)
                 {
                     //生化仪打开和命名管道发送生化仪方式不统一
-                    MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
-                    await mainwin.ShowMessageAsync("警告", "生化仪选择错误");
+                    System.Windows.MessageBox.Show("生化仪选择错误,请关闭后重新连接", "警告");
                     return;
                 }
                 else if (receiveData.CheckBit == 2)// 关闭管道，同时关闭客户端
@@ -333,13 +332,12 @@ namespace MiddleWare.Communicate
                     if (canClose)
                     {
                         //不可以安全关闭
-                        MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
-                        MessageDialogResult clickresult = await mainwin.ShowMessageAsync("警告", "确定是否退出软件", MessageDialogStyle.AffirmativeAndNegative);
-                        if (clickresult == MessageDialogResult.Negative)//取消
+                        System.Windows.Forms.DialogResult result = System.Windows.Forms.MessageBox.Show("是否直接退出程序？", "警告", System.Windows.Forms.MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2, System.Windows.Forms.MessageBoxOptions.DefaultDesktopOnly);
+                        if (result == DialogResult.No)
                         {
                             continue;
                         }
-                        else
+                        else if (result == DialogResult.Yes)
                         {
                             //确认
                             Environment.Exit(0);

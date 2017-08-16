@@ -154,7 +154,7 @@ namespace MiddleWare.Views
 
         private void AddItem(TextBox textbox, string text)
         {
-            Dispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.Invoke(new Action(() =>
             {
                 textbox.Clear();//先清空之前内容
                 textbox.AppendText(text);//增加文本
@@ -162,14 +162,14 @@ namespace MiddleWare.Views
         }
         private void EnableButton(Button button)
         {
-            Dispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.Invoke(new Action(() =>
             {
                 button.IsEnabled = true;
             }));
         }
         private void DisableButton(Button button)
         {
-            Dispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.Invoke(new Action(() =>
             {
                 button.IsEnabled = false;
             }));
