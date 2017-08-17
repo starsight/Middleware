@@ -13,6 +13,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms;
 using System.IO;
+using log4net;
+using System.Reflection;
 
 namespace MiddleWare.Views
 {
@@ -30,14 +32,23 @@ namespace MiddleWare.Views
                 //存在
                 //GlobalVariable.DSDEVICEADDRESS = abadFile;
                 this.textbox_dsdb.Text = abadFile;
+                //创建日志记录组件实例
+                ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+                //记录错误日志
+                log.Debug("自动打开对应位置数据库" + abadFile);
             }
             else
             {
                 //上一级目录没有数据情况下
                 string str = AppConfig.GetAppConfig("DeviceConnectType");
-                if (str != null && str != "null" && AppConfig.GetAppConfig("DSAddress") != null) 
+                //&& str != "null" 
+                if (str != null && AppConfig.GetAppConfig("DSAddress") != null) 
                 {
                     this.textbox_dsdb.Text = AppConfig.GetAppConfig("DSAddress");
+                    //创建日志记录组件实例
+                    ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+                    //记录错误日志
+                    log.Debug("自动获取数据库地址"+this.textbox_dsdb.Text);
                 }
             }
         }
