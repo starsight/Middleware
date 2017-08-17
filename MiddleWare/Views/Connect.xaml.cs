@@ -73,16 +73,6 @@ namespace MiddleWare.Views
         public Connect()
         {
             InitializeComponent();
-            /*
-             * 日志管理初始化 log4net.config
-             */
-            var logCfg = new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.config");
-            XmlConfigurator.ConfigureAndWatch(logCfg);
-
-            //创建日志记录组件实例
-            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            //记录错误日志
-            log.Debug("开始日志记录");
 
             DeviceList = new ObservableCollection<Device>();
             LisList = new ObservableCollection<Lis>();

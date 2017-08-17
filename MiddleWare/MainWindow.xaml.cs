@@ -26,6 +26,16 @@ namespace MiddleWare
         {
             InitializeComponent();
 
+            /*
+             * 日志管理初始化 log4net.config
+             */
+            var logCfg = new FileInfo(AppDomain.CurrentDomain.BaseDirectory+ "log4net.config");
+            XmlConfigurator.ConfigureAndWatch(logCfg);
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            //记录日志
+            log.Info("Init mainwindow finish.");
+
             //开始自动连接
             this.Connect.ReadConnectConfigForAutoRun();
 
