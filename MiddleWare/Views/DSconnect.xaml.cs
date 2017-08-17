@@ -24,7 +24,7 @@ namespace MiddleWare.Views
         public DSconnect()
         {
             InitializeComponent();
-            string abadFile = GlobalVariable.topDir + "\\ABAD.mdb";//上一级目录
+            string abadFile = GlobalVariable.topDir.FullName + "\\ABAD.mdb";
             if (File.Exists(abadFile))//检测DSDB数据库是否存在
             {
                 //存在
@@ -34,13 +34,12 @@ namespace MiddleWare.Views
             else
             {
                 //上一级目录没有数据情况下
-                if (AppConfig.GetAppConfig("DSAddress") != null)
+                string str = AppConfig.GetAppConfig("DeviceConnectType");
+                if (str != null && str != "null" && AppConfig.GetAppConfig("DSAddress") != null) 
                 {
                     this.textbox_dsdb.Text = AppConfig.GetAppConfig("DSAddress");
                 }
             }
-
-           
         }
 
         private void button_openfile_Click(object sender, RoutedEventArgs e)

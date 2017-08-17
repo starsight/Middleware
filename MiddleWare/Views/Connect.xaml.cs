@@ -102,8 +102,9 @@ namespace MiddleWare.Views
         /// </summary>
         private void ReadConnectConfigForAutoRun()
         {
+            Thread.Sleep(1000);
             string str = AppConfig.GetAppConfig("LisServerConnectWay");
-            if (str != null)//LIS Server 连接方式 HL7 ASTM
+            if (str != null && str != "Null") //LIS Server 连接方式 HL7 ASTM
             {
                 if (str == "HL7")
                 {
@@ -118,7 +119,7 @@ namespace MiddleWare.Views
             }
 
             str = AppConfig.GetAppConfig("DeviceConnectType");//仪器连接类型选择
-            if (str != null)
+            if (str != null && str != "Null") 
             {
                 switch (str)
                 {
@@ -154,7 +155,7 @@ namespace MiddleWare.Views
 
         private void AddItem(TextBox textbox, string text)
         {
-            Dispatcher.Invoke(new Action(() =>
+            Dispatcher.BeginInvoke(new Action(() =>
             {
                 textbox.Clear();//先清空之前内容
                 textbox.AppendText(text);//增加文本
@@ -162,14 +163,14 @@ namespace MiddleWare.Views
         }
         private void EnableButton(Button button)
         {
-            Dispatcher.Invoke(new Action(() =>
+            Dispatcher.BeginInvoke(new Action(() =>
             {
                 button.IsEnabled = true;
             }));
         }
         private void DisableButton(Button button)
         {
-            Dispatcher.Invoke(new Action(() =>
+            Dispatcher.BeginInvoke(new Action(() =>
             {
                 button.IsEnabled = false;
             }));
@@ -206,7 +207,7 @@ namespace MiddleWare.Views
         }
         private void button_openlis_Click(object sender, RoutedEventArgs e)
         {
-            AppConfig.UpdateAppConfig("LisServerConnectWay","Null");//如果此次连接失败，下次不会自动连接
+            AppConfig.UpdateAppConfig("LisServerConnectWay","null");//如果此次连接失败，下次不会自动连接
 
             if (LisNum)
             {
@@ -817,14 +818,12 @@ namespace MiddleWare.Views
                 isAutoConnectDevice = false;
                 button_opendevice_Click(null, null);
             }
-                
         }
         private void button_opendevice_Click(object sender, RoutedEventArgs e)
         {
-            AppConfig.UpdateAppConfig("DeviceConnectType", "kong");
+            AppConfig.UpdateAppConfig("DeviceConnectType", "null");
 
             if (IsDSshow && !IsPLshow)
-
             {
                 try//防止为空
                 {
@@ -882,7 +881,6 @@ namespace MiddleWare.Views
                     #endregion
                     GlobalVariable.DSNum = true;
                     GlobalVariable.AddValue(GlobalVariable.DSDEVICEADDRESS, "生化");
-                    
                     OpenDs(GlobalVariable.DSDEVICEADDRESS);
                 }
             }
