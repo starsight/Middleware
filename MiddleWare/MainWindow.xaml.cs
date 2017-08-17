@@ -8,6 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using MiddleWare.Communicate;
 using MahApps.Metro.Controls.Dialogs;
+using System.IO;
+using log4net.Config;
+using log4net;
+using System.Reflection;
 
 namespace MiddleWare
 {
@@ -27,7 +31,16 @@ namespace MiddleWare
                 Number_Item number_item = SetOption.Number_Item;
                 number_item.Updata_DS_Click(true, null);//这个ture来表明不是由按钮发出的
             }
-           
+
+            /*
+             * 日志管理初始化 log4net.config
+             */
+            var logCfg = new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "log4net.config");
+            XmlConfigurator.ConfigureAndWatch(logCfg);
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            //记录错误日志
+            log.Debug("Init mainwindow finish.");
         }
         public static FloatMiniWindow mini;
 
