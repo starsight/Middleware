@@ -196,10 +196,15 @@ namespace MiddleWare.Views
         {
             MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            foreach (string key in ConfigurationManager.AppSettings)
+            foreach (string key in ConfigurationManager.AppSettings.AllKeys)
             {
-                config.AppSettings.Settings.Remove(key);
+                if (key != "SocketCode" && key != "ComCode") 
+                {
+                    config.AppSettings.Settings.Remove(key);
+                }
             }
+            config.Save();//保存
+            ConfigurationManager.RefreshSection("appSettings");//刷新
             await mainwin.ShowMessageAsync("通知", "已成功清除缓存");
             return;
         }
