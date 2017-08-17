@@ -12,13 +12,13 @@
     <Grid>
         <Controls:MetroAnimatedSingleRowTabControl x:Name="MainTabControl" Grid.Row="1">
             <TabItem Header="{DynamicResource MainWindowConnection}">
-                <Views:Connect DataContext="{Binding}"/>
+                <Views:Connect x:Name="Connect" DataContext="{Binding}"/>
             </TabItem>
             <TabItem Header="{DynamicResource MainWindowMonitor}">
-                <Views:Monitor DataContext="{Binding}"/>
+                <Views:Monitor x:Name="Monitor" DataContext="{Binding}"/>
             </TabItem>
             <TabItem Header="{DynamicResource MainWindowQuery}">
-                <Views:Query DataContext="{Binding}"/>
+                <Views:Query x:Name="Query" DataContext="{Binding}"/>
             </TabItem>
             <TabItem Header="{DynamicResource MainWindowSetting}">
                 <Views:SetOption x:Name="SetOption" DataContext="{Binding}"/>
