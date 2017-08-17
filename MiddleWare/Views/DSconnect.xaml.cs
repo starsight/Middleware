@@ -30,12 +30,7 @@ namespace MiddleWare.Views
             if (File.Exists(abadFile))//检测DSDB数据库是否存在
             {
                 //存在
-                //GlobalVariable.DSDEVICEADDRESS = abadFile;
                 this.textbox_dsdb.Text = abadFile;
-                //创建日志记录组件实例
-                ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-                //记录错误日志
-                log.Debug("自动打开对应位置数据库" + abadFile);
             }
             else
             {
@@ -45,10 +40,6 @@ namespace MiddleWare.Views
                 if (str != null && AppConfig.GetAppConfig("DSAddress") != null) 
                 {
                     this.textbox_dsdb.Text = AppConfig.GetAppConfig("DSAddress");
-                    //创建日志记录组件实例
-                    ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-                    //记录错误日志
-                    log.Debug("自动获取数据库地址"+this.textbox_dsdb.Text);
                 }
             }
         }
