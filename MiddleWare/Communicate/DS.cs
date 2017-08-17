@@ -496,7 +496,7 @@ namespace MiddleWare.Communicate
                                  "'and a.IsSended = false and a.IsValid = true";
                         }
                         break;
-                    case 1://电解质 未测试
+                    case 1://电解质
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
@@ -511,7 +511,7 @@ namespace MiddleWare.Communicate
                         break;
                     case 2://质控 未测试
                         {
-                            strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
+                            /*strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
                                  "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
                                  "e.StartTime,e.Kind " +
@@ -519,12 +519,12 @@ namespace MiddleWare.Communicate
                                  "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
                                  "INNER JOIN Register d ON a.BioID = d.BioID) " +
                                  "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
-                                 "'and a.IsSended = false and a.IsValid = true";
+                                 "'and a.IsSended = false and a.IsValid = true";*/
                         }
                         break;
                     case 3://定标 未测试
                         {
-                            strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
+                            /*strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
                                  "c.FullName,c.NormalLow as NORMALLOW,c.NormalHigh as NORMALHIGH,c.Unit as UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
                                  "e.StartTime,e.Kind " +
@@ -532,7 +532,7 @@ namespace MiddleWare.Communicate
                                  "INNER JOIN CalItem c ON a.ITEM = c.ITEM) " +
                                  "INNER JOIN Register d ON a.BioID = d.BioID) " +
                                  "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
-                                 "'and a.IsSended = false and a.IsValid = true";
+                                 "'and a.IsSended = false and a.IsValid = true";*/
                         }
                         break;
                     case 4://InputResult 未测试
@@ -651,6 +651,13 @@ namespace MiddleWare.Communicate
             {
                 switch (type)
                 {
+                    /*
+                     * FullName 获取
+                     *  生化 、Input -> ITEM_PARA_MAIN
+                     *  电解质 -> 自己的表 SAMPLE_ELEC_RESULT
+                     *  打印 -> ITEM_PRINT_PARA
+                     *  计算 -> SAMPLE_ITEM_CAL_RESULT
+                     */
                     case 0://生化
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
@@ -676,17 +683,56 @@ namespace MiddleWare.Communicate
                         break;
                     case 2://质控  未测试
                         {
-                            strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
+                           /* strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
                             "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
                             "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
                             "FROM ((((SAMPLE_ITEM_TEST_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
                             "INNER JOIN ITEM_PARA_MAIN c ON a.ITEM=c.ITEM)" +
                             "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
                             " WHERE a.SAMPLE_ID ='" + testID +
-                            "' and a.IsValid = true";
+                            "' and a.IsValid = true";*/
                         }
                         break;
                     case 3://定标 未测试
+                        {
+                            /*strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,b.TEST_TIME," +
+                            "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
+                            "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
+                            "FROM ((((SAMPLE_ITEM_CAL_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
+                            "INNER JOIN ITEM_CAL_PARA c ON a.ITEM=c.ITEM)" +
+                            "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
+                            " WHERE a.SAMPLE_ID ='" + testID +
+                            "' and a.IsValid = true";*/
+                        }
+                        break;
+                    case 4://输入结果
+                        {
+                            // warning -> 从ITEM_PARA_MAIN获取ITEM项
+                            strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,b.TEST_TIME," +
+                             "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
+                             "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
+                             "FROM ((((SAMPLE_ITEM_INPUT_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
+                             "INNER JOIN ITEM_PARA_MAIN c ON a.ITEM=c.ITEM)" +
+                             "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
+                             " WHERE a.SAMPLE_ID ='" + testID +
+                             "' and a.IsValid = true";
+                        }
+                        break;
+                    case 5://打印结果
+                        {
+                            // a.RESULT_D as RESULT,a.RESULT_S as INDICATE
+                            strSelect = "SELECT a.ITEM, a.RESULT_D as RESULT,a.RESULT_S as INDICATE,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,b.TEST_TIME," +
+                            "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
+                            "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
+                            "FROM ((((SAMPLE_ITEM_PRINT_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
+                            "INNER JOIN ITEM_PRINT_PARA c ON a.ITEM=c.ITEM)" +
+                            "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
+                            " WHERE a.SAMPLE_ID ='" + testID +
+                            "' and a.IsValid = true";
+
+                        }
+                        break;
+                    case 6://计算结果
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,b.TEST_TIME," +
                             "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
@@ -695,7 +741,7 @@ namespace MiddleWare.Communicate
                             "INNER JOIN ITEM_CAL_PARA c ON a.ITEM=c.ITEM)" +
                             "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
                             " WHERE a.SAMPLE_ID ='" + testID +
-                            "' and a.IsVaild = true";
+                            "' and a.IsValid = true";
                         }
                         break;
                     default: break;
@@ -826,15 +872,15 @@ namespace MiddleWare.Communicate
             }
 
 
-            #region DS400 特别读取信息
-            if (Device == 1)//DS400额外添加内容
+            #region DS400 特别读取信息 已弃用
+            if (Device == 1)//DS400额外添加内容 
             {
                 switch (type)
                 {
                     case 0:
                         {
                             #region SAMPLE_ITEM_CAL_RESULT
-                            strSelect = "select a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_CAL_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "' and a.IsVaile = true";
+                            /*strSelect = "select a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_CAL_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "' and a.IsValid = true";
                             using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                             {
                                 ds = new DataSet();
@@ -875,11 +921,11 @@ namespace MiddleWare.Communicate
                                     return;
                                 }
 
-                            }
+                            }*/
                             #endregion
 
                             #region SAMPLE_ITEM_INPUT_RESULT
-                            strSelect = "select a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_INPUT_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "' and a.IsVaile = true";
+                            /*strSelect = "select a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_INPUT_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "' and a.IsValid = true";
                             using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                             {
                                 ds = new DataSet();
@@ -920,12 +966,12 @@ namespace MiddleWare.Communicate
                                     return;
                                 }
 
-                            }
+                            }*/
                             #endregion
 
                             #region SAMPLE_ITEM_PRINT_RESULT
                             //RESULT_D -> RESULT    RESULT_S -> INDICATE
-                            strSelect = "select a.ITEM,a.RESULT_D as RESULT,a.RESULT_S as INDICATE ,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_PRINT_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "' and a.IsVaile = true";
+                            /*strSelect = "select a.ITEM,a.RESULT_D as RESULT,a.RESULT_S as INDICATE ,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH FROM SAMPLE_ITEM_PRINT_RESULT as a WHERE a.SAMPLE_ID = '" + testID + "' and a.IsValid = true";
                             using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                             {
                                 ds = new DataSet();
@@ -960,7 +1006,7 @@ namespace MiddleWare.Communicate
                                     return;
                                 }
 
-                            }
+                            }*/
                             #endregion
                         }
                         break;
@@ -1012,16 +1058,17 @@ namespace MiddleWare.Communicate
                             #endregion
                         }
                         break;
-                    case 2://不做
+                    case 2://质控
                         {
 
                         }
                         break;
-                    case 3://不做
+                    case 3://定标
                         {
 
                         }
                         break;
+                    
                     default: break;
                 }
             }
