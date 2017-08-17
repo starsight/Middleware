@@ -26,9 +26,16 @@ namespace MiddleWare
         {
             InitializeComponent();
 
-            //开始自动连接
-            this.Connect.ReadConnectConfigForAutoRun();
-
+            if(GlobalVariable.DSDEVICE!=2)
+            {//打开软件时，若是自动打开DS设备，则自动更新数据库
+                Number_Item number_item = SetOption.Number_Item;
+                number_item.Updata_DS_Click(true, null);//这个ture来表明不是由按钮发出的
+            }
+            
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            //记录错误日志
+            log.Debug("Init mainwindow finish.");
         }
         public static FloatMiniWindow mini;
 

@@ -106,7 +106,7 @@ namespace MiddleWare.Views
 
             NamedPipe.Openpipe += new NamedPipe.MessTrans(OpenDs);//管道连接异常后，自动重新打开
 
-            //ReadConnectConfigForAutoRun(); //自动连接
+            ReadConnectConfigForAutoRun(); //自动连接
 
         }
 
@@ -115,6 +115,10 @@ namespace MiddleWare.Views
         /// </summary>
         public void ReadConnectConfigForAutoRun()
         {
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            //记录错误日志
+            log.Debug("开始自动打开程序");
             string str = AppConfig.GetAppConfig("LisServerConnectWay");
             if (str != null && str != "null") //LIS Server 连接方式 HL7 ASTM
             {
@@ -133,16 +137,19 @@ namespace MiddleWare.Views
             str = AppConfig.GetAppConfig("DeviceConnectType");//仪器连接类型选择
             if (str != null && str != "null") 
             {
+                MessageBox.Show(str);
                 switch (str)
                 {
                     case "DS400":
                         {
+                            MessageBox.Show("0");
                             isAutoConnectDevice = true;
                             this.combobox_device.SelectedIndex = 0;
                             break;
                         }
                     case "DS800":
                         {
+                            MessageBox.Show("1");
                             isAutoConnectDevice = true;
                             combobox_device.SelectedIndex = 1;
                             break;
@@ -767,7 +774,13 @@ namespace MiddleWare.Views
 
         private void combobox_device_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            //记录错误日志
+            log.Debug("仪器连接下拉列表变化");
+            MessageBox.Show("仪器连接下拉列表变化0");
             string devicecontent = (string)combobox_device.SelectedValue;
+            MessageBox.Show("仪器连接下拉列表变化1");
             EnableButton(button_opendevice);
             DisableButton(button_closedevice);
             Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
@@ -786,6 +799,7 @@ namespace MiddleWare.Views
                             EnableButton(button_closedevice);
                             DisableButton(button_opendevice);
                         }
+                        MessageBox.Show("仪器连接下拉列表变化2");
                     } break;
                 case "PL12":
                 case "PL16":
@@ -822,12 +836,17 @@ namespace MiddleWare.Views
 
            if (isAutoConnectDevice)
             {
+                MessageBox.Show("仪器连接下拉列表变化，自动打开按钮");
                 isAutoConnectDevice = false;
                 button_opendevice_Click(null, null);
+                log.Debug("仪器连接下拉列表变化，自动打开按钮");
             }
         }
         private void button_opendevice_Click(object sender, RoutedEventArgs e)
         {
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            log.Debug("开始打开按钮");
             AppConfig.UpdateAppConfig("DeviceConnectType", "null");
 
             if (IsDSshow && !IsPLshow)
@@ -835,6 +854,7 @@ namespace MiddleWare.Views
                 try//防止为空
                 {
                     GlobalVariable.DSDEVICEADDRESS = DSconnect.textbox_dsdb.Text;
+                    log.Debug("获取设备数据库地址"+GlobalVariable.DSDEVICEADDRESS);
                     if (GlobalVariable.DSDEVICEADDRESS == string.Empty)
                     {
                         AddItem(textbox_deviceshow, "请输入数据库地址\r\n");
@@ -888,6 +908,9 @@ namespace MiddleWare.Views
                     #endregion
                     GlobalVariable.DSNum = true;
                     GlobalVariable.AddValue(GlobalVariable.DSDEVICEADDRESS, "生化");
+                    //记录错误日志
+                    log.Debug("开始openDs" + GlobalVariable.DSDEVICEADDRESS);
+                    MessageBox.Show("开始openDs" + GlobalVariable.DSDEVICEADDRESS);
                     OpenDs(GlobalVariable.DSDEVICEADDRESS);
                 }
             }
@@ -968,11 +991,17 @@ namespace MiddleWare.Views
         }
         private void OpenDs(string DSaddress)//
         {
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            //记录错误日志
+            log.Debug("进行openDs" + GlobalVariable.DSDEVICEADDRESS);
             DI800Manager dm = new DI800Manager();//新建一个DI800数据操作
             AccessManagerDS amd = new AccessManagerDS();//新建一个数据库操作
             WriteAccessDS wad = new WriteAccessDS(amd);//新建一个写数据库操作
             wad.NoticeReadMessage += new WriteAccessDS.NoticeRead(ReadAccessDS.ReadData);//委托，往数据库写完一个数据，就通知去读数据库
             wad.Start();//开始写数据库操作
+            log.Debug("进行openDs" + 1);
+            MessageBox.Show("进行openDs" + 1);
             WriteEquipAccess wea = new WriteEquipAccess();//新建一个往仪器数据库写数据操作
 
             NamedPipe np = new NamedPipe();//先建一个命名管道及各种操作
@@ -981,6 +1010,8 @@ namespace MiddleWare.Views
             pPipes.PipeMessage += new ProcessPipes.PipeTransmit(ReadEquipAccess.ReadData);//从命名管道读到相关ID，就从仪器数据库开始读此ID信息
             
             pPipes.start();//开始读命名管道
+            log.Debug("进行openDs" + 2);
+            MessageBox.Show("进行openDs" + 2);
 
             ReadEquipAccess rea = new ReadEquipAccess(DSaddress);//必须要实例化
             ReadAccessDS rad = new ReadAccessDS(dm);//新建一个读本地数据操作及将数据写入dm队列中
@@ -999,6 +1030,8 @@ namespace MiddleWare.Views
             }
             pd.DItransmit += new ProcessDI800s.DIEventHandle(Monitor.ReceiveResult);//将数据同时传给界面显示
 
+            log.Debug("进行openDs" + 3);
+            MessageBox.Show("进行openDs" + 3);
             if (!GlobalVariable.IsDSRepeat)//只需要写一次就够了
             {
                 ReadEquipAccess.ReadEquipAccessMessage += Monitor.AddItemState;//
@@ -1009,8 +1042,10 @@ namespace MiddleWare.Views
 
             GlobalVariable.IsDSRepeat = true;//已经连接过生化仪
             AddItem(textbox_deviceshow, "等待生化仪器连接\r\n");
-
+            log.Debug("进行openDs" + 4);
+            MessageBox.Show("进行openDs" + 4);
             //写入配置文件
+            /*
             AppConfig.UpdateAppConfig("DSAddress", DSaddress);
             if (GlobalVariable.DSDEVICE == 0)
             {
@@ -1019,7 +1054,9 @@ namespace MiddleWare.Views
             {
                 AppConfig.UpdateAppConfig("DeviceConnectType", "DS400");
             }
-            
+            */
+            log.Debug("进行openDs" + 5);
+            MessageBox.Show("进行openDs" + 5);
             //自动更新数据库
             MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
             if(mainwin!=null)
@@ -1031,6 +1068,8 @@ namespace MiddleWare.Views
                     number_item.Updata_DS_Click(true, null);//这个ture来表明不是由按钮发出的
                 }
             }
+            log.Debug("进行openDs" + 6);
+            MessageBox.Show("进行openDs" + 6);
         }
         private void OpenPl(string com, int baud)
         {
