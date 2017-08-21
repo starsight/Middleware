@@ -554,7 +554,7 @@ namespace MiddleWare.Communicate
                                  "'and a.IsSended = false and a.IsValid = true";*/
                         }
                         break;
-                    case 4://InputResult 未测试
+                    case 4://InputResult
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
@@ -564,7 +564,7 @@ namespace MiddleWare.Communicate
                                  "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
                                  "INNER JOIN Register d ON a.BioID = d.BioID) " +
                                  "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
-                                 "'and a.IsSended = false and a.IsValid = true";
+                                 "'and a.IsSended = false";// and a.IsValid = true";
 
                             /*strSelect = "SELECT t.Item,t.Result,t.AddTime,t.StartTime,t.Kind," +
                                         "t.BioID,t.PatientID,t.FirstName,t.Sex,t.Age,t.Department," +
@@ -593,10 +593,10 @@ namespace MiddleWare.Communicate
                                         "Order by PatientID ";*/
                         }
                         break;
-                    case 5://PrintResult 未测试
+                    case 5://PrintResult
                         {
                             //print比较特殊 可参见DS400 特别读取信息 - SAMPLE_ITEM_PRINT_RESULT （940行附近） RESULT_D -> RESULT    RESULT_S -> INDICATE
-                            strSelect = "SELECT a.ITEM,a.RESULT_D as RESULT,a.RESULT_S as INDICATE,a.AddTime as TEST_TIME," +
+                            strSelect = "SELECT a.ITEM,a.RESULTD as RESULT,a.RESULTS as INDICATE,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
                                  "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
                                  "e.StartTime,e.Kind " +
@@ -604,7 +604,7 @@ namespace MiddleWare.Communicate
                                  "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
                                  "INNER JOIN Register d ON a.BioID = d.BioID) " +
                                  "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
-                                 "'and a.IsSended = false and a.IsValid = true";
+                                 "'and a.IsSended = false";// and a.IsValid = true";
                             
                                 /*strSQL.Format(_T("SELECT \
                                                     a.Item,a.FullName,a.ResultD,a.ResultS,a.DataType,\
@@ -628,7 +628,7 @@ namespace MiddleWare.Communicate
 
                         }
                         break;
-                    case 6://CalResult 未测试
+                    case 6://CalResult
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
                                  "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
@@ -638,7 +638,7 @@ namespace MiddleWare.Communicate
                                  "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
                                  "INNER JOIN Register d ON a.BioID = d.BioID) " +
                                  "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
-                                 "'and a.IsSended = false and a.IsValid = true";
+                                 "'and a.IsSended = false";// and a.IsValid = true";
                             /*
                                strSQL.Format(_T("SELECT \
                                 a.Item,a.Result,a.AddTime,\
