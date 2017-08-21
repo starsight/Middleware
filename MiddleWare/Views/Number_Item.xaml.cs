@@ -133,7 +133,7 @@ namespace MiddleWare.Views
                 {
                     foreach (DataRow dr in ds.Tables["Item"].Rows)
                     {
-                        if ((string)dr["Device"] == "DS400")
+                        if ((string)dr["Device"] == GlobalVariable.DSDeviceID)
                         {
                             Item_Number item = new Item_Number();
                             item.Item = dr["Item"] == DBNull.Value ? string.Empty : (string)dr["Item"];
@@ -189,7 +189,7 @@ namespace MiddleWare.Views
                 {
                     foreach (DataRow dr in ds.Tables["Item"].Rows)
                     {
-                        if ((string)dr["Device"] == "DS800")
+                        if ((string)dr["Device"] == GlobalVariable.DSDeviceID)
                         {
                             Item_Number item = new Item_Number();
                             item.Item = dr["Item"] == DBNull.Value ? string.Empty : (string)dr["Item"];
@@ -448,7 +448,7 @@ namespace MiddleWare.Views
                             item.FullName = dr["FullName"] == DBNull.Value ? string.Empty : (string)dr["FullName"];
                             item.Type = "bio";
                             item.Index = string.Empty;
-                            item.Device = "DS800";
+                            item.Device = GlobalVariable.DSDeviceID;
                             item_number.Add(item);
                         }
                     }
@@ -468,7 +468,7 @@ namespace MiddleWare.Views
                             item.FullName = dr["FullName"] == DBNull.Value ? string.Empty : (string)dr["FullName"];
                             item.Type = "ele";
                             item.Index = string.Empty;
-                            item.Device = "DS800";
+                            item.Device = GlobalVariable.DSDeviceID;
                             item_number.Add(item);
                         }
                     }
@@ -488,7 +488,7 @@ namespace MiddleWare.Views
                             item.FullName = dr["FullName"] == DBNull.Value ? string.Empty : (string)dr["FullName"];
                             item.Type = "cal";
                             item.Index = string.Empty;
-                            item.Device = "DS800";
+                            item.Device = GlobalVariable.DSDeviceID;
                             item_number.Add(item);
                         }
                     }
@@ -521,7 +521,7 @@ namespace MiddleWare.Views
                             item.FullName = dr["FULL_NAME"] == DBNull.Value ? string.Empty : (string)dr["FULL_NAME"];
                             item.Type = "bio";
                             item.Index = string.Empty;
-                            item.Device = "DS400";
+                            item.Device = GlobalVariable.DSDeviceID;
                             item_number.Add(item);
                         }
                     }
@@ -541,7 +541,7 @@ namespace MiddleWare.Views
                             item.FullName = dr["FULL_NAME"] == DBNull.Value ? string.Empty : (string)dr["FULL_NAME"];
                             item.Type = "ele";
                             item.Index = string.Empty;
-                            item.Device = "DS400";
+                            item.Device = GlobalVariable.DSDeviceID;
                             item_number.Add(item);
                         }
                     }
@@ -561,7 +561,7 @@ namespace MiddleWare.Views
                             item.FullName = dr["FULL_NAME"] == DBNull.Value ? string.Empty : (string)dr["FULL_NAME"];
                             item.Type = "cal";
                             item.Index = string.Empty;
-                            item.Device = "DS400";
+                            item.Device = GlobalVariable.DSDeviceID;
                             item_number.Add(item);
                         }
                     }

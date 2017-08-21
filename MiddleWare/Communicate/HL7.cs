@@ -12,6 +12,8 @@ using System.Threading;
 using MiddleWare.Views;
 using System.Threading.Tasks;
 using System.Net.Sockets;
+using System.Reflection;
+using log4net;
 //1个线程  1个HL7队列
 namespace MiddleWare.Communicate
 {
@@ -216,11 +218,16 @@ namespace MiddleWare.Communicate
         public event GlobalVariable.MessageHandler ProcessHL7Message;
         public static CancellationTokenSource ProcessHL7Cancel;
 
+        private static ILog log;
+
         public ProcessHL7(HL7Manager hm)
         {
             hl7Manager = hm;
 
             ProcessHL7Cancel = new CancellationTokenSource();
+
+            //创建日志记录组件实例
+            log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
         public void Start()
         {
@@ -234,8 +241,10 @@ namespace MiddleWare.Communicate
             PipeParser parser;
             IMessage m;
             int SendNum = 0;
+            log.Info("HL7 send socket start.");
             while (!ProcessHL7Cancel.IsCancellationRequested && GlobalVariable.IsSocketRun) 
             {
+               
                 if (hl7Manager.IsHL7Available)
                 {
                     #region 向HL7发送样本测试结果
@@ -251,6 +260,7 @@ namespace MiddleWare.Communicate
                     {
                         HL7Message = hl7Manager.GetHL7Message();
                         Connect.sendSocket(HL7Message);
+                        log.Info("HL7 send" + hl7Manager.GetHL7Sample_ID());
                         if (SendNum == 0) 
                         {
                             ++Statusbar.SBar.SendNum;
@@ -274,6 +284,7 @@ namespace MiddleWare.Communicate
                             if (ack.MSA.AcknowledgementCode.Value == "AA")
                             {
                                 ProcessHL7Message.Invoke(hl7Manager.GetHL7Sample_ID() + "Lis服务器接收成功\r\n", "LIS");
+                                log.Info("LIS receive success" + hl7Manager.GetHL7Sample_ID());
                                 Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode 
                                 Statusbar.SBar.SampleId = hl7Manager.GetHL7Sample_ID();//mini mode
                                 ++Statusbar.SBar.ReplyNum;
@@ -285,6 +296,7 @@ namespace MiddleWare.Communicate
                             {
                                 Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                                 ProcessHL7Message.Invoke(hl7Manager.GetHL7Sample_ID() + "Lis服务器第" + SendNum.ToString() + "次接收失败\r\n", "LIS");
+                                log.Info("LIS " + SendNum + " receive fail");
                             }
                         }
                         else
@@ -292,6 +304,7 @@ namespace MiddleWare.Communicate
                             //接收异常
                             Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                             ProcessHL7Message.Invoke(hl7Manager.GetHL7Sample_ID() + "Lis服务器第" + SendNum.ToString() + "次接收失败\r\n", "LIS");
+                            log.Info("LIS " + SendNum + " receive fail");
                         }
                     }
                     else//单向
@@ -300,6 +313,7 @@ namespace MiddleWare.Communicate
                         Statusbar.SBar.SampleId = hl7Manager.GetHL7Sample_ID();//mini mode
 
                         ProcessHL7Message.Invoke(hl7Manager.GetHL7Sample_ID() + "Lis服务器发送成功\r\n", "LIS");
+                        log.Info("LIS receive success" + hl7Manager.GetHL7Sample_ID());
                         UpdateDB.Invoke(hl7Manager.GetHL7Sample_ID(), hl7Manager.GetHL7Item(), hl7Manager.GetHL7Device());//直接回调
                         hl7Manager.RemoveHL7();//移除队列中开始处的HL7
                     }
@@ -356,11 +370,13 @@ namespace MiddleWare.Communicate
                                 Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
                                 Statusbar.SBar.SampleId = hl7Manager.GetHL7RequestSampleDataSample_ID();//mini mode
                                 ProcessHL7Message.Invoke(hl7Manager.GetHL7RequestSampleDataSample_ID() + "LIS服务器申请样本成功\r\n", "LIS");
+                                log.Info("Lis request sample success " + hl7Manager.GetHL7RequestSampleDataSample_ID());
                             }
                             else
                             {
                                 Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                                 ProcessHL7Message.Invoke(hl7Manager.GetHL7RequestSampleDataSample_ID() + "LIS服务器申请样本异常\r\n", "LIS");
+                                log.Info("Lis request sample fail " + hl7Manager.GetHL7RequestSampleDataSample_ID());
                             }
                         }
                         else if (qck.QAK.QueryResponseStatus.Value == "NF")//代表没有样本数据
@@ -369,6 +385,7 @@ namespace MiddleWare.Communicate
                             //结束
                             Statusbar.SBar.SoftStatus = GlobalVariable.miniError;// mini mode
                             ProcessHL7Message.Invoke(hl7Manager.GetHL7RequestSampleDataSample_ID() + "LIS服务器无相关样本信息\r\n", "LIS");
+                            log.Info("Lis no request sample " + hl7Manager.GetHL7RequestSampleDataSample_ID());
                         }
                     }
                     #endregion
@@ -393,7 +410,8 @@ namespace MiddleWare.Communicate
         private void HL7ApplySampleProcess()
         {
             string receiveString = string.Empty;
-            while ((!ProcessHL7Cancel.IsCancellationRequested && GlobalVariable.IsSocketRun) || hl7Manager.IsHL7ApplySampleAvailable)
+            //while ((!ProcessHL7Cancel.IsCancellationRequested && GlobalVariable.IsSocketRun) || hl7Manager.IsHL7ApplySampleAvailable)
+            while ((!ProcessHL7Cancel.IsCancellationRequested && GlobalVariable.IsSocketRun))
             {
                 //进行之前接收到的样本数据处理
                 hl7Manager.HL7ApplySampleSignal.WaitOne();
@@ -424,6 +442,7 @@ namespace MiddleWare.Communicate
                             //接收成功后就要发送应答信号
                             Connect.sendSocket(CreatACKQ03(dsr.MSH.ReceivingFacility.NamespaceID.Value));
                             ProcessHL7Message.Invoke(hl7info.SampleID + "LIS服务器主动发送样本申请信息\r\n", "LIS");
+                            log.Info("Lis initiative request sample " + hl7info.SampleID);
 
                             //Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
                             Statusbar.SBar.SampleId = hl7info.SampleID;//mini mode
@@ -504,6 +523,7 @@ namespace MiddleWare.Communicate
             hl7.Sample_ID = data.SAMPLE_ID;
             hl7.Device = data.Device;
             hl7Manager.AddHL7(hl7);
+            log.Info("HL7 DS package " + hl7.Sample_ID);
         }
         public static void PLdataReceived(object receivedata, string name)//处理血小板样本测试结果  ORU_RO1
         {
@@ -613,7 +633,7 @@ namespace MiddleWare.Communicate
             qryQ02.QRD.GetWhatSubjectFilter(0).Identifier.Value = "OTH";
             qryQ02.QRD.QueryResultsLevel.Value = "T";
 
-            qryQ02.QRF.GetWhereSubjectFilter(0).Value = device == 0 ? "DS800" : (device == 1 ? "DS400" : null);
+            qryQ02.QRF.GetWhereSubjectFilter(0).Value = GlobalVariable.DSDeviceID;
             qryQ02.QRF.WhenDataEndDateTime.TimeOfAnEvent.SetLongDate(DateTime.Now);
             qryQ02.QRF.WhenDataStartDateTime.TimeOfAnEvent.SetLongDate(DateTime.Now);
             qryQ02.QRF.GetWhichDateTimeQualifier(0).Value = "RCT";
@@ -622,7 +642,7 @@ namespace MiddleWare.Communicate
             #endregion
 
             hl7request.HL7RequestMessage = Parser.Encode(qryQ02);
-            hl7request.RequestDevice = device == 0 ? "DS800" : (device == 1 ? "DS400" : string.Empty);
+            hl7request.RequestDevice = GlobalVariable.DSDeviceID;
             hl7request.RequestSample_ID = sample_id;
             hl7Manager.AddHL7RequestSampleData(hl7request);
         }

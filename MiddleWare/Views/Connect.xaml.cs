@@ -105,6 +105,10 @@ namespace MiddleWare.Views
         /// </summary>
         public void ReadConnectConfigForAutoRun()
         {
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            //记录日志
+            log.Info("Start auto connect.");
             string str = AppConfig.GetAppConfig("LisServerConnectWay");
             if (str != null && str != "null") //LIS Server 连接方式 HL7 ASTM
             {
@@ -284,6 +288,10 @@ namespace MiddleWare.Views
         }
         private void StartSocket()
         {
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            //记录日志
+            log.Info("Start socket connect.");
             IPAddress ip = IPAddress.Parse(host);
             clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             try
@@ -292,10 +300,12 @@ namespace MiddleWare.Views
                 clientSocket.ReceiveTimeout = 500;//设置读取超时时间500ms
                 clientSocket.SendTimeout = 1000;//设置发送超时时间1s
                 AddItem(textbox_lisshow, "连接LIS服务器成功\r\n");
+                log.Info("Socket connect success.");
             }
             catch (SocketException se)
             {
                 AddItem(textbox_lisshow, "连接失败\r\n请打开LIS服务器后重新连接\r\n");
+                log.Debug("Socket connect fail.");
                 Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
                 DisableButton(button_closelis);
                 EnableButton(button_openlis);
@@ -383,6 +393,7 @@ namespace MiddleWare.Views
                     LisNum = false;
                     AddItem(textbox_lisshow, "LIS服务器断开连接\r\n正在重新连接\r\n");
                     LisMessage.Invoke("LIS服务器断开连接\r\n正在重新连接\r\n", "LIS");
+                    log.Debug("LIS disconnect, is reconnecting.");
 
                     GlobalVariable.IsSocketRun = false;
                     
@@ -412,6 +423,7 @@ namespace MiddleWare.Views
                         //重连成功
                         AddItem(textbox_lisshow, "连接LIS服务器成功\r\n");
                         LisMessage.Invoke("连接LIS服务器成功\r\n", "LIS");
+                        log.Debug("LIS reconnect success.");
                         GlobalVariable.IsSocketRun = true;
                         LisNum = true;
                         ph.Start();
@@ -420,6 +432,7 @@ namespace MiddleWare.Views
                     else
                     {
                         AddItem(textbox_lisshow, "LIS服务器断开连接\r\n请确定LIS后重新连接\r\n");
+                        log.Debug("LIS disconnect, please reconnect.");
                         LisMessage.Invoke("LIS服务器断开连接\r\n请确定LIS后重新连接\r\n", "LIS");
                         if (GlobalVariable.IsHL7Run && !GlobalVariable.IsASTMRun)
                         {
@@ -819,6 +832,8 @@ namespace MiddleWare.Views
         private void button_opendevice_Click(object sender, RoutedEventArgs e)
         {
             AppConfig.UpdateAppConfig("DeviceConnectType", "null");
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
             if (IsDSshow && !IsPLshow)
             {
@@ -828,12 +843,14 @@ namespace MiddleWare.Views
                     if (GlobalVariable.DSDEVICEADDRESS == string.Empty)
                     {
                         AddItem(textbox_deviceshow, "请输入数据库地址\r\n");
+                        log.Debug("No database address.");
                         return;
                     }
                 }
                 catch
                 {
                     AddItem(textbox_deviceshow, "请输入数据库地址\r\n");
+                    log.Debug("No database address.");
                     return;
                 }
 
@@ -844,18 +861,21 @@ namespace MiddleWare.Views
                 {
                     //存在
                     AddItem(textbox_deviceshow, "生化仪数据库存在\r\n");
+                    log.Debug("DS database exit.");
                 }
                 else
                 {
                     if (!CreatDSDB()) 
                     {
                         AddItem(textbox_deviceshow, "生化仪本地数据库创建失败\r\n");
+                        log.Debug("DS database create fail.");
                         return;
                     }
                 }
 
                 if(GlobalVariable.DSNum)
                 {
+                    AddItem(textbox_deviceshow, "已存在生化仪连接\r\n");
                     return;
                 }
                 if(!GlobalVariable.IsContainsKey(GlobalVariable.DSDEVICEADDRESS))//如果之前没有建立过此项连接
@@ -890,6 +910,7 @@ namespace MiddleWare.Views
                     if (PLconnect.combobox_plcom.SelectedValue == null)
                     {
                         AddItem(textbox_deviceshow, "请输入端口号与波特率\r\n");
+                        log.Debug("No port and buad.");
                         return;
                     }
                     GlobalVariable.PLCOM = (string)PLconnect.combobox_plcom.SelectedValue;
@@ -916,6 +937,7 @@ namespace MiddleWare.Views
                 catch
                 {
                     AddItem(textbox_deviceshow, "请输入端口号与波特率\r\n");
+                    log.Debug("No port and buad.");
                     return;
                 }
                 string pathto = GlobalVariable.topDir.Parent.FullName;
@@ -924,6 +946,7 @@ namespace MiddleWare.Views
                 {
                     //存在
                     AddItem(textbox_deviceshow, "血小板本地数据库存在\r\n");
+                    log.Debug("PL database exit.");
                 }
                 else
                 {
@@ -958,6 +981,9 @@ namespace MiddleWare.Views
         }
         private void OpenDs(string DSaddress)//
         {
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
             DI800Manager dm = new DI800Manager();//新建一个DI800数据操作
             AccessManagerDS amd = new AccessManagerDS();//新建一个数据库操作
             WriteAccessDS wad = new WriteAccessDS(amd);//新建一个写数据库操作
@@ -999,6 +1025,7 @@ namespace MiddleWare.Views
 
             GlobalVariable.IsDSRepeat = true;//已经连接过生化仪
             AddItem(textbox_deviceshow, "等待生化仪器连接\r\n");
+            log.Info("Wait DS device connect.");
 
             //写入配置文件
             AppConfig.UpdateAppConfig("DSAddress", DSaddress);
@@ -1019,6 +1046,7 @@ namespace MiddleWare.Views
                 {
                     Number_Item number_item = mainwin.SetOption.Number_Item;
                     number_item.Updata_DS_Click(true, null);//这个ture来表明不是由按钮发出的
+                    log.Info("Auto update DS database.");
                 }
             }
         }

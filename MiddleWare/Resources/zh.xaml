@@ -112,14 +112,14 @@
     <!--onekeyupload.xmal-->
     <system:String x:Key="UploadNoNum">未上传样本数目</system:String>
     <system:String x:Key="UploadOneKeyUpload">一键上传</system:String>
-    <system:String x:Key="UploadCheckNoUpload">选择未上传样本</system:String>
+    <system:String x:Key="UploadCheckNoUpload">查看未上传样本</system:String>
     <system:String x:Key="UploadAllSelect">全选</system:String>
     <system:String x:Key="UploadConfirmUpload">确认上传</system:String>
 
     <!--onekeydownload.xmal-->
     <system:String x:Key="DownloadNoNum">未下发样本数目</system:String>
     <system:String x:Key="DownloadOneKeyDownload">一键下发</system:String>
-    <system:String x:Key="DownloadCheckNoDownload">选择未下发样本</system:String>
+    <system:String x:Key="DownloadCheckNoDownload">查看未下发样本</system:String>
     <system:String x:Key="DownloadAllSelect">全选</system:String>
     <system:String x:Key="DownloadConfirmDownload">确认下发</system:String>
     

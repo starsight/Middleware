@@ -18,6 +18,8 @@ using MiddleWare.Communicate;
 using System.Collections;
 using MahApps.Metro.Controls.Dialogs;
 using System.Threading;
+using log4net;
+using System.Reflection;
 
 namespace MiddleWare.Views
 {
@@ -41,6 +43,8 @@ namespace MiddleWare.Views
 
         private static Hashtable taskType = new Hashtable();//用来保存需要测试的任务及类型（不重复，只为了获取对应任务的类型）
 
+        private static ILog log;
+
         public OneKeyDownload()
         {
             InitializeComponent();
@@ -54,6 +58,9 @@ namespace MiddleWare.Views
             conn = new OleDbConnection(strConnection);
 
             grid_download.DataContext = Statusbar.SBar;
+
+            //创建日志记录组件实例
+            log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         }
         /// <summary>
@@ -197,6 +204,7 @@ namespace MiddleWare.Views
             if (BackStageList.Count == 0) 
             {
                 await mainwin.ShowMessageAsync("提醒", "无样本数据可处理");
+                log.Info("无可下发样本数据");
                 return;
             }
             
@@ -228,6 +236,7 @@ namespace MiddleWare.Views
                     taskList.Add(singleTask);
                 }
                 WriteEquipAccess.WriteApplySampleDS(sampleInput, taskList);//去写入到设备数据库
+                log.Info("一键下发项目" + sampleInput.SAMPLE_ID);
                 System.Windows.Forms.Application.DoEvents();
                 Thread.Sleep(500);
             }
@@ -311,6 +320,7 @@ namespace MiddleWare.Views
                     singleTask.Type = taskType[singleItem].ToString();//从哈希表里获取相应类型
                     taskList.Add(singleTask);
                 }
+                log.Info("选择下发项目" + sampleInput.SAMPLE_ID);
                 WriteEquipAccess.WriteApplySampleDS(sampleInput, taskList);//去写入到设备数据库
                 System.Windows.Forms.Application.DoEvents();
                 Thread.Sleep(500);

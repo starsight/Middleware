@@ -16,6 +16,8 @@ using System.Windows.Threading;
 using System.Windows.Forms;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
+using log4net;
+using System.Reflection;
 
 //3个线程 2个队列 1个用于从仪器数据库读取写入到自己数据的的DI800队列  1个是从自己数据库读取然后发送的DI800队列
 namespace MiddleWare.Communicate
@@ -173,6 +175,9 @@ namespace MiddleWare.Communicate
         /// </summary>
         public void NamedPipeCreat(object name,object name_write)
         {
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
             pipe_read = 0;//0代表没有建立管道，1代表建立管道并连接，2代表建立管道未连接
             pipe_write = 0;//0代表没有建立管道，1代表建立管道并连接，2代表建立管道未连接
             run_status = false;
@@ -185,17 +190,21 @@ namespace MiddleWare.Communicate
                 NamedPipeMessage.Invoke("命名管道创建中\r\n", "DEVICE");
                 
                 pipeServer.WaitForConnection();//等待连接
+
+                log.Debug("Write pipe connect success.");
                 
                 //创建一个写的管道
                 if (pipeServer.IsConnected && pipe_read == 2)
                 {
                     pipe_write = 2;
                     pipeServer_write.WaitForConnection();//等待连接
-                    
+                    log.Debug("Read pipe connect success.");
+
                 }
                 if (pipeServer.IsConnected && pipeServer_write.IsConnected && pipe_read == 2 && pipe_write == 2)
                 {
                     NamedPipeMessage.Invoke("命名管道建立成功\r\n", "DEVICE");
+                    log.Debug("All pipe connect success.");
 
                     Statusbar.SBar.DeviceStatus = GlobalVariable.miniConn;// for mini mode
 
@@ -213,6 +222,7 @@ namespace MiddleWare.Communicate
             {
                 string str = e.Message.ToString();
                 NamedPipeMessage.Invoke("命名管道建立异常\r\n正在重新打开\r\n", "DEVICE");
+                log.Debug("Pipe connect fail.");
                 DisconnectPipe(2);
             }
         }
@@ -223,6 +233,8 @@ namespace MiddleWare.Communicate
         {
             //CloseStatus:0  主动正常关闭；1：被动关闭；2：主动异常关闭
             //1和2状态下需要重新建立连接
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             run_status = false;
             DSCancel.Cancell();
             Statusbar.SBar.DeviceStatus = GlobalVariable.miniUnConn;// for mini mode
@@ -246,6 +258,7 @@ namespace MiddleWare.Communicate
                 Openpipe.BeginInvoke(GlobalVariable.DSDEVICEADDRESS, null, null);
                 Thread.Sleep(200);
             }
+            log.Info("All pipe disconnect.");
         }
         /// <summary>
         /// 自己建立个命名管道客户端去解脱阻塞的服务器
@@ -269,7 +282,6 @@ namespace MiddleWare.Communicate
                     pipe_write = 0;//都取消连接了
                 }
             }
-            
         }
     }
 
@@ -297,6 +309,10 @@ namespace MiddleWare.Communicate
         }
         public void Run()
         {
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            log.Info("Start pipe process.");
+
             namedpipe.NamedPipeCreat(NamedPipe.Pipename, NamedPipe.Pipename_write);//读 写
             while ((!ProcessPipesCancel.IsCancellationRequested) && NamedPipe.run_status)
             {
@@ -311,6 +327,8 @@ namespace MiddleWare.Communicate
                 }
                 else if (receiveData.CheckBit == 2)// 关闭管道，同时关闭客户端
                 {
+                    log.Info("Ready colse software.");
+
                     namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);//回写函数
 
                     bool canClose = false;//当前连接是否可以安全关闭
@@ -341,12 +359,14 @@ namespace MiddleWare.Communicate
                         {
                             //确认
                             Environment.Exit(0);
+                            log.Info("Close software");
                         }
                     }
                     else
                     {
                         //可以直接关闭
                         Environment.Exit(0);
+                        log.Info("Close software");
                     }
                 }
                 else if (receiveData.GetTestEnd == 1 && receiveData.CheckBit == 0) //如果测试完成   CheckBit 1表示主动下发返回 客户端不需要处理
@@ -377,10 +397,12 @@ namespace MiddleWare.Communicate
                     //生化仪发过来仪器标识ID
                     GlobalVariable.DSDeviceID = receiveData.BarCode;
                     namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);
+                    log.Info("Pipe DS deviceID " + GlobalVariable.DSDeviceID);
                 }
                 else if (receiveData.CheckBit == 4)//关闭管道，但是不关闭客户端 by wenjie 17-08-09
                 {
                     namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);//回写函数
+                    log.Info("Disconnect pipe.");
                 }
                 Thread.Sleep(200);
             }
@@ -399,14 +421,8 @@ namespace MiddleWare.Communicate
             message.CheckBit = 1;
 
             namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref message);
-            if (GlobalVariable.DSDEVICE == 0)
-            {
-                WriteAccessDS.UpdateDBIn(_ID, "DS800");
-            }
-            else if (GlobalVariable.DSDEVICE == 1) 
-            {
-                WriteAccessDS.UpdateDBIn(_ID, "DS400");
-            }
+            
+            WriteAccessDS.UpdateDBIn(_ID, GlobalVariable.DSDeviceID);
             ++Statusbar.SBar.IssueNum;
         }
     }
@@ -465,6 +481,9 @@ namespace MiddleWare.Communicate
         public static void ReadData(string testID, int Device, int type, AccessManagerDS am,ref int ExistSample)//读取生化仪数据库
         {
             ExistSample = 0;
+            //创建日志记录组件实例
+            ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            log.Info("New DS sample result " + testID + "-" + Device + "-" + type);
             AccessManagerDS.EquipMutex.WaitOne();//上锁
             if (conn.State == System.Data.ConnectionState.Closed)
             {
@@ -871,7 +890,6 @@ namespace MiddleWare.Communicate
                 }
             }
 
-
             #region DS400 特别读取信息 已弃用
             if (Device == 1)//DS400额外添加内容 
             {
@@ -1077,6 +1095,7 @@ namespace MiddleWare.Communicate
             am.AddDI800Access(di800);
             am.DI800SignalAccess.Set();
             ReadEquipAccessMessage.Invoke(di800.SAMPLE_ID + "读取设备数据库成功\r\n", "DEVICE");
+            log.Info("Read equip database success" + di800.SAMPLE_ID);
             ExistSample = 1;
             ds.Clear();//清除DataSet所有数据
             conn.Close();//关闭
@@ -1104,6 +1123,7 @@ namespace MiddleWare.Communicate
         private static string strConnection;
         //private static string strDSInsert;
         private static string strJudge;
+        private static ILog log;
 
         public WriteEquipAccess()
         {
@@ -1112,10 +1132,12 @@ namespace MiddleWare.Communicate
             strConnection += GlobalVariable.DSDEVICEADDRESS;
 
             conn = new OleDbConnection(strConnection);
+
+            //创建日志记录组件实例
+            log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
         public static void WriteApplySampleDS(DI800Manager.DsInput SampleInfo, List<DI800Manager.DsTask> task)
         {
-            
             if (conn.State == System.Data.ConnectionState.Closed)
             {
                 conn.Open();//打开连接
@@ -1135,7 +1157,7 @@ namespace MiddleWare.Communicate
                     {
                         //申请样本重复
                         conn.Close();
-                        AccessManagerDS.mutex.ReleaseMutex();
+                        AccessManagerDS.EquipMutex.ReleaseMutex();
                         return;
                     }
                 }
@@ -1184,6 +1206,7 @@ namespace MiddleWare.Communicate
             }
             AccessManagerDS.EquipMutex.ReleaseMutex();//卸锁
             ProcessPipes.ActiveSend(SampleInfo.SAMPLE_ID); //将样本ID通过管道发送到生化仪
+            log.Info("Wirte request sample to equip database " + SampleInfo.SAMPLE_ID);
             conn.Close();
         }
     }
@@ -1203,6 +1226,8 @@ namespace MiddleWare.Communicate
 
         public static CancellationTokenSource WriteAccessDSCancel;
 
+        private static ILog log;
+
         public WriteAccessDS(AccessManagerDS am)
         {
             string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
@@ -1212,6 +1237,9 @@ namespace MiddleWare.Communicate
             this.accessmanager = am;
 
             WriteAccessDSCancel = new CancellationTokenSource();
+
+            //创建日志记录组件实例
+            log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
         public void Start()
         {
@@ -1234,6 +1262,7 @@ namespace MiddleWare.Communicate
         }
         public void WriteData(DI800Manager.DI800 di800)
         {
+            
             AccessManagerDS.mutex.WaitOne();
             if (conn.State == System.Data.ConnectionState.Closed)
             {
@@ -1255,6 +1284,7 @@ namespace MiddleWare.Communicate
                         if (oaJudge.Fill(ds) != 0)
                         {
                             WriteAccessDSMessage.Invoke(di800.SAMPLE_ID + " " + di800.Result[i].ITEM + "写入数据库重复\r\n", "DEVICE");
+                            log.Info("Repeat write DS database " + di800.SAMPLE_ID);
                             continue;
                         }
                     }
@@ -1339,6 +1369,7 @@ namespace MiddleWare.Communicate
             if (num>0)
             {
                 WriteAccessDSMessage.Invoke(di800.SAMPLE_ID + "写入数据库成功\r\n", "DEVICE");
+                log.Info("Write DS database success " + di800.SAMPLE_ID);
             }
             NoticeReadMessage.BeginInvoke("SAMPLE_ID", di800.SAMPLE_ID, null, null);//避免之前数据库有重复值但没有发送出去,这样可以重新发送命令发送
             ++Statusbar.SBar.ReceiveNum;
@@ -1786,14 +1817,7 @@ namespace MiddleWare.Communicate
                 using (OleDbCommand cmd = new OleDbCommand(strIns, conn))
                 {
                     cmd.ExecuteNonQuery();
-
-                    var tempEntity = new
-                    {
-                        SAMPLE_ID = SAMPLE_ID,
-                        ITEM = ITEM[i],
-                        DEVICE = DEVICE
-                    };
-
+                    log.Info("update lisoutput set 1 " + SAMPLE_ID);
                 }
             }
             conn.Close();//关闭连接
@@ -1804,7 +1828,7 @@ namespace MiddleWare.Communicate
         }
         public static void UpdateDBIn(string SAMPLE_ID, string DEVICE)
         {
-            if (DEVICE != "DS800" && DEVICE != "DS400")
+            if (DEVICE != GlobalVariable.DSDeviceID)
             {
                 return;
             }
@@ -1817,6 +1841,7 @@ namespace MiddleWare.Communicate
             using (OleDbCommand cmd = new OleDbCommand(strIns, conn))
             {
                 cmd.ExecuteNonQuery();
+                log.Info("update lisinput set 1 " + SAMPLE_ID);
             }
             conn.Close();
             AccessManagerDS.mutex.ReleaseMutex();//卸锁
@@ -1836,6 +1861,8 @@ namespace MiddleWare.Communicate
         public static event GlobalVariable.MessageHandler ReadAccessDSMessage;
 
         private static DI800Manager di800Manager;
+
+        private static ILog log;
         public ReadAccessDS(DI800Manager dm)
         {
             di800Manager = dm;
@@ -1843,6 +1870,8 @@ namespace MiddleWare.Communicate
             string pathto = GlobalVariable.topDir.Parent.FullName;
             strConnection += "Data Source=" + @pathto + "\\DSDB.mdb";
             conn = new OleDbConnection(strConnection);
+
+            log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
         public static void ReadData(string selectname, string selectvalue)
         {
@@ -1912,6 +1941,7 @@ namespace MiddleWare.Communicate
                 di800Manager.AddDI800(di800);
                 di800Manager.DI800Signal.Set();
                 ReadAccessDSMessage.Invoke(di800.SAMPLE_ID + "数据库读取成功\r\n", "DEVICE");
+                log.Info("Read database sample success" + di800.SAMPLE_ID);
             }
             ds.Clear();//清楚DataSet所有数据
             conn.Close();//关闭

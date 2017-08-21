@@ -1,4 +1,5 @@
-﻿using MahApps.Metro.Controls.Dialogs;
+﻿using log4net;
+using MahApps.Metro.Controls.Dialogs;
 using MiddleWare.Communicate;
 using System;
 using System.Collections;
@@ -8,6 +9,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.OleDb;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -39,6 +41,9 @@ namespace MiddleWare.Views
         private List<UpOrDownload_Show> chooseList;
         public ObservableCollection<UpOrDownload_Show> UploadList;
 
+        private static ILog log;
+        
+
         public OneKeyUpload()
         {
             InitializeComponent();
@@ -52,6 +57,9 @@ namespace MiddleWare.Views
             conn = new OleDbConnection(strConnection);
 
             grid_upload.DataContext = Statusbar.SBar;
+
+            //创建日志记录组件实例
+            log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
         /// <summary>
         /// 获取没有上传的样本数据
@@ -189,11 +197,13 @@ namespace MiddleWare.Views
             if (hID.Count == 0) 
             {
                 await mainwin.ShowMessageAsync("提醒", "无样本数据可处理");
+                log.Info("无一键上传样本");
                 return;
             }
             ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
             foreach (string singleID in hID)
             {
+                log.Info("一键上传样本" + singleID);
                 ReadAccessDS.ReadData("SAMPLE_ID", singleID);
                 GlobalVariable.NoDisplaySampleID.Add(singleID);
                 System.Windows.Forms.Application.DoEvents();
@@ -242,6 +252,7 @@ namespace MiddleWare.Views
             if (chooseList.Count == 0) 
             {
                 await mainwin.ShowMessageAsync("提醒", "请选择样本");
+                log.Info("无选择上传样本");
                 return;
             }
             foreach(var single in chooseList)
@@ -249,10 +260,10 @@ namespace MiddleWare.Views
                 if (single.Device == GlobalVariable.DSDeviceID)
                 {
                     //只有当前连接生化仪的项目才能上传
+                    log.Info("选择上传样本" + single.Sample_ID);
                     ReadAccessDS.ReadData("SAMPLE_ID", single.Sample_ID);
                     GlobalVariable.NoDisplaySampleID.Add(single.Sample_ID);
                 }
-                
             }
             ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
 
