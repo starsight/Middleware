@@ -984,6 +984,21 @@ namespace MiddleWare.Views
             //创建日志记录组件实例
             ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+            //开启自动更新数据库线程
+            MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+            if(mainwin!=null)
+            {
+                //打开软件时，若是自动打开DS设备，由于窗口还未加载完，引用为null，需要在MainWindow初始化中再更新数据库
+                if (mainwin.SetOption!=null)
+                {
+                    
+                    Number_Item number_item = mainwin.SetOption.Number_Item;
+                    number_item.UpdateDSDBCancel = new CancellationTokenSource();
+                    Task.Factory.StartNew(number_item.UpdateDSDBRun, number_item.UpdateDSDBCancel.Token);
+                    GlobalVariable.IsUpdateDSDB = false;
+                }
+            }
+
             DI800Manager dm = new DI800Manager();//新建一个DI800数据操作
             AccessManagerDS amd = new AccessManagerDS();//新建一个数据库操作
             WriteAccessDS wad = new WriteAccessDS(amd);//新建一个写数据库操作
@@ -1037,18 +1052,7 @@ namespace MiddleWare.Views
                 AppConfig.UpdateAppConfig("DeviceConnectType", "DS400");
             }
             
-            //自动更新数据库
-            MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
-            if(mainwin!=null)
-            {
-                //打开软件时，若是自动打开DS设备，由于窗口还未加载完，引用为null，需要在MainWindow初始化中再更新数据库
-                if (mainwin.SetOption!=null)
-                {
-                    Number_Item number_item = mainwin.SetOption.Number_Item;
-                    number_item.Updata_DS_Click(true, null);//这个ture来表明不是由按钮发出的
-                    log.Info("Auto update DS database.");
-                }
-            }
+            
         }
         private void OpenPl(string com, int baud)
         {
@@ -1386,6 +1390,7 @@ namespace MiddleWare.Views
             Key_lisinput.Columns.Append("SAMPLE_ID");
             Key_lisinput.Columns.Append("PATIENT_ID");
             Key_lisinput.Columns.Append("Device");
+            Key_lisinput.Columns.Append("SEND_TIME");
             Key_lisinput.Name = "PrimaryKey";
             table_lisinput.Keys.Append(Key_lisinput, ADOX.KeyTypeEnum.adKeyPrimary);
             cat.Tables.Append(table_lisinput);

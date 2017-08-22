@@ -257,13 +257,10 @@ namespace MiddleWare.Views
             }
             foreach(var single in chooseList)
             {
-                if (single.Device == GlobalVariable.DSDeviceID)
-                {
-                    //只有当前连接生化仪的项目才能上传
-                    log.Info("选择上传样本" + single.Sample_ID);
-                    ReadAccessDS.ReadData("SAMPLE_ID", single.Sample_ID);
-                    GlobalVariable.NoDisplaySampleID.Add(single.Sample_ID);
-                }
+                //所有项目都可以上传，不局限于正在连接的设备
+                log.Info("选择上传样本" + single.Sample_ID);
+                ReadAccessDS.ReadData("SAMPLE_ID", single.Sample_ID);
+                GlobalVariable.NoDisplaySampleID.Add(single.Sample_ID);
             }
             ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
 

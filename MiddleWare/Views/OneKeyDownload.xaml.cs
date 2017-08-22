@@ -211,6 +211,10 @@ namespace MiddleWare.Views
             ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
             foreach (var single in BackStageList)
             {
+                if(single.Device!=GlobalVariable.DSDeviceID)
+                {
+                    continue;
+                }
                 DI800Manager.DsInput sampleInput = new DI800Manager.DsInput();
                 List<DI800Manager.DsTask> taskList = new List<DI800Manager.DsTask>();
                 sampleInput.SAMPLE_ID = single.Sample_ID;
@@ -296,6 +300,10 @@ namespace MiddleWare.Views
             ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
             foreach (var single in chooseList)
             {
+                if(single.Device!=GlobalVariable.DSDeviceID)
+                {
+                    continue;
+                }
                 DI800Manager.DsInput sampleInput = new DI800Manager.DsInput();
                 List<DI800Manager.DsTask> taskList = new List<DI800Manager.DsTask>();
                 sampleInput.SAMPLE_ID = single.Sample_ID;

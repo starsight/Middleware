@@ -86,7 +86,7 @@
         </TextBox>
         <Button x:Name="button_relisconnectnum" Grid.Column="4" Grid.Row="6" Content="{DynamicResource OK}" FontWeight="Medium" FontFamily="宋体" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Left" Click="button_relisconnectnum_Click" Width="100" Height="35"/>
         <TextBlock Text="{DynamicResource VersionInformation}" Grid.Column="1" Grid.ColumnSpan="2" FontFamily="宋体" FontSize="25" Grid.Row="8" VerticalAlignment="Bottom"/>
-        <TextBlock x:Name="version" Grid.Column="2" Grid.Row="8" FontFamily="宋体" FontSize="25" VerticalAlignment="Bottom" HorizontalAlignment="Right" />
+        <TextBlock x:Name="version" Grid.Column="2" Grid.Row="8" Grid.ColumnSpan="2" FontFamily="宋体" FontSize="25" VerticalAlignment="Bottom" HorizontalAlignment="Center" />
         <Button x:Name="button_clearcache" Content="{DynamicResource ClearConfiguration}" FontFamily="宋体" FontSize="20" FontWeight="Medium" Click="button_clearcache_Click" Grid.Column="4" Grid.Row="8" Height="35" Width="150" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
     </Grid>
 </UserControl>

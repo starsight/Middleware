@@ -212,10 +212,8 @@ namespace MiddleWare.Communicate
                     pipe_write = 1;
                     run_status = true;
 
-                    /*此处添加数据库查询处理  未上传样本和未下发样本*/
+                    //查看未上传数据，与仪器无关
                     ReadAccessDS.CheckUnDoneSampleNum(false);
-                    ReadAccessDS.CheckUnDoneSampleNum(true);
-                    
                 }
             }
             catch(Exception e)
@@ -319,7 +317,23 @@ namespace MiddleWare.Communicate
                 NamedPipe.PipeMessage receiveData = new NamedPipe.PipeMessage();
                 namedpipe.ReadNamedPipe(NamedPipe.pipeServer, ref receiveData);
 
-                if(receiveData.Device!=GlobalVariable.DSDEVICE)
+                if ((receiveData.CheckBit == 3)&&!GlobalVariable.IsUpdateDSDB)// && GlobalVariable.DSDeviceID != string.Empty    modified by xubinbin
+                {
+                    //生化仪发过来仪器标识ID
+                    GlobalVariable.DSDeviceID = receiveData.BarCode;
+
+                    namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);
+
+
+                    //此时自动更新数据库
+                    GlobalVariable.IsUpdateDSDB = true;
+
+                    /*此处添加数据库查询处理未下发样本，与仪器相关*/
+                    ReadAccessDS.CheckUnDoneSampleNum(true);
+
+                    log.Info("Pipe DS deviceID " + GlobalVariable.DSDeviceID);
+                }
+                else if (receiveData.Device!=GlobalVariable.DSDEVICE)
                 {
                     //生化仪打开和命名管道发送生化仪方式不统一
                     System.Windows.MessageBox.Show("生化仪选择错误,请关闭后重新连接", "警告");
@@ -392,13 +406,6 @@ namespace MiddleWare.Communicate
                         Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;
                     }
                 }
-                else if (receiveData.CheckBit == 3)// && GlobalVariable.DSDeviceID != string.Empty    modified by xubinbin
-                {
-                    //生化仪发过来仪器标识ID
-                    GlobalVariable.DSDeviceID = receiveData.BarCode;
-                    namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);
-                    log.Info("Pipe DS deviceID " + GlobalVariable.DSDeviceID);
-                }
                 else if (receiveData.CheckBit == 4)//关闭管道，但是不关闭客户端 by wenjie 17-08-09
                 {
                     namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);//回写函数
@@ -419,6 +426,7 @@ namespace MiddleWare.Communicate
             message.BarCode = string.Empty;
             message.BarCodeNum = 0;
             message.CheckBit = 1;
+            message.Device = GlobalVariable.DSDEVICE;
 
             namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref message);
             
@@ -1571,8 +1579,20 @@ namespace MiddleWare.Communicate
             }
             conn.Close();
             AccessManagerDS.mutex.ReleaseMutex();
-            WriteEquipAccess.WriteApplySampleDS(taskInput, tasklist);
-            WriteAccessDSMessage.Invoke(SampleInfo.SampleID + "申请样本任务成功\r\n", "DEVICE");
+            if(SampleInfo.Device==GlobalVariable.DSDeviceID)
+            {
+                //连接仪器和LIS下发样本仪器相同
+                //将任务信息写入到设备数据库
+                WriteEquipAccess.WriteApplySampleDS(taskInput, tasklist);
+                WriteAccessDSMessage.Invoke(SampleInfo.SampleID + "申请样本任务成功\r\n", "DEVICE");
+            }
+            else
+            {
+                //连接仪器和LIS下发样本仪器不同
+                //任务信息不写入到设备数据库，仅仅在DSDB内保存
+                WriteAccessDSMessage.Invoke(SampleInfo.SampleID + "样本任务下发到数据库中\r\n", "DEVICE");
+            }
+            
         }
         public static void WriteRequestSampleDataASTM(ASTMManager.ASTMPatientInfo PatientInfo)
         {
@@ -1962,7 +1982,7 @@ namespace MiddleWare.Communicate
             if (!UpDown)
             {
                 //未上传
-                strSelect = "select * from lisoutput where [ISSEND] = 0";
+                strSelect = "select * from lisoutput where [ISSEND] = false";
                 ds = new DataSet();
                 using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                 {
@@ -1984,7 +2004,7 @@ namespace MiddleWare.Communicate
             else
             {
                 //未下发
-                strSelect = "select * from lisinput where [IsSend] = false";
+                strSelect = "select * from lisinput where [IsSend] = false AND DEVICE ='" + GlobalVariable.DSDeviceID + "'";
                 ds = new DataSet();
                 using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                 {

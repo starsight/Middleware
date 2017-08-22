@@ -8,6 +8,10 @@ using System.IO;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using MahApps.Metro.Controls.Dialogs;
+using log4net;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MiddleWare.Views
 {
@@ -19,6 +23,8 @@ namespace MiddleWare.Views
         public ObservableCollection<Device> NDeviceList;
         public ObservableCollection<Item_Number_Show> item_show;
         List<Item_Number> item_total = new List<Item_Number>();//原始
+        private static ILog log;
+        public CancellationTokenSource UpdateDSDBCancel;
         public Number_Item()
         {
             InitializeComponent();
@@ -27,6 +33,26 @@ namespace MiddleWare.Views
 
             NcomboBox.ItemsSource = NDeviceList;
             Number_dataGrid.ItemsSource = item_show;
+
+            //创建日志记录组件实例
+            log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        }
+        public void UpdateDSDBRun()
+        {
+            while(!UpdateDSDBCancel.IsCancellationRequested)
+            {
+                if(GlobalVariable.IsUpdateDSDB)
+                {
+                    //需要去更新数据库
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        Updata_DS_Click(true, null);//这个ture来表明不是由按钮发出的
+                    }));
+                    log.Info("Auto update DS database.");
+                    UpdateDSDBCancel.Cancel();//更新完数据库就停止
+                }
+                Thread.Sleep(100);
+            }
         }
         private void combox()
         {
@@ -35,8 +61,10 @@ namespace MiddleWare.Views
             string curFile = @pathto + "\\DSDB.mdb";
             if (File.Exists(curFile))//检测DSDB数据库是否存在
             {
-                NDeviceList.Add(new Device { NAME = "DS400" });
-                NDeviceList.Add(new Device { NAME = "DS800" });
+                //如果本地数据库存在
+                //NDeviceList.Add(new Device { NAME = "DS400" });
+                //NDeviceList.Add(new Device { NAME = "DS800" });
+                NDeviceList.Add(new Device { NAME = GlobalVariable.DSDeviceID });
             }
             curFile = @pathto + "\\PLDB.mdb";
             if (File.Exists(curFile))//检测PLDB数据库是否存在
@@ -45,7 +73,6 @@ namespace MiddleWare.Views
                 NDeviceList.Add(new Device { NAME = "PL" });
             }
         }
-
         /// <summary>
         /// 得到PL数据
         /// </summary>
@@ -105,7 +132,7 @@ namespace MiddleWare.Views
         /// <summary>
         /// 得到DS400数据
         /// </summary>
-        private async void GetDS400DB()
+        private async void GetDSDB()
         {
             item_show.Clear();
             List<Item_Number> item_number = new List<Item_Number>();//显示的数据
@@ -230,24 +257,15 @@ namespace MiddleWare.Views
                 await mainwin.ShowMessageAsync("警告", "请选择仪器");
                 return;
             }
-            switch (device)
+            if(device==GlobalVariable.DSDeviceID)
             {
-                case "PL":
-                    {
-                        GetPLDB();
-                    }
-                    break;
-                case "DS400":
-                    {
-                        GetDS400DB();
-                    }
-                    break;
-                case "DS800":
-                    {
-                        GetDS800DB();
-                    }
-                    break;
-                default: break;
+                //取DS值
+                GetDSDB();
+            }
+            else if(device=="PL")
+            {
+                //取PL值
+                GetPLDB();
             }
         }
         /// <summary>
@@ -266,7 +284,8 @@ namespace MiddleWare.Views
                 await mainwin.ShowMessageAsync("警告", "请选择仪器");
                 return;
             }
-            if (device == "DS400" || device == "DS800") //DS
+            //if (device == "DS400" || device == "DS800") //DS
+            if(device==GlobalVariable.DSDeviceID)
             {
                 Dictionary<string, string> data = new Dictionary<string, string>();
                 DataSet ds = new DataSet();
@@ -606,12 +625,13 @@ namespace MiddleWare.Views
             if (GlobalVariable.DSDEVICE == 0)
             {
                 //DS800
-                GetDS800DB();
+                //GetDS800DB();
+                GetDSDB();
             }
             else if (GlobalVariable.DSDEVICE == 1)
             {
                 //DS400
-                GetDS400DB();
+                GetDSDB();
             }
             if(!IsShowMessage)
             {
@@ -625,7 +645,7 @@ namespace MiddleWare.Views
         /// <param name="e"></param>
         private void NcomboBox_DropDownOpened(object sender, EventArgs e)
         {
-            combox();
+            combox();//更新下拉栏
         }
     }
     public class Item_Number_Show : INotifyPropertyChanged
