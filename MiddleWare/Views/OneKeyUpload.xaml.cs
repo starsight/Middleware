@@ -183,11 +183,15 @@ namespace MiddleWare.Views
                     //先往哈希表里写入样本号
                     foreach (DataRow dr in ds.Tables["Up"].Rows)
                     {
-                        //只能上传当前连接仪器的信息
+                        //所有项目都可以上传，不局限于正在连接的设备
+                        hID.Add(dr["SAMPLE_ID"].ToString());
+                        /*
+                         * 只能上传当前连接仪器的信息
                         if (dr["Device"].ToString() == GlobalVariable.DSDeviceID)
                         {
                             hID.Add(dr["SAMPLE_ID"].ToString());
                         }
+                        */
                     }
                 }
             }

@@ -305,7 +305,7 @@ namespace MiddleWare.Views
             catch (SocketException se)
             {
                 AddItem(textbox_lisshow, "连接失败\r\n请打开LIS服务器后重新连接\r\n");
-                log.Debug("Socket connect fail.");
+                log.Debug("Socket connect fail." + se.ToString());
                 Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
                 DisableButton(button_closelis);
                 EnableButton(button_openlis);
@@ -446,6 +446,7 @@ namespace MiddleWare.Views
                         }
                         DisableButton(button_closelis);
                         EnableButton(button_openlis);
+                        LisNum = false;//已经没有LIS连接了
                         Statusbar.SBar.LISStatus = GlobalVariable.miniUnConn;// for mini mode
 
                         break;//退出去
