@@ -250,13 +250,15 @@ namespace MiddleWare.Communicate
 
             pipeServer_write.Close();
             pipeServer_write.Dispose();
+            log.Info("All pipe disconnect.");
             if (CloseStatus != 0)
             {
+                log.Info("Pipe try auto connect.");
                 GlobalVariable.DSNum = true;
                 Openpipe.BeginInvoke(GlobalVariable.DSDEVICEADDRESS, null, null);
                 Thread.Sleep(200);
             }
-            log.Info("All pipe disconnect.");
+            
         }
         /// <summary>
         /// 自己建立个命名管道客户端去解脱阻塞的服务器
@@ -317,11 +319,12 @@ namespace MiddleWare.Communicate
                 NamedPipe.PipeMessage receiveData = new NamedPipe.PipeMessage();
                 namedpipe.ReadNamedPipe(NamedPipe.pipeServer, ref receiveData);
 
-                if ((receiveData.CheckBit == 3)&&!GlobalVariable.IsUpdateDSDB)// && GlobalVariable.DSDeviceID != string.Empty    modified by xubinbin
+                if ((receiveData.CheckBit == 3) && !GlobalVariable.IsUpdateDSDB)// && GlobalVariable.DSDeviceID != string.Empty    modified by xubinbin
                 {
                     //生化仪发过来仪器标识ID
                     GlobalVariable.DSDeviceID = receiveData.BarCode;
 
+                    receiveData.Device = GlobalVariable.DSDEVICE;
                     namedpipe.WriteNamedPipe(NamedPipe.pipeServer_write, ref receiveData);
 
 
@@ -333,7 +336,7 @@ namespace MiddleWare.Communicate
 
                     log.Info("Pipe DS deviceID " + GlobalVariable.DSDeviceID);
                 }
-                else if (receiveData.Device!=GlobalVariable.DSDEVICE)
+                else if ((receiveData.Device != GlobalVariable.DSDEVICE) && NamedPipe.run_status) 
                 {
                     //生化仪打开和命名管道发送生化仪方式不统一
                     System.Windows.MessageBox.Show("生化仪选择错误,请关闭后重新连接", "警告");

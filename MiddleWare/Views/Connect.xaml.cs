@@ -986,18 +986,32 @@ namespace MiddleWare.Views
             ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
             //开启自动更新数据库线程
-            MainWindow mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
-            if(mainwin!=null)
+            MainWindow mainwin;
+            try
             {
-                //打开软件时，若是自动打开DS设备，由于窗口还未加载完，引用为null，需要在MainWindow初始化中再更新数据库
-                if (mainwin.SetOption!=null)
+                Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    
-                    Number_Item number_item = mainwin.SetOption.Number_Item;
-                    number_item.UpdateDSDBCancel = new CancellationTokenSource();
-                    Task.Factory.StartNew(number_item.UpdateDSDBRun, number_item.UpdateDSDBCancel.Token);
-                    GlobalVariable.IsUpdateDSDB = false;
-                }
+                    //委托UI线程执行此操作
+                    mainwin = (MainWindow)System.Windows.Application.Current.MainWindow;
+                    if (mainwin != null)
+                    {
+                        if (mainwin.SetOption != null)
+                        {
+                            Number_Item number_item = mainwin.SetOption.Number_Item;
+                            number_item.UpdateDSDBCancel = new CancellationTokenSource();
+                            Task.Factory.StartNew(number_item.UpdateDSDBRun, number_item.UpdateDSDBCancel.Token);
+                        }
+                        log.Debug("OpenDS get mainwin success.");
+                    }
+                }));
+            }
+            catch
+            {
+                log.Debug("OpenDS get mainwin fail.");
+            }
+            finally
+            {
+                GlobalVariable.IsUpdateDSDB = false;
             }
 
             DI800Manager dm = new DI800Manager();//新建一个DI800数据操作
