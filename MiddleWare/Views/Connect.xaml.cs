@@ -1053,6 +1053,9 @@ namespace MiddleWare.Views
                 DSCancel.DSCancellMessage += Monitor.AddItemState;
             }
 
+            //查看未上传数据，与仪器无关，没有限制
+            ReadAccessDS.CheckUnDoneSampleNum(false);
+
             GlobalVariable.IsDSRepeat = true;//已经连接过生化仪
             AddItem(textbox_deviceshow, "等待生化仪器连接\r\n");
             log.Info("Wait DS device connect.");

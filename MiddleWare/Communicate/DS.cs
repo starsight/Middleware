@@ -212,8 +212,7 @@ namespace MiddleWare.Communicate
                     pipe_write = 1;
                     run_status = true;
 
-                    //查看未上传数据，与仪器无关
-                    ReadAccessDS.CheckUnDoneSampleNum(false);
+                    
                 }
             }
             catch(Exception e)
@@ -691,7 +690,7 @@ namespace MiddleWare.Communicate
                     case 0://生化
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
-                            "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
+                            "b.PATIENT_ID  as PATIENTID,b.SendTime,b.SAMPLE_KIND,b.EMERGENCY," +
                             "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
                             "FROM ((((SAMPLE_ITEM_TEST_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
                             "INNER JOIN ITEM_PARA_MAIN c ON a.ITEM=c.ITEM)" +
@@ -703,7 +702,7 @@ namespace MiddleWare.Communicate
                     case 1://电解质  未测试
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
-                            "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
+                            "b.PATIENT_ID  as PATIENTID,b.SendTime,b.SAMPLE_KIND,b.EMERGENCY," +
                             "a.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
                             "FROM (((SAMPLE_ELEC_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
                             "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
@@ -713,20 +712,20 @@ namespace MiddleWare.Communicate
                         break;
                     case 2://质控  未测试
                         {
-                           /* strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
-                            "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
-                            "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
-                            "FROM ((((SAMPLE_ITEM_TEST_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
-                            "INNER JOIN ITEM_PARA_MAIN c ON a.ITEM=c.ITEM)" +
-                            "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
-                            " WHERE a.SAMPLE_ID ='" + testID +
-                            "' and a.IsValid = true";*/
+                            /* strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
+                             "b.PATIENT_ID  as PATIENTID,b.SendTime,b.SAMPLE_KIND,b.EMERGENCY," +
+                             "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
+                             "FROM ((((SAMPLE_ITEM_TEST_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
+                             "INNER JOIN ITEM_PARA_MAIN c ON a.ITEM=c.ITEM)" +
+                             "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
+                             " WHERE a.SAMPLE_ID ='" + testID +
+                             "' and a.IsValid = true";*/
                         }
                         break;
                     case 3://定标 未测试
                         {
                             /*strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,b.TEST_TIME," +
-                            "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
+                            "b.PATIENT_ID  as PATIENTID,b.SendTime,b.SAMPLE_KIND,b.EMERGENCY," +
                             "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
                             "FROM ((((SAMPLE_ITEM_CAL_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
                             "INNER JOIN ITEM_CAL_PARA c ON a.ITEM=c.ITEM)" +
@@ -739,7 +738,7 @@ namespace MiddleWare.Communicate
                         {
                             // warning -> 从ITEM_PARA_MAIN获取ITEM项
                             strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,b.TEST_TIME," +
-                             "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
+                             "b.PATIENT_ID  as PATIENTID,b.SendTime,b.SAMPLE_KIND,b.EMERGENCY," +
                              "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
                              "FROM ((((SAMPLE_ITEM_INPUT_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
                              "INNER JOIN ITEM_PARA_MAIN c ON a.ITEM=c.ITEM)" +
@@ -752,7 +751,7 @@ namespace MiddleWare.Communicate
                         {
                             // a.RESULT_D as RESULT,a.RESULT_S as INDICATE
                             strSelect = "SELECT a.ITEM, a.RESULT_D as RESULT,a.RESULT_S as INDICATE,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,b.TEST_TIME," +
-                            "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
+                            "b.PATIENT_ID  as PATIENTID,b.SendTime,b.SAMPLE_KIND,b.EMERGENCY," +
                             "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
                             "FROM ((((SAMPLE_ITEM_PRINT_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
                             "INNER JOIN ITEM_PRINT_PARA c ON a.ITEM=c.ITEM)" +
@@ -765,7 +764,7 @@ namespace MiddleWare.Communicate
                     case 6://计算结果
                         {
                             strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,b.TEST_TIME," +
-                            "b.PATIENT_ID  as PATIENTID,b.SEND_TIME,b.SAMPLE_KIND,b.EMERGENCY," +
+                            "b.PATIENT_ID  as PATIENTID,b.SendTime,b.SAMPLE_KIND,b.EMERGENCY," +
                             "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
                             "FROM ((((SAMPLE_ITEM_CAL_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
                             "INNER JOIN ITEM_CAL_PARA c ON a.ITEM=c.ITEM)" +
@@ -815,7 +814,7 @@ namespace MiddleWare.Communicate
                     }
                     else if (Device == 1)
                     {
-                        di800.SEND_TIME = dr["SEND_TIME"] == DBNull.Value ? GlobalVariable.DefalutTime : ((DateTime)dr["SEND_TIME"]);
+                        di800.SEND_TIME = dr["SendTime"] == DBNull.Value ? GlobalVariable.DefalutTime : ((DateTime)dr["SendTime"]);
                     }
                     di800.SAMPLE_ID = dealID(testID);//需要对ID进行一次再处理
 
@@ -1823,10 +1822,6 @@ namespace MiddleWare.Communicate
         }
         public static void UpdateDBOut(string SAMPLE_ID, List<string> ITEM, string DEVICE)
         {
-            if (DEVICE != GlobalVariable.DSDeviceID) 
-            {
-                return;
-            }
             AccessManagerDS.mutex.WaitOne();
             if (conn.State == System.Data.ConnectionState.Closed)
             {
@@ -1835,7 +1830,6 @@ namespace MiddleWare.Communicate
             ItemNum = ITEM.Count;
             for (int i = 0; i < ItemNum; i++)
             {
-                //todo : issend=-1 in access file  2017-05-10 wenjie
                 strIns = "update lisoutput set ISSEND='" + "1" + "'" + " where " + "SAMPLE_ID='" + SAMPLE_ID + "'" + " and " + " ITEM='" + ITEM[i] + "'";
                 using (OleDbCommand cmd = new OleDbCommand(strIns, conn))
                 {
