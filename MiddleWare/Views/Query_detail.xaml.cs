@@ -55,6 +55,15 @@ namespace MiddleWare.Views
                 PL_chart.Visibility = Visibility.Visible;
                 PL_chart.show(record);
             }
+            else
+            {
+                //还是DS生化仪
+                PL_data.Visibility = Visibility.Collapsed;
+                PL_chart.Visibility = Visibility.Collapsed;
+                DS_data.Visibility = Visibility.Visible;
+                DS_data.show(record);
+                //这个函数里面是直接赋值的,非绑定
+            }
             foreach (var name in record.result)
             {
                 if (name.item == "PAC1" || name.item == "PAC2")
