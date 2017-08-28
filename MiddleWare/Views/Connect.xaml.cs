@@ -1331,6 +1331,7 @@ namespace MiddleWare.Views
             Key_lisoutput.Columns.Append("ITEM");
             Key_lisoutput.Columns.Append("Type");
             Key_lisoutput.Columns.Append("Device");
+            Key_lisoutput.Columns.Append("SEND_TIME");
             Key_lisoutput.Name = "PrimaryKey";
             table_lisoutput.Keys.Append(Key_lisoutput, ADOX.KeyTypeEnum.adKeyPrimary);
 

@@ -19,6 +19,7 @@ namespace MiddleWare.Communicate
             public string Sample_ID;
             public List<string> Item;
             public string Device;
+            public string SendTime;
         }
         private readonly Queue<ASTMStruct> ASTMQueue = new Queue<ASTMStruct>();
         //public ManualResetEvent ASTMSignal = new ManualResetEvent(false);
@@ -34,6 +35,13 @@ namespace MiddleWare.Communicate
             lock(ASTMLocker)
             {
                 return ASTMQueue.Peek().ASTMMessage;
+            }
+        }
+        public string GetASTMSample_SendTime()
+        {
+            lock(ASTMLocker)
+            {
+                return ASTMQueue.Peek().SendTime;
             }
         }
         public string GetASTMSample_ID()
@@ -165,7 +173,7 @@ namespace MiddleWare.Communicate
     {
         public static ASTMManager astmManager;
 
-        public delegate void UpdateAccessEventHandle(string SAMPLE_ID, List<string> ITEM, string DEVICE);
+        public delegate void UpdateAccessEventHandle(string SAMPLE_ID, List<string> ITEM, string DEVICE, string SEND_TIME);
         public event UpdateAccessEventHandle UpdateDB;
 
         public delegate void RequestSampleDataEventHandle(ASTMManager.ASTMPatientInfo PatientInfo);
@@ -233,7 +241,7 @@ namespace MiddleWare.Communicate
                                     Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
                                     Statusbar.SBar.SampleId = astmManager.GetASTMSample_ID();// mini mode
                                     ++Statusbar.SBar.ReplyNum;
-                                    UpdateDB.Invoke(astmManager.GetASTMSample_ID(), astmManager.GetASTMItem(), astmManager.GetASTMDevice());//回调
+                                    UpdateDB.Invoke(astmManager.GetASTMSample_ID(), astmManager.GetASTMItem(), astmManager.GetASTMDevice(), astmManager.GetASTMSample_SendTime());//回调
                                 }
                             }
                             else
@@ -259,7 +267,7 @@ namespace MiddleWare.Communicate
                             Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
                             Statusbar.SBar.SampleId = astmManager.GetASTMSample_ID();// mini mode
                             ++Statusbar.SBar.SendNum;
-                            UpdateDB.Invoke(astmManager.GetASTMSample_ID(), astmManager.GetASTMItem(), astmManager.GetASTMDevice());//回调
+                            UpdateDB.Invoke(astmManager.GetASTMSample_ID(), astmManager.GetASTMItem(), astmManager.GetASTMDevice(), astmManager.GetASTMSample_SendTime());//回调
                         }
                         else
                         {
@@ -458,7 +466,7 @@ namespace MiddleWare.Communicate
                                     Statusbar.SBar.SampleId = astmManager.GetASTMSample_ID();// mini mode
 
                                     ++Statusbar.SBar.ReplyNum;
-                                    UpdateDB.Invoke(astmManager.GetASTMSample_ID(), astmManager.GetASTMItem(), astmManager.GetASTMDevice());//回调
+                                    UpdateDB.Invoke(astmManager.GetASTMSample_ID(), astmManager.GetASTMItem(), astmManager.GetASTMDevice(), astmManager.GetASTMSample_SendTime());//回调
                                 }
                                 else
                                 {
@@ -491,7 +499,7 @@ namespace MiddleWare.Communicate
                             Statusbar.SBar.SoftStatus = GlobalVariable.miniWaiting;// mini mode
                             Statusbar.SBar.SampleId = astmManager.GetASTMSample_ID();// mini mode
 
-                            UpdateDB.Invoke(astmManager.GetASTMSample_ID(), astmManager.GetASTMItem(), astmManager.GetASTMDevice());//回调
+                            UpdateDB.Invoke(astmManager.GetASTMSample_ID(), astmManager.GetASTMItem(), astmManager.GetASTMDevice(), astmManager.GetASTMSample_SendTime());//回调
                         }
                         else
                         {
@@ -714,6 +722,7 @@ namespace MiddleWare.Communicate
             astm.ASTMMessage = message.Encode();
             astm.Device = data.Device;
             astm.Sample_ID = data.SAMPLE_ID;
+            astm.SendTime = data.SEND_TIME.ToString();
             astmManager.AddASTM(astm);
         }
         public static void PLdataReceived(object receivedata, string name)//PL数据ASTM化

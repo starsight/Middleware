@@ -95,7 +95,7 @@ namespace MiddleWare.Views
                     string tempAllItem;
                     foreach (DataRow dr in ds.Tables["Up"].Rows)
                     {
-                        tempID = dr["SAMPLE_ID"].ToString();
+                        tempID = dr["SAMPLE_ID"].ToString() + "&" + dr["SEND_TIME"].ToString();
                         tempItem = dr["ITEM"].ToString();
                         if (!htID.ContainsKey(tempID))
                         {
@@ -115,9 +115,11 @@ namespace MiddleWare.Views
                         singleSample = new UpOrDownload_Show();
                         singleSample.number = ++num;
                         singleSample.IsSelected = false;
-                        singleSample.Sample_ID = (string)tempSampleID;
+                        string[] s = tempSampleID.ToString().Split('&');
+                        singleSample.Sample_ID = s[0];
                         singleSample.Item = (string)htID[tempSampleID];
-                        strSelect = "select * from lisoutput where [ISSEND]= 0 and [SAMPLE_ID]='" + (string)tempSampleID + "'";
+                        singleSample.Test_Time = s[1];
+                        strSelect = "select * from lisoutput where [ISSEND]= 0 and [SAMPLE_ID]='" + singleSample.Sample_ID + "' and [SEND_TIME]=#" + singleSample.Test_Time + "#";
                         using (OleDbDataAdapter tempOa = new OleDbDataAdapter(strSelect, conn))
                         {
                             tempDs = new DataSet();
@@ -125,7 +127,7 @@ namespace MiddleWare.Views
                             {
                                 foreach (DataRow dr in tempDs.Tables["temp"].Rows)
                                 {
-                                    singleSample.Test_Time = dr["SEND_TIME"] == DBNull.Value ? DateTime.Now.ToString() : dr["SEND_TIME"].ToString();
+                                    //singleSample.Test_Time = dr["SEND_TIME"] == DBNull.Value ? DateTime.Now.ToString() : dr["SEND_TIME"].ToString();
                                     singleSample.Patient_ID = dr["PATIENT_ID"] == DBNull.Value ? blank : (string)dr["PATIENT_ID"];
                                     singleSample.Device = dr["Device"] == DBNull.Value ? blank : (string)dr["Device"];
                                     singleSample.Kind = dr["Type"] == DBNull.Value ? blank : (string)dr["Type"];
@@ -158,7 +160,8 @@ namespace MiddleWare.Views
             }
 
             AccessManagerDS.mutex.WaitOne();
-            HashSet<string> hID = new HashSet<string>();
+            
+            HashSet<Hashtable> hID = new HashSet<Hashtable>();
             if (conn.State == ConnectionState.Closed)
             {
                 conn.Open();
@@ -184,7 +187,12 @@ namespace MiddleWare.Views
                     foreach (DataRow dr in ds.Tables["Up"].Rows)
                     {
                         //所有项目都可以上传，不局限于正在连接的设备
-                        hID.Add(dr["SAMPLE_ID"].ToString());
+                        Hashtable single = new Hashtable();
+
+                        single.Add("SAMPLE_ID", dr["SAMPLE_ID"].ToString());
+                        single.Add("SEND_TIME", dr["SEND_TIME"].ToString());
+                        hID.Add(single);
+
                         /*
                          * 只能上传当前连接仪器的信息
                         if (dr["Device"].ToString() == GlobalVariable.DSDeviceID)
@@ -205,11 +213,11 @@ namespace MiddleWare.Views
                 return;
             }
             ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");
-            foreach (string singleID in hID)
+            foreach (Hashtable singleID in hID)
             {
                 log.Info("一键上传样本" + singleID);
-                ReadAccessDS.ReadData("SAMPLE_ID", singleID);
-                GlobalVariable.NoDisplaySampleID.Add(singleID);
+                ReadAccessDS.ReadData(singleID["SAMPLE_ID"].ToString(), singleID["SEND_TIME"].ToString());
+                GlobalVariable.NoDisplaySampleID.Add(singleID["SAMPLE_ID"].ToString());
                 System.Windows.Forms.Application.DoEvents();
                 Thread.Sleep(1000);
             }
@@ -263,7 +271,7 @@ namespace MiddleWare.Views
             {
                 //所有项目都可以上传，不局限于正在连接的设备
                 log.Info("选择上传样本" + single.Sample_ID);
-                ReadAccessDS.ReadData("SAMPLE_ID", single.Sample_ID);
+                ReadAccessDS.ReadData(single.Sample_ID, single.Test_Time);
                 GlobalVariable.NoDisplaySampleID.Add(single.Sample_ID);
             }
             ProgressDialogController controller = await mainwin.ShowProgressAsync("Please wait...", "Progress message");

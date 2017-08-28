@@ -1986,7 +1986,7 @@ namespace MiddleWare.Communicate
             WriteAccessPLMessage.Invoke(data.ID + "写入数据库成功\r\n", "DEVICE");
             NoticeReadMessage.Invoke("SAMPLE_ID", data.ID);
         }
-        public static void UpdateDB(string SAMPLE_ID, List<string> ITEM, string DEVICE)
+        public static void UpdateDB(string SAMPLE_ID, List<string> ITEM, string DEVICE,string SEND_TIME)
         {
             if (DEVICE != "PL_12") 
             {

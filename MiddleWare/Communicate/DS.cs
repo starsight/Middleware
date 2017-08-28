@@ -504,7 +504,7 @@ namespace MiddleWare.Communicate
                 catch
                 {
                     ReadEquipAccessMessage.Invoke("数据库地址错误\r\n", "DEVICE");
-                    AccessManagerDS.EquipMutex.ReleaseMutex();//斜锁
+                    AccessManagerDS.EquipMutex.ReleaseMutex();//卸锁
                     return;
                 }
             }
@@ -1105,7 +1105,7 @@ namespace MiddleWare.Communicate
             am.AddDI800Access(di800);
             am.DI800SignalAccess.Set();
             ReadEquipAccessMessage.Invoke(di800.SAMPLE_ID + "读取设备数据库成功\r\n", "DEVICE");
-            log.Info("Read equip database success" + di800.SAMPLE_ID);
+            log.Info("Read equip database success " + di800.SAMPLE_ID);
             ExistSample = 1;
             ds.Clear();//清除DataSet所有数据
             conn.Close();//关闭
@@ -1285,7 +1285,7 @@ namespace MiddleWare.Communicate
             for (int i = 0; i < di800.Result.Count; i++)
             {
                 //判断重复
-                strJudge = "select * from lisoutput where [SAMPLE_ID]='" + di800.SAMPLE_ID + "' AND [ITEM]='" + di800.Result[i].ITEM + "' AND [DEVICE]='" + di800.Device + "'";
+                strJudge = "select * from lisoutput where [SAMPLE_ID]='" + di800.SAMPLE_ID + "' AND [ITEM]='" + di800.Result[i].ITEM + "' AND [DEVICE]='" + di800.Device + "' AND [SEND_TIME]= #" + di800.SEND_TIME.ToString() + "#";
                 using (OleDbDataAdapter oaJudge = new OleDbDataAdapter(strJudge, conn))//判断是否写入重复
                 {
                     DataSet ds = new DataSet();
@@ -1332,45 +1332,6 @@ namespace MiddleWare.Communicate
                     cmd.Parameters.Add("@ISSEND", OleDbType.Integer).Value = false;
 
                     cmd.ExecuteNonQuery();
-
-                    /* author: wenjie 
-                     * function:send result to lis middleware server
-                     * problems: should send record data at one time
-                     */
-                    var tempEntity = new
-                    {
-                        SAMPLE_ID = di800.SAMPLE_ID,
-                        PATIENT_ID = di800.PATIENT_ID,
-                        ITEM = di800.Result[i].ITEM,
-                        TYPE = di800.Type,
-                        SEND_TIME = 1000 * di800.SEND_TIME.Subtract(new DateTime(1970, 1, 1, 8, 0, 0)).TotalSeconds,// transfer millisecond based on beijing time zone
-                        DEVICE = di800.Device,
-                        FULL_NAME = di800.Result[i].FULL_NAME,
-                        RESULT = di800.Result[i].RESULT,
-                        UNIT = di800.Result[i].UNIT,
-                        NORMAL_lOW = di800.Result[i].NORMAL_LOW,
-                        NORMAL_HIGH = di800.Result[i].NORMAL_HIGH,
-                        TIME = 1000 * di800.TIME.Subtract(new DateTime(1970, 1, 1, 8, 0, 0)).TotalSeconds,// transfer millisecond based on beijing time zone
-                        INDICATE = di800.Result[i].INDICATE,
-                        IsGet = "0",
-                        FIRST_NAME = di800.FIRST_NAME,
-                        SEX = di800.SEX,
-                        AGE = di800.AGE,
-                        SAMPLE_KIND = di800.SAMPLE_KIND,
-                        DOCTOR = di800.DOCTOR,
-                        AREA = di800.AREA,
-                        BED = di800.BED,
-                        DEPARTMENT = di800.DEPARTMENT,
-                        ISSEND = false
-                    };
-                    /*
-                    string json = JsonConvert.SerializeObject(tempEntity);
-                    var client = new RestClient();
-                    client.BaseUrl = new Uri(GlobalVariable.BaseUrl);//http://localhost:8080/MiddlewareWeb
-                    var request = new RestRequest("DS/DSResult", Method.POST);
-                    request.AddParameter("dsJSON", json);
-                    IRestResponse response = client.Execute(request);
-                    */
                 }
                 #endregion
             }
@@ -1380,9 +1341,11 @@ namespace MiddleWare.Communicate
             {
                 WriteAccessDSMessage.Invoke(di800.SAMPLE_ID + "写入数据库成功\r\n", "DEVICE");
                 log.Info("Write DS database success " + di800.SAMPLE_ID);
+                NoticeReadMessage.BeginInvoke(di800.SAMPLE_ID, di800.SEND_TIME.ToString(), null, null);//通知读取数据库
+                ++Statusbar.SBar.ReceiveNum;
             }
-            NoticeReadMessage.BeginInvoke("SAMPLE_ID", di800.SAMPLE_ID, null, null);//避免之前数据库有重复值但没有发送出去,这样可以重新发送命令发送
-            ++Statusbar.SBar.ReceiveNum;
+            //NoticeReadMessage.BeginInvoke("SAMPLE_ID", di800.SAMPLE_ID, null, null);//避免之前数据库有重复值但没有发送出去,这样可以重新发送命令发送
+            
         }
         public static void WriteRequestSampleDataHL7(HL7Manager.HL7SampleInfo SampleInfo)
         {
@@ -1820,7 +1783,7 @@ namespace MiddleWare.Communicate
             conn.Close();
             AccessManagerDS.mutex.ReleaseMutex();
         }
-        public static void UpdateDBOut(string SAMPLE_ID, List<string> ITEM, string DEVICE)
+        public static void UpdateDBOut(string SAMPLE_ID, List<string> ITEM, string DEVICE,string SEND_TIME)
         {
             AccessManagerDS.mutex.WaitOne();
             if (conn.State == System.Data.ConnectionState.Closed)
@@ -1830,7 +1793,7 @@ namespace MiddleWare.Communicate
             ItemNum = ITEM.Count;
             for (int i = 0; i < ItemNum; i++)
             {
-                strIns = "update lisoutput set ISSEND='" + "1" + "'" + " where " + "SAMPLE_ID='" + SAMPLE_ID + "'" + " and " + " ITEM='" + ITEM[i] + "'";
+                strIns = "update lisoutput set ISSEND='" + "1" + "'" + " where " + "[SAMPLE_ID]='" + SAMPLE_ID + "'" + " and " + " [ITEM]='" + ITEM[i] + "' and [SEND_TIME]=#" + SEND_TIME + "#";
                 using (OleDbCommand cmd = new OleDbCommand(strIns, conn))
                 {
                     cmd.ExecuteNonQuery();
@@ -1890,7 +1853,7 @@ namespace MiddleWare.Communicate
 
             log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         }
-        public static void ReadData(string selectname, string selectvalue)
+        public static void ReadData(string sampleID,string sendTime)
         {
             AccessManagerDS.mutex.WaitOne();
             if (conn.State == System.Data.ConnectionState.Closed)
@@ -1901,7 +1864,7 @@ namespace MiddleWare.Communicate
             di800 = new DI800Manager.DI800();
             ds = new DataSet();
 
-            string strSelect = "select * from " + table + " where " + selectname + "='" + selectvalue + "'";
+            string strSelect = "select * from lisoutput where [SAMPLE_ID] ='" + sampleID + "'AND [SEND_TIME]= #" + sendTime + "#";
             using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
             {
                 di800.Result = new List<DI800Manager.DI800Result>();
@@ -1988,7 +1951,7 @@ namespace MiddleWare.Communicate
                         HashSet<string> hID = new HashSet<string>();//选用哈希表来消除重复
                         foreach (DataRow dr in ds.Tables["tempID"].Rows)
                         {
-                            hID.Add(dr["SAMPLE_ID"].ToString());
+                            hID.Add(dr["SAMPLE_ID"].ToString() + dr["SEND_TIME"].ToString());
                         }
                         Statusbar.SBar.NoSendNum = hID.Count;
                     }

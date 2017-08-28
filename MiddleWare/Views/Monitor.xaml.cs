@@ -33,9 +33,6 @@ namespace MiddleWare.Views
         private static ConvertQueue cq;
         private ObservableCollection<Result> ResultList;
         private ObservableCollection<Device> DeviceSelectMonitor;
-        // private ObservableCollection<dot> DotListPAC;
-        // private ObservableCollection<dot> DotListRBC;
-        // private ObservableCollection<dot> DotListPLT;
 
         Thread UpdataStateThread;
         Thread ConvertResultDSThread;
@@ -66,17 +63,11 @@ namespace MiddleWare.Views
             //调试语句
             ResultList = new ObservableCollection<Result>();
             DeviceSelectMonitor = new ObservableCollection<Device>();
-            //DotListPAC = new ObservableCollection<dot>();
-            //DotListRBC = new ObservableCollection<dot>();
-            //DotListPLT = new ObservableCollection<dot>();
 
             datagrid_monitor.ItemsSource = ResultList;//把表格绑定进去
             combobox_selectdevice.ItemsSource = DeviceSelectMonitor;//把下拉列表绑定进去
-            //PLchart.chart_PAC.ItemsSource = DotListPAC;//把PAC绑定进去
-            //PLchart.chart_RBC.ItemsSource = DotListRBC;//把RBC绑定进去
-            //PLchart.chart_PLT.ItemsSource = DotListPLT;//把PLT绑定进去        
+      
             this.DataContext = this;
-            //datagird_monitor.DataContext = ResultList;
         }
 
         #region 状态更新
@@ -258,7 +249,8 @@ namespace MiddleWare.Views
                         dsshow.DSPATIENT_ID = di800.PATIENT_ID;
                         dsshow.DSDOCTOR = di800.DOCTOR;
                         dsshow.DSSAMPLE_ID = di800.SAMPLE_ID;
-                        dsshow.DSTEST_TIME = di800.TIME.ToString();
+                        //dsshow.DSTEST_TIME = di800.TIME.ToString();
+                        dsshow.DSTEST_TIME = di800.SEND_TIME.ToString();
                         dsshow.DSFIRST_NAME = di800.FIRST_NAME;
                         dsshow.DSSAMPLE_KIND = di800.SAMPLE_KIND;
                         dsshow.DSAREA = di800.AREA;
@@ -296,9 +288,6 @@ namespace MiddleWare.Views
                     Dispatcher.Invoke(new Action(() =>
                     {
                         ResultList.Clear();//清除上条记录
-                        // DotListPAC.Clear();
-                        // DotListPLT.Clear();
-                        // DotListRBC.Clear();
                     }));
                     foreach (var single in pl12result)
                     {

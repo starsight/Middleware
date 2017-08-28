@@ -27,6 +27,7 @@ namespace MiddleWare.Communicate
             public string Sample_ID;
             public List<string> Item;
             public string Device;
+            public string SendTime;
         }
         private readonly Queue<HL7Struct> HL7Queue = new Queue<HL7Struct>();
         public void AddHL7(HL7Struct data)
@@ -48,6 +49,13 @@ namespace MiddleWare.Communicate
             lock (HL7Locker)
             {
                 return HL7Queue.Peek().Sample_ID;
+            }
+        }
+        public string GetHL7Sample_SendTime()
+        {
+            lock(HL7Locker)
+            {
+                return HL7Queue.Peek().SendTime;
             }
         }
         public List<string> GetHL7Item()
@@ -209,7 +217,7 @@ namespace MiddleWare.Communicate
     {
         public static HL7Manager hl7Manager;
 
-        public delegate void UpdateAccessEventHandle(string SAMPLE_ID, List<string> ITEM, string DEVICE);
+        public delegate void UpdateAccessEventHandle(string SAMPLE_ID, List<string> ITEM, string DEVICE,string SEND_TIME);
         public event UpdateAccessEventHandle UpdateDB;
 
         public delegate void RequestSampleDataEventHandle(HL7Manager.HL7SampleInfo SampleInfo);//往外发送申请到的样本信息
@@ -289,7 +297,7 @@ namespace MiddleWare.Communicate
                                 Statusbar.SBar.SampleId = hl7Manager.GetHL7Sample_ID();//mini mode
                                 ++Statusbar.SBar.ReplyNum;
                                 SendNum = 0;
-                                UpdateDB.Invoke(hl7Manager.GetHL7Sample_ID(), hl7Manager.GetHL7Item(), hl7Manager.GetHL7Device());
+                                UpdateDB.Invoke(hl7Manager.GetHL7Sample_ID(), hl7Manager.GetHL7Item(), hl7Manager.GetHL7Device(), hl7Manager.GetHL7Sample_SendTime());
                                 hl7Manager.RemoveHL7();//移除队列中开始处的HL7
                             }
                             else 
@@ -314,7 +322,7 @@ namespace MiddleWare.Communicate
 
                         ProcessHL7Message.Invoke(hl7Manager.GetHL7Sample_ID() + "Lis服务器发送成功\r\n", "LIS");
                         log.Info("LIS receive success" + hl7Manager.GetHL7Sample_ID());
-                        UpdateDB.Invoke(hl7Manager.GetHL7Sample_ID(), hl7Manager.GetHL7Item(), hl7Manager.GetHL7Device());//直接回调
+                        UpdateDB.Invoke(hl7Manager.GetHL7Sample_ID(), hl7Manager.GetHL7Item(), hl7Manager.GetHL7Device(), hl7Manager.GetHL7Sample_SendTime());//直接回调
                         hl7Manager.RemoveHL7();//移除队列中开始处的HL7
                     }
                     #endregion
@@ -522,6 +530,7 @@ namespace MiddleWare.Communicate
             hl7.HL7Message = Parser.Encode(oruR01);
             hl7.Sample_ID = data.SAMPLE_ID;
             hl7.Device = data.Device;
+            hl7.SendTime = data.SEND_TIME.ToString();
             hl7Manager.AddHL7(hl7);
             log.Info("HL7 DS package " + hl7.Sample_ID);
         }

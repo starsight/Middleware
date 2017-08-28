@@ -130,11 +130,11 @@ namespace MiddleWare.Views
                 }
                 if (ID == string.Empty)
                 {
-                    strSelect = "SELECT * FROM LISOUTPUT WHERE [TIME] BETWEEN #" + date.ToString() + "# AND #" + Endtime + "# ORDER BY [SAMPLE_ID]";
+                    strSelect = "SELECT * FROM LISOUTPUT WHERE [SEND_TIME] BETWEEN #" + date.ToString() + "# AND #" + Endtime + "# ORDER BY [SAMPLE_ID]";
                 }
                 else
                 {
-                    strSelect = "SELECT * FROM LISOUTPUT WHERE [TIME] BETWEEN #" + date.ToString() + "# AND #" + Endtime + "# AND [SAMPLE_ID]='" + ID + "' ORDER BY [SAMPLE_ID]";
+                    strSelect = "SELECT * FROM LISOUTPUT WHERE [SEND_TIME] BETWEEN #" + date.ToString() + "# AND #" + Endtime + "# AND [SAMPLE_ID]='" + ID + "' ORDER BY [SAMPLE_ID]";
                 }
                 using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                 {
@@ -156,11 +156,10 @@ namespace MiddleWare.Views
                         {
                             #region
 
-                            string tempID = dr["SAMPLE_ID"] == DBNull.Value ? blank : (string)dr["SAMPLE_ID"];
+                            string tempID = dr["SAMPLE_ID"].ToString() + dr["SEND_TIME"].ToString();
 
                             if (!tempID.Equals(numID))//因为一条SAMPLEID很多数据,避免重复
                             {
-
                                 if (numID != string.Empty)//不是第一次进来
                                 {
                                     Result.Add(record);//把上一次记录添加进去
