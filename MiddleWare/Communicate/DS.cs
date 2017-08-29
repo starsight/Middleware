@@ -701,6 +701,7 @@ namespace MiddleWare.Communicate
                         break;
                     case 1://电解质  未测试
                         {
+
                             strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,a.TIME as TEST_TIME," +
                             "b.PATIENT_ID  as PATIENTID,b.SendTime,b.SAMPLE_KIND,b.EMERGENCY," +
                             "a.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
@@ -742,6 +743,13 @@ namespace MiddleWare.Communicate
                              "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
                              "FROM ((((SAMPLE_ITEM_INPUT_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
                              "INNER JOIN ITEM_PARA_MAIN c ON a.ITEM=c.ITEM)" +
+                             "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
+                             " WHERE a.SAMPLE_ID ='" + testID +
+                             "' and a.IsValid = true UNION SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,b.TEST_TIME," +
+                             "b.PATIENT_ID  as PATIENTID,b.SendTime,b.SAMPLE_KIND,b.EMERGENCY," +
+                             "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
+                             "FROM ((((SAMPLE_ITEM_INPUT_RESULT a INNER JOIN SAMPLE_MAIN b ON b.SAMPLE_ID=a.SAMPLE_ID)" +
+                             "INNER JOIN ITEM_PARA_ELECTROLYTE c ON a.ITEM=c.ITEM)" +
                              "INNER JOIN SAMPLE_PATIENT_INFO d ON d.SAMPLE_ID=a.SAMPLE_ID) LEFT JOIN SAMPLE_REGISTER_INFO e ON e.SAMPLE_ID=a.SAMPLE_ID)" +
                              " WHERE a.SAMPLE_ID ='" + testID +
                              "' and a.IsValid = true";

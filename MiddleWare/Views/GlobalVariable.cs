@@ -103,7 +103,7 @@ namespace MiddleWare.Views
 
         public static bool IsSocketRun = false;//Socket是否在连接状态
 
-        public static string Version = "1.0.0-alpha 20170822";//版本信息
+        public static string Version = "1.1.5-alpha 20170829";//版本信息
 
         public static string Manufacturer = "Sinnowa";//仪器供应商
         public static string DSDeviceID = "0";//生化仪仪器标识

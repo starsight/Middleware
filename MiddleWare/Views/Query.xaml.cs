@@ -207,6 +207,7 @@ namespace MiddleWare.Views
                         }
                         if (record.sample_ID != string.Empty)
                         {
+                            List<single_record> recordList = new List<single_record>();//用于排序
                             //把最后一次的记录加进来
                             string tempID = record.sample_ID + record.test_Time;
                             if(recordHash.Contains(tempID))
@@ -216,6 +217,15 @@ namespace MiddleWare.Views
                             recordHash.Add(tempID, record);
                             //把哈希队列内的记录添加到表格
                             foreach(single_record temp in recordHash.Values)
+                            {
+                                recordList.Add(temp);
+                            }
+                            /*排序操作,降序*/
+                            recordList.Sort(delegate (single_record x, single_record y)
+                            {
+                                return y.test_Time.CompareTo(x.test_Time);
+                            });
+                            foreach(single_record temp in recordList)
                             {
                                 Result.Add(temp);
                             }
