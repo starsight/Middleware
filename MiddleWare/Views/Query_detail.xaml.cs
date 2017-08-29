@@ -123,7 +123,7 @@ namespace MiddleWare.Views
                 }
                 
             }
-            else if(record.test_Device == "PL_12" || record.test_Device == "PL_16")
+            if(record.test_Device == "PL_12" || record.test_Device == "PL_16")
             {
                 Device = true;
                 PlPrintDetail = new DetailInfoPrintPL
@@ -161,6 +161,39 @@ namespace MiddleWare.Views
                     });
                 }
             }
+            else
+            {
+                //还是DS生化仪
+                Device = false;
+                DsPrintDetail = new DetailInfoPrintDS
+                {
+                    DSTYPE = record.type,
+                    DSSAMPLE_ID = record.sample_ID,
+                    DSDOCTOR = record.doctor,
+                    DSPATIENT_ID = record.patiennt_ID,
+                    DSTEST_TIME = record.test_Time,
+                    DSDEPARTMENT = record.department,
+                    DSSAMPLE_KIND = record.test_kind,
+                    DSAREA = record.area,
+                    DSSEX = record.patient_Sex,
+                    DSDEVICE = record.test_Device,
+                    DSBED = record.bed
+                };
+                foreach (Query.single_result single in record.result)
+                {
+                    DsPrintDetail.TableDetails.Add(new data_detailSource
+                    {
+                        item = single.item,
+                        full_item = single.fullname,
+                        result = single.result,
+                        unit = single.unit,
+                        normal_low = single.normal_low,
+                        normal_high = single.normal_high,
+                        indicate = single.indicate
+                    });
+                }
+            }
+
         }
 
         private void button_printpreview_Click(object sender, RoutedEventArgs e)
