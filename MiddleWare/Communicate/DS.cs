@@ -574,6 +574,14 @@ namespace MiddleWare.Communicate
                                  "INNER JOIN BioItem c ON a.ITEM = c.ITEM) " +
                                  "INNER JOIN Register d ON a.BioID = d.BioID) " +
                                  "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
+                                 "'and a.IsSended = false UNION SELECT a.ITEM,a.RESULT,a.AddTime as TEST_TIME," +
+                                 "b.PATIENTID,b.FamilyName,b.FIRSTNAME,b.SEX,b.AGE," +
+                                 "c.FullName,c.NORMALLOW,c.NORMALHIGH,c.UNIT, d.DEPARTMENT,d.AERA,d.BedNum,d.DOCTOR," +
+                                 "e.StartTime,e.Kind " +
+                                 "FROM ((((InputResult a INNER JOIN Patient b ON b.BioID = a.BioID) " +
+                                 "INNER JOIN ElecItem c ON a.ITEM = c.ITEM) " +
+                                 "INNER JOIN Register d ON a.BioID = d.BioID) " +
+                                 "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";// and a.IsValid = true";
 
                             /*strSelect = "SELECT t.Item,t.Result,t.AddTime,t.StartTime,t.Kind," +
@@ -737,7 +745,7 @@ namespace MiddleWare.Communicate
                         break;
                     case 4://输入结果
                         {
-                            // warning -> 从ITEM_PARA_MAIN获取ITEM项
+                            // warning -> 从ITEM_PARA_MAIN / ITEM_PARA_ELECTROLYTE 分别获取ITEM项
                             strSelect = "SELECT a.ITEM,a.RESULT,a.UNIT,a.NORMAL_LOW as NORMALLOW,a.NORMAL_HIGH as NORMALHIGH,b.TEST_TIME," +
                              "b.PATIENT_ID  as PATIENTID,b.SendTime,b.SAMPLE_KIND,b.EMERGENCY," +
                              "c.FULL_NAME as FullName, d.FIRST_NAME as FIRSTNAME ,d.SEX,d.AGE,e.DEPATMENT as DEPARTMENT,e.TREAT_AERA as AERA,e.SILKBED_NO as BedNum,e.DOCTOR " +
