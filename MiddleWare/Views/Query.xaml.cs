@@ -138,6 +138,7 @@ namespace MiddleWare.Views
                 }
                 using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                 {
+                    Hashtable recordHash = new Hashtable();
                     if (oa.Fill(ds, "LISOUTPUT") == 0)
                     {
                         if (device != "所有仪器")
@@ -151,7 +152,6 @@ namespace MiddleWare.Views
                     {
                         single_record record = new single_record();//记录一条ID的数据
                         record.result = new List<single_result>();
-
                         foreach (DataRow dr in ds.Tables["LISOUTPUT"].Rows)
                         {
                             #region
@@ -162,10 +162,22 @@ namespace MiddleWare.Views
                             {
                                 if (numID != string.Empty)//不是第一次进来
                                 {
-                                    Result.Add(record);//把上一次记录添加进去
-                                    record = new single_record();
-                                    record.result = new List<single_result>();
-                                    //record.result.Clear();
+                                    //Result.Add(record);//把上一次记录添加进去
+                                    if(recordHash.Contains(numID))
+                                    {
+                                        recordHash.Remove(numID);
+                                    }
+                                    recordHash.Add(numID, record);
+                                    if(recordHash.Contains(tempID))
+                                    {
+                                        //如果之前有这个样本数据的话
+                                        record = (single_record)recordHash[tempID];
+                                    }
+                                    else
+                                    {
+                                        record = new single_record();
+                                        record.result = new List<single_result>();
+                                    }
                                 }
                                 numID = tempID;
                                 record.type = dr["Type"] == DBNull.Value ? blank : (string)dr["Type"];
@@ -195,7 +207,18 @@ namespace MiddleWare.Views
                         }
                         if (record.sample_ID != string.Empty)
                         {
-                            Result.Add(record);//把最后一次的记录加进来
+                            //把最后一次的记录加进来
+                            string tempID = record.sample_ID + record.test_Time;
+                            if(recordHash.Contains(tempID))
+                            {
+                                recordHash.Remove(tempID);
+                            }
+                            recordHash.Add(tempID, record);
+                            //把哈希队列内的记录添加到表格
+                            foreach(single_record temp in recordHash.Values)
+                            {
+                                Result.Add(temp);
+                            }
                         }
                     }
                 }
