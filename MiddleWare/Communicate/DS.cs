@@ -1981,24 +1981,40 @@ namespace MiddleWare.Communicate
             {
                 //未下发
                 strSelect = "select * from lisinput where [IsSend] = false AND DEVICE ='" + GlobalVariable.DSDeviceID + "'";
+                string strSelectTask = "select * from listask where DEVICE ='" + GlobalVariable.DSDeviceID + "'";
                 ds = new DataSet();
+                int sampleCount = 0;
+                HashSet<string> hID = new HashSet<string>();//用来表示lisinput表内的样本数目，选用哈希表来消除重复
+                HashSet<String> hTask = new HashSet<string>();//用来表示listask表内的样本数目，选用哈希表来消除重复
                 using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
                 {
                     if (oa.Fill(ds, "tempID") != 0)
                     {
-                        HashSet<string> hID = new HashSet<string>();//选用哈希表来消除重复
                         foreach (DataRow dr in ds.Tables["tempID"].Rows)
                         {
                             hID.Add(dr["SAMPLE_ID"].ToString());
                         }
-                        Statusbar.SBar.NoIssueNum = hID.Count;
-                    }
-                    else
-                    {
-                        Statusbar.SBar.NoIssueNum = 0;
                     }
                 }
-
+                ds.Clear();
+                using (OleDbDataAdapter oatask = new OleDbDataAdapter(strSelectTask, conn))
+                {
+                    if(oatask.Fill(ds,"tempTask")!=0)
+                    {
+                        foreach(DataRow dr in ds.Tables["tempTask"].Rows)
+                        {
+                            hTask.Add(dr["SAMPLE_ID"].ToString());
+                        }
+                    }
+                }
+                foreach(string temp in hID)
+                {
+                    if(hTask.Contains(temp))
+                    {
+                        sampleCount++;
+                    }
+                }
+                Statusbar.SBar.NoIssueNum = sampleCount;
             }
             conn.Close();
             AccessManagerDS.mutex.ReleaseMutex();//卸锁

@@ -52,7 +52,20 @@
             <local:Query_DSdetail x:Name="DS_data" DataContext="{Binding}" Visibility="Collapsed"/>
             <local:Query_PLdetail x:Name="PL_data" DataContext="{Binding}" Visibility="Collapsed"/>
         </Grid>
-        <DataGrid x:Name="Query_detail_datagrid"  Grid.Row="2" Grid.Column="1" AutoGenerateColumns="False" Background="WhiteSmoke" AlternatingRowBackground="BlanchedAlmond" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False"  >
+        <DataGrid x:Name="Query_detail_datagrid"  Grid.Row="2" Grid.Column="1" AutoGenerateColumns="False" Background="WhiteSmoke" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False"  >
+            <DataGrid.RowStyle>
+                <Style  TargetType="DataGridRow">
+                    <Setter Property="Background" Value="White"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="MediumPurple"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="MediumPurple"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTextColumn HeaderStyle="{StaticResource item}" Binding="{Binding item}" IsReadOnly="True"/>
                 <DataGridTextColumn HeaderStyle="{StaticResource fullname}" Binding="{Binding full_item}" IsReadOnly="True" />

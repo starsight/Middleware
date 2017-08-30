@@ -49,17 +49,15 @@
         <Button x:Name="button_allselect" Content="{DynamicResource DownloadAllSelect}" Click="button_allselect_Click" FontSize="18" FontFamily="宋体" Height="35" Width="100" Grid.Column="3" Grid.Row="2" FontWeight="Normal"/>
         <Button x:Name="button_download" Content="{DynamicResource DownloadConfirmDownload}" Click="button_download_Click" FontSize="18" FontFamily="宋体" Height="35" Width="100" Grid.Column="4" Grid.Row="2" FontWeight="Normal"/>
         <TextBlock Text="{Binding Path=NoIssueNum}" FontSize="15" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="2" Grid.Row="0"/>
-        <DataGrid x:Name="datagrid_download" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="1" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalContentAlignment="Top" AlternatingRowBackground="BlanchedAlmond" Background="WhiteSmoke" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False">
+        <DataGrid x:Name="datagrid_download" Grid.Column="1" Grid.ColumnSpan="4" Grid.Row="1" HorizontalContentAlignment="Center" HorizontalAlignment="Center" VerticalContentAlignment="Top" Background="WhiteSmoke" CanUserReorderColumns="False" CanUserSortColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" AutoGenerateColumns="False">
             <DataGrid.RowStyle>
                 <Style  TargetType="DataGridRow">
                     <Style.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="SkyBlue"/>
-                            <Setter Property="Foreground" Value="Blue"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Background" Value="SkyBlue"/>
-                            <Setter Property="Foreground" Value="Blue"/>
                         </Trigger>
                     </Style.Triggers>
                 </Style>

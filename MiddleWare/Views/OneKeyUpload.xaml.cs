@@ -74,6 +74,7 @@ namespace MiddleWare.Views
             num = 0;
             ds = new DataSet();
             UploadList.Clear();
+            List<UpOrDownload_Show> sampleList = new List<UpOrDownload_Show>();//未上传样本存储列表，并将其排序
             string strSelect = "select * from lisoutput where [ISSEND]= 0";
             using (OleDbDataAdapter oa = new OleDbDataAdapter(strSelect, conn))
             {
@@ -136,14 +137,27 @@ namespace MiddleWare.Views
                             }
                             tempDs.Clear();
                         }
-                        UploadList.Add(singleSample);
+                        //UploadList.Add(singleSample);
+                        sampleList.Add(singleSample);
                     }
                 }
                 ds.Clear();
             }
+            if(sampleList.Count>0)
+            {
+                //排序操作
+                sampleList.Sort(delegate (UpOrDownload_Show x, UpOrDownload_Show y)
+                {
+                    return y.Test_Time.CompareTo(x.Test_Time);
+                });
+                foreach(UpOrDownload_Show temp in sampleList)
+                {
+                    UploadList.Add(temp);
+                }
+                Statusbar.SBar.NoSendNum = UploadList.Count();
+            }
             AccessManagerDS.mutex.ReleaseMutex();
             conn.Close();
-            Statusbar.SBar.NoSendNum = UploadList.Count();
         }
         /// <summary>
         /// 一键上传所有未发送样本

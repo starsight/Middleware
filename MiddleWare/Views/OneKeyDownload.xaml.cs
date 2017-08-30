@@ -75,7 +75,8 @@ namespace MiddleWare.Views
             }
             num = 0;
             ds = new DataSet();
-            if(flag)
+            List<UpOrDownload_Show> sampleList = new List<UpOrDownload_Show>();//未下发样本存储列表，并将其排序
+            if (flag)
             {
                 DownloadList.Clear();
             }
@@ -172,17 +173,35 @@ namespace MiddleWare.Views
                     }
                     tempds.Clear();
                 }
+                sampleList.Add(singleSample);
+            }
+            if(sampleList.Count>0)
+            {
+                //进行排序
+                sampleList.Sort(delegate (UpOrDownload_Show x, UpOrDownload_Show y)
+                {
+                    return y.Test_Time.CompareTo(x.Test_Time);
+                });
                 if (flag)
                 {
-                    DownloadList.Add(singleSample);
-                    Statusbar.SBar.NoIssueNum = DownloadList.Count();//检查更新一下
+                    //需要显示出来
+                    foreach(UpOrDownload_Show temp in sampleList)
+                    {
+                        DownloadList.Add(temp);
+                    }
+                    Statusbar.SBar.NoIssueNum = DownloadList.Count;
                 }
                 else
                 {
-                    BackStageList.Add(singleSample);
-                    Statusbar.SBar.NoIssueNum = DownloadList.Count();//检查更新一下
+                    //不需要显示出来
+                    foreach(UpOrDownload_Show temp in sampleList)
+                    {
+                        BackStageList.Add(temp);
+                    }
+                    Statusbar.SBar.NoIssueNum = BackStageList.Count;
                 }
             }
+            
             conn.Close();
             AccessManagerDS.mutex.ReleaseMutex();
         }
