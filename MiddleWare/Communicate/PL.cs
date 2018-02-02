@@ -525,7 +525,7 @@ namespace MiddleWare.Communicate
         public WriteAccessPL(PLManager pm)
         {
             strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-            string pathto = GlobalVariable.topDir.Parent.FullName;
+            string pathto = GlobalVariable.currentDir.FullName;
             strConnection += "Data Source=" + @pathto + "\\PLDB.mdb";
             conn = new OleDbConnection(strConnection);
             ds = new DataSet();
@@ -2046,7 +2046,7 @@ namespace MiddleWare.Communicate
             plManager = pm;
 
             string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-            string pathto = GlobalVariable.topDir.Parent.FullName;
+            string pathto = GlobalVariable.currentDir.FullName;
             strConnection += "Data Source=" + @pathto + "\\PLDB.mdb";
             conn = new OleDbConnection(strConnection);
         }

@@ -135,6 +135,8 @@
     <Compile Include="Communicate\DS.cs" />
     <Compile Include="Communicate\HL7.cs" />
     <Compile Include="Communicate\PL.cs" />
+    <Compile Include="Communicate\TCPClient.cs" />
+    <Compile Include="Model\DSSample.cs" />
     <Compile Include="Views\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
@@ -149,6 +151,7 @@
     <Compile Include="Views\HL7connect.xaml.cs">
       <DependentUpon>HL7connect.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\IniFiles.cs" />
     <Compile Include="Views\NotificationAreaIcon.cs" />
     <Compile Include="Views\Connect.xaml.cs">
       <DependentUpon>Connect.xaml</DependentUpon>

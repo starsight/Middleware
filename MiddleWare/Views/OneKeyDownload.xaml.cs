@@ -30,7 +30,7 @@ namespace MiddleWare.Views
     {
         private static OleDbConnection conn;
         private string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-        private string pathto = GlobalVariable.topDir.Parent.FullName;
+        private string pathto = GlobalVariable.currentDir.FullName;
         private UpOrDownload_Show singleSample;
         private int num;
         private DataSet ds;

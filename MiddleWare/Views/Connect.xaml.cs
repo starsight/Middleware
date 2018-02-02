@@ -109,23 +109,9 @@ namespace MiddleWare.Views
             ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             //记录日志
             log.Info("Start auto connect.");
-            string str = AppConfig.GetAppConfig("LisServerConnectWay");
-            if (str != null && str != "null") //LIS Server 连接方式 HL7 ASTM
-            {
-                if (str == "HL7")
-                {
-                    isAutoConnectLisServer = true;
-                    combobox_lis.SelectedIndex = 0;
-                }
-                else if (str == "ASTM")
-                {
-                    isAutoConnectLisServer = true;
-                    combobox_lis.SelectedIndex = 1;
-                }
-            }
-
-            str = AppConfig.GetAppConfig("DeviceConnectType");//仪器连接类型选择
-            if (str != null && str != "null") 
+            //先连接设备型号
+            string str = AppConfig.GetAppConfig("DeviceConnectType");//仪器连接类型选择
+            if (str != null && str != "null")
             {
                 switch (str)
                 {
@@ -157,6 +143,25 @@ namespace MiddleWare.Views
                         break;
                 }
             }
+
+            Thread.Sleep(100);//延迟连接LIS，以便Middleware接收到仪器型号
+            //后续连接LIS
+            str = AppConfig.GetAppConfig("LisServerConnectWay");
+            if (str != null && str != "null") //LIS Server 连接方式 HL7 ASTM
+            {
+                if (str == "HL7")
+                {
+                    isAutoConnectLisServer = true;
+                    combobox_lis.SelectedIndex = 0;
+                }
+                else if (str == "ASTM")
+                {
+                    isAutoConnectLisServer = true;
+                    combobox_lis.SelectedIndex = 1;
+                }
+            }
+
+            
         }
 
         private void AddItem(TextBox textbox, string text)
@@ -300,6 +305,10 @@ namespace MiddleWare.Views
                 clientSocket.ReceiveTimeout = 500;//设置读取超时时间500ms
                 clientSocket.SendTimeout = 1000;//设置发送超时时间1s
                 AddItem(textbox_lisshow, "连接LIS服务器成功\r\n");
+
+                //连接成功后，发送当前仪器的标识号
+                sendSocket(GlobalVariable.DSDeviceID);
+
                 log.Info("Socket connect success.");
             }
             catch (SocketException se)
@@ -317,6 +326,7 @@ namespace MiddleWare.Views
 
             HL7Manager hm = new HL7Manager();//新建一个hl7操作和队列
             ProcessHL7 ph = new ProcessHL7(hm);//新建一个HL7数据操作，包括socket给LIS服务器发送数据
+            TCPClient tc = new TCPClient(hm);//新建一个TCP连接
             if (IsHL7show && !IsASTMshow)
             {
                 #region HL7传输
@@ -327,6 +337,7 @@ namespace MiddleWare.Views
                 GlobalVariable.IsHL7Run = true;
                 GlobalVariable.IsASTMRun = false;
                 ph.Start();//开始发送数据
+                tc.start();//开始接收
 
                 //写入配置文件
                 AppConfig.UpdateAppConfig("HL7IP", host);
@@ -423,6 +434,10 @@ namespace MiddleWare.Views
                         //重连成功
                         AddItem(textbox_lisshow, "连接LIS服务器成功\r\n");
                         LisMessage.Invoke("连接LIS服务器成功\r\n", "LIS");
+
+                        //连接成功后，发送当前仪器的标识号
+                        sendSocket(GlobalVariable.DSDeviceID);
+
                         log.Debug("LIS reconnect success.");
                         GlobalVariable.IsSocketRun = true;
                         LisNum = true;
@@ -856,7 +871,7 @@ namespace MiddleWare.Views
                 }
 
                 //DSConnect显示
-                string pathto = GlobalVariable.topDir.Parent.FullName;
+                string pathto = GlobalVariable.currentDir.FullName;
                 string curFile = @pathto + "\\DSDB.mdb";
                 if (File.Exists(curFile))//检测DSDB数据库是否存在
                 {
@@ -941,7 +956,7 @@ namespace MiddleWare.Views
                     log.Debug("No port and buad.");
                     return;
                 }
-                string pathto = GlobalVariable.topDir.Parent.FullName;
+                string pathto = GlobalVariable.currentDir.FullName;
                 string curFile = @pathto + "\\PLDB.mdb";
                 if (File.Exists(curFile)) //检测PLDB数据库是否存在
                 {
@@ -1166,7 +1181,7 @@ namespace MiddleWare.Views
         {
             AddItem(textbox_deviceshow, "正在创建生化仪本地数据库\r\n");
             ADOX.CatalogClass cat = new CatalogClass();
-            string pathto = GlobalVariable.topDir.Parent.FullName;
+            string pathto = GlobalVariable.currentDir.FullName;
             string curFile = "Provider=Microsoft.Jet.OLEDB.4.0;" + "Data Source=" + @pathto + "\\DSDB.mdb;" + "Jet OLEDB:Engine Type=5";
             try
             {
@@ -1585,7 +1600,7 @@ namespace MiddleWare.Views
         private bool CreatPLDB()
         {
             AddItem(textbox_deviceshow, "正在创建血小板本地数据库\r\n");
-            string pathto = GlobalVariable.topDir.Parent.FullName;
+            string pathto = GlobalVariable.currentDir.FullName;
             string curFile = "Provider=Microsoft.Jet.OLEDB.4.0;" + "Data Source=" + @pathto + "\\PLDB.mdb;" + "Jet OLEDB:Engine Type=5";
             ADOX.CatalogClass cat = new CatalogClass();
             try

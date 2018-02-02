@@ -82,7 +82,7 @@ namespace MiddleWare.Views
             QDeviceList.Clear();
             bool IsDSDB = false;
             bool IsPLDB = false;
-            string pathto = GlobalVariable.topDir.Parent.FullName;
+            string pathto = GlobalVariable.currentDir.FullName;
             string curFile = @pathto + "\\DSDB.mdb";
             if (File.Exists(curFile))//检测DSDB数据库是否存在
             {
@@ -121,7 +121,7 @@ namespace MiddleWare.Views
                 DataSet ds = new DataSet();
                 OleDbConnection conn;
                 string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-                string pathto = GlobalVariable.topDir.Parent.FullName;
+                string pathto = GlobalVariable.currentDir.FullName;
                 strConnection += "Data Source=" + @pathto + "\\DSDB.mdb";
                 conn = new OleDbConnection(strConnection);
                 if (conn.State == System.Data.ConnectionState.Closed)
@@ -239,7 +239,7 @@ namespace MiddleWare.Views
             #region PL
             if (device == "血小板分析仪" || device == "所有仪器") //血小板数据库获取数据
             {
-                string pathto = GlobalVariable.topDir.Parent.FullName;
+                string pathto = GlobalVariable.currentDir.FullName;
                 numID = string.Empty;
                 DataSet ds = new DataSet();
                 OleDbConnection conn;

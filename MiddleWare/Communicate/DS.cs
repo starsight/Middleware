@@ -18,6 +18,7 @@ using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using log4net;
 using System.Reflection;
+using MiddleWare.Model;
 
 //3个线程 2个队列 1个用于从仪器数据库读取写入到自己数据的的DI800队列  1个是从自己数据库读取然后发送的DI800队列
 namespace MiddleWare.Communicate
@@ -1257,7 +1258,7 @@ namespace MiddleWare.Communicate
         public WriteAccessDS(AccessManagerDS am)
         {
             string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-            string pathto = GlobalVariable.topDir.Parent.FullName;
+            string pathto = GlobalVariable.currentDir.FullName;
             strConnection += "Data Source=" + @pathto + "\\DSDB.mdb";
             conn = new OleDbConnection(strConnection);
             this.accessmanager = am;
@@ -1371,9 +1372,12 @@ namespace MiddleWare.Communicate
                 return;//无样本ID号,但这种不可能发生
             }
             AccessManagerDS.mutex.WaitOne();
-            age= SampleInfo.DateOfBrith == null ? string.Empty : ((DateTime.Now.Month < SampleInfo.DateOfBrith.Value.Month || (DateTime.Now.Month == SampleInfo.DateOfBrith.Value.Month &&
-                    DateTime.Now.Day < SampleInfo.DateOfBrith.Value.Day)) ? (DateTime.Now.Year - SampleInfo.DateOfBrith.Value.Year).ToString() : (DateTime.Now.Year - SampleInfo.DateOfBrith.Value.Year - 1).ToString());
-
+            age = SampleInfo.DateOfBirth == null ? string.Empty : ((DateTime.Now.Month < SampleInfo.DateOfBirth.Value.Month || (DateTime.Now.Month == SampleInfo.DateOfBirth.Value.Month &&
+                    DateTime.Now.Day < SampleInfo.DateOfBirth.Value.Day)) ? (DateTime.Now.Year - SampleInfo.DateOfBirth.Value.Year - 1).ToString() : (DateTime.Now.Year - SampleInfo.DateOfBirth.Value.Year).ToString());
+            if(conn==null)
+            {
+                System.Windows.MessageBox.Show("未连接仪器");
+            }
             if (conn.State == System.Data.ConnectionState.Closed)
             {
                 conn.Open();//打开连接
@@ -1450,10 +1454,10 @@ namespace MiddleWare.Communicate
             
             for (int i = 0; i < SampleInfo.ExtraInfo.Count; ++i)
             {
-                if (SampleInfo.ExtraInfo[i].TextID == string.Empty)
+                if (SampleInfo.ExtraInfo[i].TextID == string.Empty || SampleInfo.ExtraInfo[i].TextID.Equals(string.Empty)) 
                 {
                     //如果没有项目编号
-                    if (SampleInfo.ExtraInfo[i].TextName == string.Empty) 
+                    if (SampleInfo.ExtraInfo[i].TextName == string.Empty || SampleInfo.ExtraInfo[i].TextName.Equals(string.Empty)) 
                     {
                         //如果也没有项目名称
                         //发过来的任务为空,那就不处理
@@ -1462,7 +1466,7 @@ namespace MiddleWare.Communicate
                     else
                     {
                         //有项目成名,那就去搜本地数据库是否有相应的名称
-                        strJudge = "select * from item_info WHERE SrtComp(Item,'" + SampleInfo.ExtraInfo[i].TextName + "',0)=0 AND [Device]='" + SampleInfo.Device + "'";
+                        strJudge = "select * from item_info WHERE StrComp(Item,'" + SampleInfo.ExtraInfo[i].TextName + "',0)=0 AND [Device]='" + SampleInfo.Device + "'";
                         using (OleDbDataAdapter oa = new OleDbDataAdapter(strJudge, conn))
                         {
                             DataSet ds = new DataSet();
@@ -1511,7 +1515,7 @@ namespace MiddleWare.Communicate
                 else
                 {
                     //如果有项目编号,就去找项目编号
-                    strJudge = "select * from item_info where [Index]='" + SampleInfo.ExtraInfo[i].TextID + "'AND [Device]='" + SampleInfo.Device + "'";
+                    strJudge = "select * from item_info where [Index]='" + SampleInfo.ExtraInfo[i].TextID + "' AND [Device]='" + SampleInfo.Device + "'";
                     using (OleDbDataAdapter oa = new OleDbDataAdapter(strJudge, conn))
                     {
                         DataSet ds = new DataSet();
@@ -1681,7 +1685,7 @@ namespace MiddleWare.Communicate
                         else
                         {
                             //有项目名字,那就去搜本地数据库是否有相应的名称
-                            strJudge = "select * from item_info WHERE SrtComp(Item,'" + SampleInfo.ExtraInfo[i].ItemName + "',0)=0 AND [Device]='" + PatientInfo.Device + "'";
+                            strJudge = "select * from item_info WHERE StrComp(Item,'" + SampleInfo.ExtraInfo[i].ItemName + "',0)=0 AND [Device]='" + PatientInfo.Device + "'";
                             using (OleDbDataAdapter oa = new OleDbDataAdapter(strJudge, conn))
                             {
                                 DataSet ds = new DataSet();
@@ -1863,7 +1867,7 @@ namespace MiddleWare.Communicate
         {
             di800Manager = dm;
             string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-            string pathto = GlobalVariable.topDir.Parent.FullName;
+            string pathto = GlobalVariable.currentDir.FullName;
             strConnection += "Data Source=" + @pathto + "\\DSDB.mdb";
             conn = new OleDbConnection(strConnection);
 
@@ -1934,6 +1938,34 @@ namespace MiddleWare.Communicate
             }
             if (!IsAllSend)
             {
+                List<DSSample> list = convert(di800);
+                string json = JsonConvert.SerializeObject(list);
+                var client = new RestClient(GlobalVariable.BaseUrl);
+                var request = new RestRequest("/receive/DS", Method.POST);
+                request.AddParameter("text/json; charset=utf-8", json,ParameterType.RequestBody);
+                //request.AddBody(json);
+                request.RequestFormat = RestSharp.DataFormat.Json;
+                try
+                {
+                    client.ExecuteAsync(request, response =>
+                    {
+                        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            // OK
+                            Console.WriteLine("OK");
+                        }
+                        else
+                        {
+                            // NOK
+                            Console.WriteLine("NOK");
+                        }
+                    });
+                }
+                catch (Exception error)
+                {
+                    Console.WriteLine(error.ToString());
+                }
+
                 di800Manager.AddDI800(di800);
                 di800Manager.DI800Signal.Set();
                 ReadAccessDSMessage.Invoke(di800.SAMPLE_ID + "数据库读取成功\r\n", "DEVICE");
@@ -2018,6 +2050,41 @@ namespace MiddleWare.Communicate
             }
             conn.Close();
             AccessManagerDS.mutex.ReleaseMutex();//卸锁
+        }
+
+        private static List<DSSample> convert(DI800Manager.DI800 di800)
+        {
+            List<DSSample> list = new List<DSSample>();
+            List<DI800Manager.DI800Result> list_result = di800.Result;
+            foreach(DI800Manager.DI800Result result in list_result)
+            {
+                DSSample dssample = new DSSample();
+                dssample.SampleId = di800.SAMPLE_ID;
+                dssample.PatientId = di800.PATIENT_ID;
+                dssample.Type = di800.Type;
+                dssample.SendTime = di800.SEND_TIME;
+                dssample.Device = di800.Device;
+                dssample.Time = di800.TIME;
+                dssample.FirstName = di800.FIRST_NAME;
+                dssample.Sex = di800.SEX;
+                dssample.SampleKind = di800.SAMPLE_KIND;
+                dssample.Age = di800.AGE;
+                dssample.Doctor = di800.DOCTOR;
+                dssample.Area = di800.AREA;
+                dssample.Bed = di800.BED;
+                dssample.Department = di800.DEPARTMENT;
+
+                dssample.Item = result.ITEM;
+                dssample.FullName = result.FULL_NAME;
+                dssample.Result = result.RESULT;
+                dssample.NormalLow = result.NORMAL_LOW;
+                dssample.NormalHigh = result.NORMAL_HIGH;
+                dssample.Unit = result.UNIT;
+                dssample.Indicate = result.INDICATE;
+
+                list.Add(dssample);
+            }
+            return list;
         }
     }
 
@@ -2165,5 +2232,6 @@ namespace MiddleWare.Communicate
             DSCancellMessage.Invoke("已经取消与生化仪连接\r\n", "DEVICE");
         }
     }
+
 
 }

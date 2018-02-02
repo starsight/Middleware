@@ -57,7 +57,7 @@ namespace MiddleWare.Views
         private void combox()
         {
             NDeviceList.Clear();
-            string pathto = GlobalVariable.topDir.Parent.FullName;
+            string pathto = GlobalVariable.currentDir.FullName;
             string curFile = @pathto + "\\DSDB.mdb";
             if (File.Exists(curFile))//检测DSDB数据库是否存在
             {
@@ -83,7 +83,7 @@ namespace MiddleWare.Views
             DataSet ds = new DataSet();
             OleDbConnection conn;
             string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-            string pathto = GlobalVariable.topDir.Parent.FullName;
+            string pathto = GlobalVariable.currentDir.FullName;
             strConnection += "Data Source=" + @pathto + "\\PLDB.mdb";
             conn = new OleDbConnection(strConnection);
             if (conn.State == ConnectionState.Closed)
@@ -139,7 +139,7 @@ namespace MiddleWare.Views
             DataSet ds = new DataSet();
             OleDbConnection conn;
             string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-            string pathto = GlobalVariable.topDir.Parent.FullName;
+            string pathto = GlobalVariable.currentDir.FullName;
             strConnection += "Data Source=" + @pathto + "\\DSDB.mdb";
             conn = new OleDbConnection(strConnection);
             if (conn.State == ConnectionState.Closed)
@@ -195,7 +195,7 @@ namespace MiddleWare.Views
             DataSet ds = new DataSet();
             OleDbConnection conn;
             string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-            string pathto = GlobalVariable.topDir.Parent.FullName;
+            string pathto = GlobalVariable.currentDir.FullName;
             strConnection += "Data Source=" + @pathto + "\\DSDB.mdb";
             conn = new OleDbConnection(strConnection);
             if (conn.State == ConnectionState.Closed)
@@ -291,7 +291,7 @@ namespace MiddleWare.Views
                 DataSet ds = new DataSet();
                 OleDbConnection conn;
                 string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-                string pathto = GlobalVariable.topDir.Parent.FullName;
+                string pathto = GlobalVariable.currentDir.FullName;
                 strConnection += "Data Source=" + @pathto + "\\DSDB.mdb";
                 conn = new OleDbConnection(strConnection);
                 if (conn.State == ConnectionState.Closed)
@@ -349,7 +349,7 @@ namespace MiddleWare.Views
                 DataSet ds1 = new DataSet();
                 OleDbConnection conn;
                 string strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-                string pathto = GlobalVariable.topDir.Parent.FullName;
+                string pathto = GlobalVariable.currentDir.FullName;
                 strConnection += "Data Source=" + @pathto + "\\PLDB.mdb";
                 conn = new OleDbConnection(strConnection);
                 if (conn.State == ConnectionState.Closed)
@@ -590,7 +590,7 @@ namespace MiddleWare.Views
                 conn.Close();
             }
             strConnection = "Provider=Microsoft.Jet.OleDb.4.0;";
-            string pathto = GlobalVariable.topDir.Parent.FullName;
+            string pathto = GlobalVariable.currentDir.FullName;
             strConnection += "Data Source=" + @pathto + "\\DSDB.mdb";
             conn = new OleDbConnection(strConnection);
             if (conn.State == System.Data.ConnectionState.Closed)

@@ -81,10 +81,13 @@ namespace MiddleWare.Views
 
         /*语言环境 为int类型,便于以后添加多种语言 */
         public static int Language;//0代表简体中文 1代表英语
+
+        /*可执行文件所在路径*/
+        public static System.IO.DirectoryInfo currentDir = new System.IO.DirectoryInfo(System.Environment.CurrentDirectory);
         public static System.IO.DirectoryInfo topDir = System.IO.Directory.GetParent(System.Environment.CurrentDirectory);
 
         /*MiddlewareWeb*/
-        public static String BaseUrl = "http://localhost:8080/MiddlewareWeb";
+        public static String BaseUrl = "http://localhost:8080";
 
         /*mini window*/
         public static bool isMiniMode = false;

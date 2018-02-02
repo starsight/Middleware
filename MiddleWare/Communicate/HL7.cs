@@ -184,7 +184,7 @@ namespace MiddleWare.Communicate
             public string AdmissionNumber;//住院号
             public string BedNumber;//床号
             public string PatientName;//病人姓名
-            public DateTime? DateOfBrith;//出生日期
+            public DateTime? DateOfBirth;//出生日期
             public string Sex;//性别
             public string PatientAlias;//别名，曾用名，用作血型
             public string Race;//种族 未用
@@ -696,11 +696,11 @@ namespace MiddleWare.Communicate
             hl7info.PatientName = dsr.GetDSP(2).DataLine.Value;
             try
             {
-                hl7info.DateOfBrith = DateTime.ParseExact(dsr.GetDSP(3).DataLine.Value, "yyyyMMddHHmmss", System.Globalization.CultureInfo.CurrentCulture);
+                hl7info.DateOfBirth = DateTime.ParseExact(dsr.GetDSP(3).DataLine.Value, "yyyyMMddHHmmss", System.Globalization.CultureInfo.CurrentCulture);
             }
             catch
             {
-                hl7info.DateOfBrith = GlobalVariable.DefalutTime;
+                hl7info.DateOfBirth = GlobalVariable.DefalutTime;
             }
             hl7info.Sex = dsr.GetDSP(4).DataLine.Value;
             hl7info.PatientAlias = dsr.GetDSP(5).DataLine.Value;
