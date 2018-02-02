@@ -99,7 +99,6 @@ namespace MiddleWare.Views
             //ReadConnectConfigForAutoRun(); //自动连接
 
         }
-
         /// <summary>
         /// 自动连接
         /// </summary>
@@ -109,8 +108,25 @@ namespace MiddleWare.Views
             ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             //记录日志
             log.Info("Start auto connect.");
-            //先连接设备型号
-            string str = AppConfig.GetAppConfig("DeviceConnectType");//仪器连接类型选择
+            //先连接LIS
+
+            string str = AppConfig.GetAppConfig("LisServerConnectWay");
+            if (str != null && str != "null") //LIS Server 连接方式 HL7 ASTM
+            {
+                if (str == "HL7")
+                {
+                    isAutoConnectLisServer = true;
+                    combobox_lis.SelectedIndex = 0;
+                }
+                else if (str == "ASTM")
+                {
+                    isAutoConnectLisServer = true;
+                    combobox_lis.SelectedIndex = 1;
+                }
+            }
+            Thread.Sleep(100);//延迟连接LIS，以便Middleware接收到仪器型号
+            //后续连接仪器
+            str = AppConfig.GetAppConfig("DeviceConnectType");//仪器连接类型选择
             if (str != null && str != "null")
             {
                 switch (str)
@@ -144,24 +160,6 @@ namespace MiddleWare.Views
                 }
             }
 
-            Thread.Sleep(100);//延迟连接LIS，以便Middleware接收到仪器型号
-            //后续连接LIS
-            str = AppConfig.GetAppConfig("LisServerConnectWay");
-            if (str != null && str != "null") //LIS Server 连接方式 HL7 ASTM
-            {
-                if (str == "HL7")
-                {
-                    isAutoConnectLisServer = true;
-                    combobox_lis.SelectedIndex = 0;
-                }
-                else if (str == "ASTM")
-                {
-                    isAutoConnectLisServer = true;
-                    combobox_lis.SelectedIndex = 1;
-                }
-            }
-
-            
         }
 
         private void AddItem(TextBox textbox, string text)
