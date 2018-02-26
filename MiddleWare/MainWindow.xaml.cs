@@ -33,8 +33,6 @@ namespace MiddleWare
             XmlConfigurator.ConfigureAndWatch(logCfg);
             //创建日志记录组件实例
             ILog log = log4net.LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-            //记录日志
-
 
             //读取设备INI文件，获取设备型号
             IniFiles hardwareINI = new IniFiles(GlobalVariable.currentDir+ "//hardware.ini");
