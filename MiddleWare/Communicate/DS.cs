@@ -584,7 +584,6 @@ namespace MiddleWare.Communicate
                                  "INNER JOIN Register d ON a.BioID = d.BioID) " +
                                  "INNER JOIN BioMain e ON a.BioID = e.BioID) WHERE a.BioID " + "='" + testID +
                                  "'and a.IsSended = false";// and a.IsValid = true";
-
                             /*strSelect = "SELECT t.Item,t.Result,t.AddTime,t.StartTime,t.Kind," +
                                         "t.BioID,t.PatientID,t.FirstName,t.Sex,t.Age,t.Department," +
                                         "t.Aera,t.BedNum,t.Doctor,t.FullName,t.Unit," +
