@@ -40,6 +40,7 @@ namespace MiddleWare
             {
                 GlobalVariable.DSDeviceID = hardwareINI.ReadString("Device", "deviceID", GlobalVariable.DSDeviceID);
             }
+            //记录日志
             log.Info(string.Format("Device is {0}",GlobalVariable.DSDeviceID));
 
             log.Info("Init mainwindow finish.");
