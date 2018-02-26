@@ -26,6 +26,9 @@ namespace MiddleWare
         {
             InitializeComponent();
 
+
+
+
             /*
              * 日志管理初始化 log4net.config
              */
