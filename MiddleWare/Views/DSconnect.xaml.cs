@@ -39,7 +39,12 @@ namespace MiddleWare.Views
                 //&& str != "null" 
                 if (str != null && AppConfig.GetAppConfig("DSAddress") != null) 
                 {
-                    this.textbox_dsdb.Text = AppConfig.GetAppConfig("DSAddress");
+                    string dsAddress = AppConfig.GetAppConfig("DSAddress");
+                    if(File.Exists(dsAddress))
+                    {
+                        //如果是一个真实的文件地址
+                        this.textbox_dsdb.Text = AppConfig.GetAppConfig("DSAddress");
+                    }
                 }
             }
         }
